@@ -1,10 +1,10 @@
-import type { StarlightPlugin } from '@astrojs/starlight/types'
+import type { StarlightPlugin } from "@astrojs/starlight/types";
 
 export default function starlightRecipes(): StarlightPlugin {
   return {
-    name: 'starlight-recipes',
+    name: "starlight-recipes",
     hooks: {
-      'config:setup'({ logger }) {
+      "config:setup"({ logger }) {
         /**
          * This is the entry point of your Starlight plugin.
          * The `config:setup` hook is called when Starlight is initialized (during the Astro `astro:config:setup`
@@ -14,8 +14,8 @@ export default function starlightRecipes(): StarlightPlugin {
          *
          * @see https://starlight.astro.build/reference/plugins/
          */
-        logger.info('Hello from the starlight-recipes plugin!')
+        logger.info("Hello from the starlight-recipes plugin!");
       },
     },
-  }
+  };
 }
