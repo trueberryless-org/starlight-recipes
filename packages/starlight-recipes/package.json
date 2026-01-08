@@ -1,9 +1,18 @@
 {
   "name": "starlight-recipes",
   "version": "0.0.1",
-  "license": "MIT",
   "description": "Starlight plugin to create a recipe website.",
-  "author": "trueberryless-org",
+  "homepage": "https://github.com/trueberryless-org/starlight-recipes",
+  "bugs": {
+    "url": "https://github.com/trueberryless-org/starlight-recipes/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/trueberryless-org/starlight-recipes.git",
+    "directory": "packages/starlight-recipes"
+  },
+  "license": "MIT",
+  "author": "trueberryless <trueberryless@gmail.com> (https://trueberryless.org)",
   "type": "module",
   "exports": {
     ".": "./index.ts"
@@ -20,12 +29,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "homepage": "https://github.com/trueberryless-org/starlight-recipes",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/trueberryless-org/starlight-recipes.git",
-    "directory": "packages/starlight-recipes"
-  },
-  "bugs": "https://github.com/trueberryless-org/starlight-recipes/issues"
+  }
 }
