@@ -1,0 +1,32 @@
+{
+  "name": "starlight-recipes-docs",
+  "version": "0.0.1",
+  "license": "MIT",
+  "description": "Starlight plugin to create a recipe website.",
+  "author": "trueberryless-org",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.37.2",
+    "astro": "^5.16.7",
+    "sharp": "^0.34.5",
+    "starlight-recipes": "workspace:*"
+  },
+  "engines": {
+    "node": "^18.17.1 || ^20.3.0 || >=21.0.0"
+  },
+  "private": true,
+  "homepage": "https://github.com/trueberryless-org/starlight-recipes",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/trueberryless-org/starlight-recipes.git",
+    "directory": "docs"
+  },
+  "bugs": "https://github.com/trueberryless-org/starlight-recipes/issues"
+}
