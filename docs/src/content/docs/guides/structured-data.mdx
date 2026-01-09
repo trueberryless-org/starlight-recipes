@@ -100,23 +100,25 @@ Structured data is widely used among different services. Some further examples i
 
 ## Supported properties
 
-import DocField from '../../../components/StructuredDataPropertyDescription.astro';
+import DocField from '../../../components/DocField.astro';
 
-Starlight Recipes mainly focuses on [Google-supported and -recommended properties](https://developers.google.com/search/docs/appearance/structured-data/recipe#structured-data-type-definitions) as Google's convention is the most influential -- though this is likely a mix of market dominance and "SEO [Citogenesis](https://xkcd.com/978/)".
+Starlight Recipes mainly focuses on [Google-supported and -recommended properties](https://developers.google.com/search/docs/appearance/structured-data/recipe#structured-data-type-definitions) as Google's convention is the most influential -- though this is likely a mix of market dominance, [citogenesis](https://xkcd.com/978/) and a "[Reiteration](https://en.wikipedia.org/wiki/Illusory_truth_effect) Loop".
 
 ### `name`
 
 <DocField
   description="The name of the dish."
-  property="title"
+  linkedProperty="title"
   link="https://starlight.astro.build/reference/frontmatter/#title-required"
+  backlinking={true}
 />
 
 ### `image`
 
 <DocField
   description="Image of the completed dish."
-  property="cover"
+  linkedProperty="cover"
+  backlinking={true}
 />
 
-For best results, we recommend providing multiple high-resolution images (minimum of 50K pixels when multiplying width and height) with the following aspect ratios: 16x9, 4x3, and 1x1.
+For best results, it is recommended to provide multiple high-resolution images (minimum of 50K pixels when multiplying width and height) with the following aspect ratios: 16x9, 4x3, and 1x1.

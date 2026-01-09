@@ -20,8 +20,12 @@
     "./schema": "./schema.ts"
   },
   "dependencies": {
+    "@astrojs/markdown-remark": "^6.3.10",
     "@astrojs/mdx": "^4.3.13",
-    "github-slugger": "^2.0.0"
+    "astro-remote": "^0.3.4",
+    "github-slugger": "^2.0.0",
+    "mdast-util-mdx-expression": "^2.0.1",
+    "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
     "@astrojs/starlight": "^0.37.2",

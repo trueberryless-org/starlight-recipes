@@ -1,10 +1,18 @@
 import { AstroError } from "astro/errors";
 import { z } from "astro/zod";
 
+import { recipesAuthorSchema } from "../schema";
 import { stripLeadingSlash, stripTrailingSlash } from "./path";
 
 const configSchema = z
   .object({
+    /**
+     * A list of global author(s).
+     *
+     * Global authors are keyed by a unique identifier that can also be referenced in a blog post `authors` frontmatter
+     * field.
+     */
+    authors: z.record(recipesAuthorSchema).default({}),
     /**
      * The base prefix for all recipe routes.
      *

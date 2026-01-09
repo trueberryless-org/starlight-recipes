@@ -1,0 +1,51 @@
+---
+import type { StarlightRecipeEntry } from "../libs/content";
+import type { Locale } from "../libs/i18n";
+import { getPathWithLocale, getRelativeUrl } from "../libs/page";
+
+import Cover from "./Cover.astro";
+import Excerpt from "./Excerpt.astro";
+import Metadata from "./Metadata.astro";
+import RecipeTags from "./RecipeTags.astro";
+
+interface Props {
+  entry: StarlightRecipeEntry;
+  locale: Locale;
+}
+
+const { entry, locale } = Astro.props;
+---
+
+<article class="preview">
+  <header>
+    <h2>
+      <a href={getRelativeUrl(`/${getPathWithLocale(entry.id, locale)}`)}
+        >{entry.data.title}</a
+      >
+    </h2>
+    {entry.data.cover && <Cover cover={entry.data.cover} />}
+    <Metadata entry={entry} {locale} />
+  </header>
+  <div class="sl-markdown-content">
+    <Excerpt {entry} />
+  </div>
+  <footer>
+    <RecipeTags {entry} {locale} />
+  </footer>
+</article>
+
+<style>
+  .preview {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  h2 {
+    margin-bottom: 1.5rem;
+  }
+
+  h2 a {
+    text-decoration: none;
+  }
+</style>

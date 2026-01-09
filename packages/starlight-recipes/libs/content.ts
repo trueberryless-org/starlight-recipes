@@ -4,6 +4,7 @@ import {
   getCollection,
   getEntry,
   render,
+  // @ts-ignore
 } from "astro:content";
 import config from "virtual:starlight-recipes-config";
 import context from "virtual:starlight-recipes-context";
@@ -19,7 +20,7 @@ import { stripLeadingSlash, stripTrailingSlash } from "./path";
 
 const recipeEntriesPerLocale = new Map<Locale, StarlightRecipeEntry[]>();
 
-export async function getRecipeStaticPaths() {
+export async function getRecipesStaticPaths() {
   const paths = [];
 
   if (starlightConfig.isMultilingual) {
@@ -30,7 +31,7 @@ export async function getRecipeStaticPaths() {
       const pages = getPaginatedRecipeEntries(entries);
 
       for (const [index, entries] of pages.entries()) {
-        paths.push(getRecipeStaticPath(pages, entries, index, locale));
+        paths.push(getRecipesStaticPath(pages, entries, index, locale));
       }
     }
   } else {
@@ -38,7 +39,7 @@ export async function getRecipeStaticPaths() {
     const pages = getPaginatedRecipeEntries(entries);
 
     for (const [index, entries] of pages.entries()) {
-      paths.push(getRecipeStaticPath(pages, entries, index, DefaultLocale));
+      paths.push(getRecipesStaticPath(pages, entries, index, DefaultLocale));
     }
   }
 
@@ -194,7 +195,7 @@ export async function getRecipeEntryExcerpt(entry: StarlightRecipeEntry) {
   return Content;
 }
 
-function getRecipeStaticPath(
+function getRecipesStaticPath(
   pages: StarlightRecipeEntry[][],
   entries: StarlightRecipeEntry[],
   index: number,
@@ -226,7 +227,7 @@ function getRecipeStaticPath(
         config.prevNextLinksOrder === "reverse-chronological"
           ? prevLink
           : nextLink,
-    } satisfies StarlightRecipeStaticProps,
+    } satisfies StarlightRecipesStaticProps,
   };
 }
 
@@ -289,7 +290,7 @@ export interface StarlightRecipeEntryPaginated {
   prevLink: StarlightRecipeLink | undefined;
 }
 
-interface StarlightRecipeStaticProps {
+interface StarlightRecipesStaticProps {
   entries: StarlightRecipeEntry[];
   locale: Locale;
   nextLink: StarlightRecipeLink | undefined;

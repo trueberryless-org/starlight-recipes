@@ -1,21 +1,23 @@
 import type { StarlightUserConfig } from "@astrojs/starlight/types";
 import type { AstroConfig, ViteUserConfig } from "astro";
+import path from "node:path";
 
 import type { StarlightRecipesConfig } from "./config";
 
 // Assuming you have a config validator
 
-/**
- * Expose the starlight-recipes plugin configuration and project context.
- */
+// Expose the starlight-blog plugin configuration and project context.
 export function vitePluginStarlightRecipesConfig(
   starlightRecipesConfig: StarlightRecipesConfig,
   context: StarlightRecipesContext
 ): VitePlugin {
-  // Define the virtual modules available to the app
   const modules = {
     "virtual:starlight-recipes-config": `export default ${JSON.stringify(starlightRecipesConfig)}`,
     "virtual:starlight-recipes-context": `export default ${JSON.stringify(context)}`,
+    "virtual:starlight-recipes-images": getImagesVirtualModule(
+      starlightRecipesConfig,
+      context
+    ),
   };
 
   const moduleResolutionMap = Object.fromEntries(
@@ -37,9 +39,34 @@ export function vitePluginStarlightRecipesConfig(
   };
 }
 
-/**
- * Helper to resolve virtual module IDs for Vite
- */
+export function getImagesVirtualModule(
+  starlightRecipesConfig: StarlightRecipesConfig,
+  context: StarlightRecipesContext
+) {
+  let module = "";
+  const authors = Object.entries(starlightRecipesConfig.authors);
+
+  for (const [id, author] of authors) {
+    if (!author.picture?.startsWith(".")) continue;
+    module += `import ${id} from ${resolveModuleId(author.picture, context)};\n`;
+  }
+
+  module += "export const authors = {\n";
+  for (const [id, author] of authors) {
+    if (!author.picture) continue;
+    module += `  "${author.name}": ${author.picture.startsWith(".") ? id : resolveModuleId(author.picture, context)},\n`;
+  }
+  module += "};\n";
+
+  return module;
+}
+
+function resolveModuleId(id: string, context: StarlightRecipesContext) {
+  return JSON.stringify(
+    id.startsWith(".") ? path.resolve(context.rootDir, id) : id
+  );
+}
+
 function resolveVirtualModuleId<TModuleId extends string>(
   id: TModuleId
 ): `\0${TModuleId}` {

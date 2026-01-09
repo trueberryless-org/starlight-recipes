@@ -17,7 +17,7 @@ export default defineConfig({
         },
         {
           label: "Guides",
-          items: ["guides/structured-data"],
+          items: ["guides/frontmatter", "guides/structured-data"],
         },
       ],
       social: [

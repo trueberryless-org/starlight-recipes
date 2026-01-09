@@ -1,0 +1,29 @@
+---
+// @ts-ignore
+import { Markdown } from "astro-remote";
+
+import {
+  getRecipeEntryExcerpt,
+  type StarlightRecipeEntry,
+} from "../libs/content";
+
+import ExcerptContent from "./ExcerptContent.astro";
+
+interface Props {
+  entry: StarlightRecipeEntry;
+}
+
+const { entry } = Astro.props;
+
+const Content = await getRecipeEntryExcerpt(entry);
+---
+
+{
+  typeof Content === "string" ? (
+    <Markdown content={Content} />
+  ) : (
+    <ExcerptContent>
+      <Content />
+    </ExcerptContent>
+  )
+}

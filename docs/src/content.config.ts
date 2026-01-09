@@ -6,6 +6,8 @@ import { recipesSchema } from "starlight-recipes/schema";
 export const collections = {
   docs: defineCollection({
     loader: docsLoader(),
-    schema: docsSchema({ extend: recipesSchema }),
+    schema: docsSchema({
+      extend: (context) => recipesSchema(context),
+    }),
   }),
 };

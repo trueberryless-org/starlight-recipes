@@ -9,6 +9,7 @@ import {
   validateConfig,
 } from "./libs/config";
 import { vitePluginStarlightRecipesConfig } from "./libs/vite";
+import { Translations } from "./translations";
 
 export type { StarlightRecipesConfig, StarlightRecipesUserConfig };
 
@@ -20,6 +21,9 @@ export default function starlightRecipes(
   return {
     name: "starlight-recipes",
     hooks: {
+      "i18n:setup"({ injectTranslations }) {
+        injectTranslations(Translations);
+      },
       "config:setup"({
         addIntegration,
         logger,

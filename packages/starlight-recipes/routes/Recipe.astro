@@ -2,27 +2,27 @@
 import type { InferGetStaticPropsType } from "astro";
 
 import Page from "../components/Page.astro";
-import Posts from "../components/Posts.astro";
+import Recipes from "../components/Recipes.astro";
 import PrevNextLinks from "../components/PrevNextLinks.astro";
-import { getBlogStaticPaths } from "../libs/content";
+import { getRecipesStaticPaths } from "../libs/content";
 import { getPageProps } from "../libs/page";
-import { getBlogTitle } from "../libs/title";
+import { getSiteTitle } from "../libs/title";
 
 export const prerender = true;
 
 export function getStaticPaths() {
-  return getBlogStaticPaths();
+  return getRecipesStaticPaths();
 }
 
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 
 const { entries, locale, nextLink, prevLink } = Astro.props;
 
-const pageProps = getPageProps(getBlogTitle(locale));
+const pageProps = getPageProps(getSiteTitle(locale));
 ---
 
 <Page {...pageProps}>
-  <Posts {entries} {locale} />
+  <Recipes {entries} {locale} />
   <footer class="not-content">
     <PrevNextLinks next={nextLink} prev={prevLink} />
   </footer>

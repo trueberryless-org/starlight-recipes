@@ -1,21 +1,28 @@
 ---
 interface Props {
-  property: string;
   description: string;
+  linkedProperty: string;
   link?: string;
+  backlinking?: boolean;
 }
 
-const { property, description, link } = Astro.props;
+const { description, linkedProperty, link, backlinking } = Astro.props;
 
 // Use the provided link, or fallback to the documentation schema fragment
-const finalLink = link || `/guides/frontmatter-schema#${property}`;
+const finalLink =
+  link ||
+  (backlinking
+    ? `/guides/frontmatter#${linkedProperty}`
+    : `/guides/structured-data#${linkedProperty}`);
 ---
 
 <p class="doc-item">
   <span>{description}</span>
   <span class="divider">—</span>
   <small>
-    Generated from <code><a href={finalLink}>{property}</a></code>.
+    {backlinking ? "Generated from " : "Used to generate "}<code
+      ><a href={finalLink}>{linkedProperty}</a></code
+    >{backlinking ? "." : " for Structured Data."}
   </small>
 </p>
 

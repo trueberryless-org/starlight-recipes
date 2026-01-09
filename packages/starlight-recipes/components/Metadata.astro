@@ -1,12 +1,9 @@
 ---
 import { Badge } from "@astrojs/starlight/components";
-import config from "virtual:starlight-blog-config";
 
 import { getEntryAuthors } from "../libs/authors";
-import { renderBlogEntryToString } from "../libs/container";
 import type { StarlightRecipeEntry } from "../libs/content";
 import type { Locale } from "../libs/i18n";
-import { getMetrics, type Metrics } from "../libs/metrics";
 
 import Author from "./Author.astro";
 
@@ -20,57 +17,13 @@ const { entry, showBadges = true } = Astro.props;
 const authors = getEntryAuthors(entry);
 
 const hasAuthors = authors.length > 0;
-
-let metrics: Metrics | undefined;
-
-if (config.metrics.readingTime !== false || config.metrics.words !== false) {
-  const html = await renderBlogEntryToString(entry, Astro.locals.t);
-  metrics = getMetrics(html, Astro.currentLocale, entry.data.metrics);
-}
 ---
 
 <div class="metadata not-content">
   <div class="dates">
     <time datetime={entry.data.date.toISOString()}>
-      {Astro.locals.t("starlightBlog.post.date", { date: entry.data.date })}
+      {Astro.locals.t("starlightRecipes.post.date", { date: entry.data.date })}
     </time>
-    {
-      entry.data.lastUpdated !== undefined &&
-      typeof entry.data.lastUpdated !== "boolean" &&
-      entry.data.lastUpdated?.toISOString() !==
-        entry.data.date.toISOString() ? (
-        <span
-          class="metadata-alt"
-          set:html={Astro.locals.t("starlightBlog.post.lastUpdate", {
-            date: entry.data.lastUpdated,
-            isoDate: entry.data.lastUpdated.toISOString(),
-          })}
-        />
-      ) : null
-    }
-    {
-      config.metrics.readingTime !== false &&
-        metrics &&
-        metrics.readingTime.minutes > 0 && (
-          <span class="metadata-alt">
-            {Astro.locals.t("starlightBlog.metrics.readingTime.minutes", {
-              count: metrics.readingTime.minutes,
-            })}
-          </span>
-        )
-    }
-    {
-      config.metrics.words !== false && metrics && metrics.words.total > 0 && (
-        <span class="metadata-alt">
-          {Astro.locals.t("starlightBlog.metrics.words", {
-            count:
-              config.metrics.words === "total"
-                ? metrics.words.total
-                : metrics.words.rounded,
-          })}
-        </span>
-      )
-    }
   </div>
   {
     hasAuthors ? (
@@ -87,14 +40,14 @@ if (config.metrics.readingTime !== false || config.metrics.words !== false) {
         {entry.data.draft && (
           <Badge
             size="medium"
-            text={Astro.locals.t("starlightBlog.post.draft")}
+            text={Astro.locals.t("starlightRecipes.post.draft")}
             variant="caution"
           />
         )}
         {entry.data.featured && (
           <Badge
             size="medium"
-            text={Astro.locals.t("starlightBlog.post.featured")}
+            text={Astro.locals.t("starlightRecipes.post.featured")}
             variant="note"
           />
         )}

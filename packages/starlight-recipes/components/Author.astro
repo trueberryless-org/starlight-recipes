@@ -1,0 +1,87 @@
+---
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+import { authors } from "virtual:starlight-recipes-images";
+
+import { getRelativeUrl } from "../libs/page";
+import type { StarlightRecipesAuthor } from "../schema";
+
+interface Props {
+  author: StarlightRecipesAuthor;
+}
+
+const { author } = Astro.props;
+
+const isLink = author.url !== undefined;
+const Element = isLink ? "a" : "div";
+
+const picture = authors[author.name] ?? author.picture;
+
+const pictureSrc = (
+  picture === undefined
+    ? undefined
+    : typeof picture === "string"
+      ? picture.startsWith("http")
+        ? picture
+        : getRelativeUrl(picture, true)
+      : picture
+) as ImageMetadata | undefined;
+---
+
+<Element href={isLink ? author.url : undefined} class="author">
+  {
+    pictureSrc && (
+      <Image
+        alt={author.name}
+        loading="eager"
+        src={pictureSrc}
+        height={40}
+        width={40}
+      />
+    )
+  }
+  <div class="text">
+    <div class="name">{author.name}</div>
+    {author.title && <div class="title">{author.title}</div>}
+  </div>
+</Element>
+
+<style>
+  .author {
+    align-items: center;
+    display: flex;
+    gap: 0.5rem;
+    line-height: var(--sl-line-height-headings);
+    text-decoration: none;
+  }
+
+  .text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .name {
+    font-size: var(--sl-text-base);
+    font-weight: 600;
+  }
+
+  .author[href] .name {
+    color: var(--sl-color-text-accent);
+  }
+
+  .title {
+    font-size: var(--sl-text-xs);
+    color: var(--sl-color-text);
+  }
+
+  .author[href]:hover .name {
+    color: var(--sl-color-text);
+  }
+
+  img {
+    border: 1px solid var(--sl-color-gray-2);
+    border-radius: 9999px;
+    height: 2.5rem;
+    width: 2.5rem;
+  }
+</style>

@@ -1,0 +1,87 @@
+---
+title: Frontmatter
+---
+
+You can customize individual recipes by setting values in their frontmatter which is set at the top of your files between `---` separators:
+
+```md
+---
+// src/content/docs/recipes/virgin-colada.md
+title: Non-Alcoholic Piña Colada
+cover:
+  alt: A beautiful Virgin Colada
+  image: ../../../assets/virgin-colada.png
+---
+```
+
+## Extend your frontmatter schema
+
+Starlight Recipes extends [Starlight's frontmatter schema](https://starlight.astro.build/reference/frontmatter/) with information about the recipe.
+You need to update the content config file in order for the additional recipe-specific fields to be available:
+
+```diff lang="ts"
+// src/content.config.ts
+import { defineCollection } from 'astro:content';
+import { docsLoader } from '@astrojs/starlight/loaders';
+import { docsSchema } from '@astrojs/starlight/schema';
++import { recipesSchema } from 'starlight-recipes/schema'
+
+export const collections = {
+  docs: defineCollection({
+    loader: docsLoader(),
+    schema: docsSchema({
++      extend: (context) => recipesSchema(context)
+    })
+  }),
+};
+```
+
+## Frontmatter fields
+
+import DocField from '../../../components/DocField.astro';
+
+### `cover`
+
+**Required**<br />
+**Type:** [`CoverConfig`](#coverconfig)
+
+<DocField
+  description="Image of the completed dish."
+  linkedProperty="image"
+/>
+
+You can add a single high-quality image of the completed dish at the top of the recipe:
+
+```md
+---
+cover:
+  alt: "A beautiful Virgin Colada"
+  images: "../../../assets/virgin-colada.png"
+---
+```
+
+Or -- the [**recommended**](https://developers.google.com/search/docs/appearance/structured-data/recipe/#:~:text=aspect%20ratios) way -- you provide the same image with three different aspect ratios:
+
+```md
+---
+cover:
+  alt: "A beautiful Virgin Colada"
+  images:
+    - "../../../assets/virgin-colada-16x9.png"
+    - "../../../assets/virgin-colada-4x3.png"
+    - "../../../assets/virgin-colada-1x1.png"
+---
+```
+
+#### `CoverConfig`
+
+```ts
+type CoverConfig = {
+  // Universal alternative text describing the cover images for assistive technologies.
+  alt: string;
+  // The cover images for the recipe.
+  // Provide either relative paths to image files in your project,
+  // e.g. `../../assets/cover.png`, or URLs to remote images.
+  images: string | string[];
+};
+```
