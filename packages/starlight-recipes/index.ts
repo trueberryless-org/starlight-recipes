@@ -1,20 +1,57 @@
-import type { StarlightPlugin } from "@astrojs/starlight/types";
+import type {
+  StarlightPlugin,
+  StarlightUserConfig,
+} from "@astrojs/starlight/types";
 
-export default function starlightRecipes(): StarlightPlugin {
+import {
+  type StarlightRecipesConfig,
+  type StarlightRecipesUserConfig,
+  validateConfig,
+} from "./libs/config";
+import { vitePluginStarlightRecipesConfig } from "./libs/vite";
+
+export type { StarlightRecipesConfig, StarlightRecipesUserConfig };
+
+export default function starlightRecipes(
+  userConfig?: StarlightRecipesUserConfig
+): StarlightPlugin {
+  const config = validateConfig(userConfig);
+
   return {
     name: "starlight-recipes",
     hooks: {
-      "config:setup"({ logger }) {
-        /**
-         * This is the entry point of your Starlight plugin.
-         * The `config:setup` hook is called when Starlight is initialized (during the Astro `astro:config:setup`
-         * integration hook).
-         * To learn more about the Starlight plugin API and all available options in this hook, check the Starlight
-         * plugins reference.
-         *
-         * @see https://starlight.astro.build/reference/plugins/
-         */
-        logger.info("Hello from the starlight-recipes plugin!");
+      "config:setup"({
+        addIntegration,
+        logger,
+        astroConfig,
+        config: starlightConfig,
+      }) {
+        addIntegration({
+          name: "starlight-recipes-integration",
+          hooks: {
+            "astro:config:setup": ({ injectRoute, updateConfig }) => {
+              injectRoute({
+                entrypoint: "starlight-recipes/routes/Recipe.astro",
+                pattern: "/recipes/[...slug]",
+                prerender: true,
+              });
+
+              updateConfig({
+                vite: {
+                  plugins: [
+                    vitePluginStarlightRecipesConfig(config, {
+                      rootDir: astroConfig.root.pathname,
+                      site: astroConfig.site,
+                      srcDir: astroConfig.srcDir.pathname,
+                      title: starlightConfig.title,
+                      trailingSlash: astroConfig.trailingSlash,
+                    }),
+                  ],
+                },
+              });
+            },
+          },
+        });
       },
     },
   };

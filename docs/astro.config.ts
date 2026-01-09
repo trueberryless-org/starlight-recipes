@@ -13,7 +13,11 @@ export default defineConfig({
       sidebar: [
         {
           label: "Start Here",
-          items: ["getting-started"],
+          items: ["getting-started", "configuration"],
+        },
+        {
+          label: "Guides",
+          items: ["guides/structured-data"],
         },
       ],
       social: [

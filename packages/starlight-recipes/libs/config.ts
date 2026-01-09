@@ -1,0 +1,65 @@
+import { AstroError } from "astro/errors";
+import { z } from "astro/zod";
+
+import { stripLeadingSlash, stripTrailingSlash } from "./path";
+
+const configSchema = z
+  .object({
+    /**
+     * The base prefix for all recipe routes.
+     *
+     * @default 'recipes'
+     */
+    prefix: z
+      .string()
+      .default("recipes")
+      .transform((value) => stripTrailingSlash(stripLeadingSlash(value))),
+    /**
+     * The order of the previous and next links on the recipes page.
+     *
+     * By default, next links will point to the next recipe towards the past (`reverse-chronological`).
+     * Setting this option to `chronological` will make next links point to the next recipe towards the future.
+     */
+    prevNextLinksOrder: z
+      .union([z.literal("chronological"), z.literal("reverse-chronological")])
+      .default("reverse-chronological"),
+    /**
+     * The number of recipes to display per page on the recipes page.
+     */
+    recipeCount: z.number().min(1).default(5).transform(infinityToMax),
+    /**
+     * The number of recent recipes to display in the sidebar.
+     */
+    recentRecipeCount: z.number().min(1).default(10).transform(infinityToMax),
+  })
+  .default({});
+
+export function validateConfig(userConfig: unknown): StarlightRecipesConfig {
+  const config = configSchema.safeParse(userConfig);
+
+  if (!config.success) {
+    const errors = config.error.flatten();
+
+    throw new AstroError(
+      `Invalid starlight-recipes configuration:
+
+${errors.formErrors.map((formError) => ` - ${formError}`).join("\n")}
+${Object.entries(errors.fieldErrors)
+  .map(
+    ([fieldName, fieldErrors]) => ` - ${fieldName}: ${fieldErrors.join(" - ")}`
+  )
+  .join("\n")}
+  `,
+      `See the error report above for more informations.\n\nIf you believe this is a bug, please file an issue at https://github.com/trueberryless-org/starlight-recipes/issues/new/choose`
+    );
+  }
+
+  return config.data;
+}
+
+function infinityToMax(value: number): number {
+  return value === Infinity ? Number.MAX_SAFE_INTEGER : value;
+}
+
+export type StarlightRecipesUserConfig = z.input<typeof configSchema>;
+export type StarlightRecipesConfig = z.output<typeof configSchema>;

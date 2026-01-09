@@ -29,6 +29,9 @@ importers:
       '@astrojs/starlight':
         specifier: ^0.37.2
         version: 0.37.2(astro@5.16.7(rollup@4.55.1)(typescript@5.9.3))
+      '@expressive-code/plugin-collapsible-sections':
+        specifier: ^0.41.5
+        version: 0.41.5
       astro:
         specifier: ^5.16.7
         version: 5.16.7(rollup@4.55.1)(typescript@5.9.3)
@@ -40,6 +43,13 @@ importers:
         version: link:../packages/starlight-recipes
 
   packages/starlight-recipes:
+    dependencies:
+      '@astrojs/mdx':
+        specifier: ^4.3.13
+        version: 4.3.13(astro@5.16.7(rollup@4.55.1)(typescript@5.9.3))
+      github-slugger:
+        specifier: ^2.0.0
+        version: 2.0.0
     devDependencies:
       '@astrojs/starlight':
         specifier: ^0.37.2
@@ -352,6 +362,9 @@ packages:
 
   '@expressive-code/core@0.41.5':
     resolution: {integrity: sha512-II5TEy5eOoXiqPwqtpSqwamUd7lZS3YH3ofxR1ZyQMmygqORZn8/7SzgfF8G0kB7uKCBzFZT6RgKgCuHcJuPpA==}
+
+  '@expressive-code/plugin-collapsible-sections@0.41.5':
+    resolution: {integrity: sha512-n1a+9K+vfBgBEh4f8IVHX1Jkx3sIdmiPbNehxS9oewU+0YGPzRE4KGQmMvis92mTPcFh5dZ/A/CU+0ImDN5QXg==}
 
   '@expressive-code/plugin-frames@0.41.5':
     resolution: {integrity: sha512-qU0cvAQGfRLX7XwGf3/+hqIVmAc/mNNTlqVLR0iBfJF6EKvtP3R7/uAlPrAxnxQxn0meTazCz8D+PsPyOpHKrQ==}
@@ -2723,6 +2736,10 @@ snapshots:
       postcss-nested: 6.2.0(postcss@8.5.6)
       unist-util-visit: 5.0.0
       unist-util-visit-parents: 6.0.2
+
+  '@expressive-code/plugin-collapsible-sections@0.41.5':
+    dependencies:
+      '@expressive-code/core': 0.41.5
 
   '@expressive-code/plugin-frames@0.41.5':
     dependencies:

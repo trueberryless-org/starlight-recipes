@@ -15,7 +15,13 @@
   "author": "trueberryless <trueberryless@gmail.com> (https://trueberryless.org)",
   "type": "module",
   "exports": {
-    ".": "./index.ts"
+    ".": "./index.ts",
+    "./routes/Recipe.astro": "./routes/Recipe.astro",
+    "./schema": "./schema.ts"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.3.13",
+    "github-slugger": "^2.0.0"
   },
   "devDependencies": {
     "@astrojs/starlight": "^0.37.2",
@@ -29,5 +35,12 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "sideEffects": false,
+  "keywords": [
+    "starlight",
+    "plugin",
+    "recipe",
+    "astro"
+  ]
 }

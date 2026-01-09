@@ -1,0 +1,31 @@
+---
+import type { ComponentProps } from "astro/types";
+import { Image } from "astro:assets";
+
+import type { StarlightRecipeEntry } from "../libs/content";
+
+interface Props {
+  cover: NonNullable<StarlightRecipeEntry["data"]["cover"]>;
+}
+
+const { cover } = Astro.props;
+
+const image = cover.image;
+
+const commonImageProps = { alt: cover.alt, loading: "eager" } as const;
+
+const imageProps: ComponentProps<typeof Image> =
+  typeof image === "string"
+    ? { ...commonImageProps, inferSize: true, src: image }
+    : { ...commonImageProps, src: image };
+---
+
+<figure>
+  <Image {...imageProps} />
+</figure>
+
+<style>
+  figure {
+    margin-bottom: 1.5rem;
+  }
+</style>
