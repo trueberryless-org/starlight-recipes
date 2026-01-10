@@ -71,3 +71,103 @@ type CoverConfig = {
   image: string;
 };
 ```
+
+### `date`
+
+**Type:** `Date`
+
+The date of the recipe which must be a valid [YAML timestamp](https://yaml.org/type/timestamp.html).
+Recipes are sorted by descending date in the recipe list.
+
+```md
+---
+date: 2024-03-11
+---
+```
+
+### `lastUpdated`
+
+**Type:** `Date | boolean`
+
+If a date is specified in a recipe for this [Starlight frontmatter field](https://starlight.astro.build/reference/frontmatter/#lastupdated), such date will also be displayed next to the recipe date.
+
+Displayed only if different from the [`date`](#date-required) frontmatter field and must be a valid [YAML timestamp](https://yaml.org/type/timestamp.html).
+
+```md
+---
+lastUpdated: 2024-07-01
+---
+```
+
+### `tags`
+
+**Type:** `string[]`
+
+A list of tags associated with the recipe displayed at the bottom of a recipe and in the recipe list.
+
+```md
+---
+tags:
+  - Tag
+  - Another tag
+---
+```
+
+### `excerpt`
+
+**Type:** `string`
+
+The excerpt of the recipe used in the recipe list, authors, and tags pages which supports basic Markdown formatting.
+
+```md
+---
+excerpt: A small excerpt of the recipe…
+---
+```
+
+If not provided, excerpt delimiters will be used if present in the recipe content or the entire recipe content will be rendered otherwise.
+To learn more about excerpts, check the ["Excerpts" guide](/guides/excerpts).
+
+### `authors`
+
+**Type:** [`StarlightBlogAuthorsConfig`](/configuration#author-configuration)
+
+The author(s) of the recipe. Check the ["Authors" guide](/guides/authors) for more informations.
+
+```md
+---
+authors:
+  - Bob
+---
+```
+
+### `featured`
+
+**Type:** `boolean`<br />
+**Default:** `false`
+
+Set whether this recipe should be considered featured.
+Featured recipes are listed at the top of the sidebar in a dedicated group.
+
+The featured group is displayed only if at least one recipe is marked as featured.
+If a recipe is featured and also popular, it will be displayed only in the featured group.
+
+```md
+---
+featured: true
+---
+```
+
+### `draft`
+
+**Type:** `boolean`<br />
+**Default:** `false`
+
+Set whether this recipe should be considered a draft and not be included in [production builds](https://docs.astro.build/en/reference/cli-reference/#astro-build).
+Set to `true` to mark a recipe as a draft and make it only visible during development.
+
+```md
+---
+draft: true
+---
+```

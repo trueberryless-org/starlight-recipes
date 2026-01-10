@@ -56,7 +56,6 @@ export async function getTagsStaticPaths() {
 export function getEntryTags(
   entry: StarlightRecipeEntry
 ): StarlightRecipeEntryTag[] {
-  // @ts-ignore
   return (entry.data.tags ?? []).map((tag) => {
     return {
       label: tag,

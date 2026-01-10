@@ -33,6 +33,18 @@ export default function starlightRecipes(
         config: starlightConfig,
         updateConfig: updateStarlightConfig,
       }) {
+        if (astroConfig.site === undefined) {
+          throw new Error(
+            "The 'site' property must be set in your Astro config for starlight-recipes to generate valid SEO images.\nSee https://docs.astro.build/en/reference/configuration-reference/#site for more information."
+          );
+        }
+
+        if (astroConfig.adapter === undefined) {
+          logger.warn(
+            "Starlight Recipes: No Astro Server Adapter found. All on-demand features will be disabled. Setup an adapter for interactivity.\nSee https://docs.astro.build/en/guides/on-demand-rendering/ for more information."
+          );
+        }
+
         addRouteMiddleware({ entrypoint: "starlight-recipes/middleware" });
 
         const components: StarlightUserConfig["components"] = {
@@ -47,10 +59,37 @@ export default function starlightRecipes(
           hooks: {
             "astro:config:setup": ({ injectRoute, updateConfig }) => {
               injectRoute({
+                entrypoint: "starlight-recipes/routes/Tags.astro",
+                pattern: "/[...prefix]/tags/[tag]",
+                prerender: true,
+              });
+
+              injectRoute({
+                entrypoint: "starlight-recipes/routes/Authors.astro",
+                pattern: "/[...prefix]/authors/[author]",
+                prerender: true,
+              });
+
+              injectRoute({
                 entrypoint: "starlight-recipes/routes/Recipe.astro",
                 pattern: "/recipes/[...slug]",
                 prerender: true,
               });
+
+              if (astroConfig.adapter !== undefined) {
+                injectRoute({
+                  entrypoint: "starlight-recipes/routes/api/rating/rate.ts",
+                  pattern: "/api/recipe/rate",
+                  prerender: false,
+                });
+
+                injectRoute({
+                  entrypoint:
+                    "starlight-recipes/routes/api/rating/get-rating.ts",
+                  pattern: "/api/recipe/get-rating",
+                  prerender: false,
+                });
+              }
 
               updateConfig({
                 vite: {
@@ -60,6 +99,7 @@ export default function starlightRecipes(
                       site: astroConfig.site,
                       srcDir: astroConfig.srcDir.pathname,
                       title: starlightConfig.title,
+                      adapter: astroConfig.adapter,
                       trailingSlash: astroConfig.trailingSlash,
                     }),
                   ],

@@ -27,14 +27,14 @@ const { recipes, authors } = Astro.locals.starlightRecipes
 ---
 ```
 
-This can be useful for example to create a widget that lists recent recipe with their word count on your homepage:
+This can be useful for example to create a widget that lists popular recipe with their word count on your homepage:
 
 import Preview from '@/components/Preview.astro'
 import RecipesDataPostsExample from '@/components/RecipesDataExample.astro'
 
 <Preview>
 
-```astro title="RecentRecipesPosts.astro" "Astro.locals.starlightRecipes.recipes"
+```astro title="PopularRecipesPosts.astro" "Astro.locals.starlightRecipes.recipes"
 <ul>
   {
     Astro.locals.starlightRecipes.recipes.slice(0, 5).map((post) => (

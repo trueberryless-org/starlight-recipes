@@ -20,11 +20,17 @@ const hasAuthors = authors.length > 0;
 ---
 
 <div class="metadata not-content">
-  <div class="dates">
-    <time datetime={entry.data.date.toISOString()}>
-      {Astro.locals.t("starlightRecipes.post.date", { date: entry.data.date })}
-    </time>
-  </div>
+  {
+    entry.data.date && (
+      <div class="dates">
+        <time datetime={entry.data.date.toISOString()}>
+          {Astro.locals.t("starlightRecipes.post.date", {
+            date: entry.data.date,
+          })}
+        </time>
+      </div>
+    )
+  }
   {
     hasAuthors ? (
       <div class="authors">

@@ -1,3 +1,121 @@
 ---
 title: Configuration
+description: An overview of all the configuration options supported by the Starlight Recipes plugin.
 ---
+
+The Starlight Recipes plugin can be configured inside the `astro.config.mjs` configuration file of your project:
+
+```js {11}
+// astro.config.mjs
+import starlight from '@astrojs/starlight'
+import { defineConfig } from 'astro/config'
+import starlightRecipes from 'starlight-recipes'
+
+export default defineConfig({
+  integrations: [
+    starlight({
+      plugins: [
+        starlightRecipes({
+          // Configuration options go here.
+        }),
+      ],
+      title: 'My Recipes',
+    }),
+  ],
+})
+```
+
+## Plugin configuration
+
+The Starlight Recipes plugin accepts the following configuration options:
+
+### `recipeCount`
+
+**Type:** `number`<br />
+**Default:** `5`
+
+The number of recipes to display per page in the recipe list.
+
+### `popularRecipeCount`
+
+**Type:** `number`<br />
+**Default:** `3`
+
+The number of popular recipes to display in the sidebar.
+
+### `authors`
+
+**Type:** [`StarlightRecipesAuthorsConfig`](#author-configuration)
+
+A list of global authors for all recipes or regular authors that can be referenced in individual recipes.
+Check the ["Authors" guide](/guides/authors) for more informations.
+
+### `prevNextLinksOrder`
+
+**Type:** `'chronological' | 'reverse-chronological'`<br />
+**Default:** `'reverse-chronological'`
+
+The order of the previous and next links on the recipes overview page.
+
+By default, next links will point to the next recipe towards the past (`'reverse-chronological'`).
+Setting this option to `'chronological'` will make next links point to the next recipe towards the future.
+
+### `prefix`
+
+**Type:** `string`<br />
+**Default:** `'recipes'`
+
+The base prefix for all recipe routes.
+
+By default, an overview of all recipes will be available at `/recipes` and individual recipes at e.g. `/recipes/virgin-colada`.
+Setting this option to `'cookbook'` will make an overview of all recipes available at `/cookbook` and individual recipes at e.g. `/cookbook/virgin-colada`.
+
+## Author configuration
+
+Global authors for all recipes or regular authors that can be referenced in individual recipes can be defined using the [`authors`](#authors) configuration option.
+When a recipe frontmatter does not define an author, the global authors from the configuration will be used instead.
+Check the ["Authors" guide](/guides/authors) for more informations.
+
+```js {3-8}
+starlightRecipes({
+  authors: {
+    alice: {
+      // Author configuration for the `alice` author goes here.
+    },
+    bob: {
+      // Author configuration for the `bob` author goes here.
+    },
+  },
+})
+```
+
+An author can be configured using the following options:
+
+### `name`
+
+**Required**<br />
+**Type:** `string`
+
+The name of the author.
+
+### `title`
+
+**Type:** `string`
+
+A title to display below the author's name.
+
+### `url`
+
+**Type:** `string`
+
+A URL to link the author's name to.
+
+### `picture`
+
+**Type:** `string`
+
+A URL or path to an image to display as the author's picture.
+
+- For local images in `src/`, provide the relative path to the image, e.g. `./src/assets/author.png`.
+- For local images in `public/`, provide an absolute path starting with a `/`, e.g. `/images/author.png`.
+- For remote images, provide the URL to the image. When using remote images, check out the [“Authorizing remote images”](https://docs.astro.build/en/guides/images/#authorizing-remote-images) guide to enable image optimization.

@@ -82,6 +82,7 @@ export interface StarlightRecipesContext {
   srcDir: string;
   site: AstroConfig["site"];
   title: StarlightUserConfig["title"];
+  adapter: AstroConfig["adapter"];
   trailingSlash: AstroConfig["trailingSlash"];
 }
 

@@ -1,0 +1,260 @@
+---
+import context from "virtual:starlight-recipes-context";
+
+interface Props {
+  recipeId: string;
+}
+
+const { recipeId } = Astro.props;
+const isInteractive =
+  !!import.meta.env.STARLIGHT_RECIPES_RATING_RANDOM_GUID && !!context.adapter;
+---
+
+<recipe-rating
+  data-recipe-id={recipeId}
+  data-interactive={isInteractive ? "true" : "false"}
+  class="not-content"
+  style="margin: 0"
+>
+  <div class="rating-container" id="main-container">
+    <div class="stars-wrapper" id="stars-container">
+      {
+        [5, 4, 3, 2, 1].map((num) => (
+          <button
+            type="button"
+            class="star-btn"
+            data-value={num}
+            aria-label={`Rate ${num} stars`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="star-icon"
+            >
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+            </svg>
+          </button>
+        ))
+      }
+    </div>
+
+    <div class="rating-stats">
+      <div class="loading-spinner" id="spinner"></div>
+      <span class="avg-value">...</span>
+      <span class="count-value"></span>
+    </div>
+  </div>
+</recipe-rating>
+
+<script>
+  class RecipeRating extends HTMLElement {
+    constructor() {
+      super();
+      const recipeId = this.dataset.recipeId;
+      const isInteractive = this.dataset.interactive === "true";
+      const votedKey = `sl-recipes-voted-${recipeId}`;
+
+      this.refreshStats();
+      this.checkVoted(votedKey);
+
+      if (!isInteractive) return;
+
+      const buttons = this.querySelectorAll(".star-btn");
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          if (localStorage.getItem(votedKey)) return;
+
+          // START LOADING STATE
+          this.setLoading(true);
+
+          const stars = btn.getAttribute("data-value");
+          try {
+            const res = await fetch("/api/recipe/rate", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ recipeId, stars: parseInt(stars!) }),
+            });
+
+            if (res.ok) {
+              localStorage.setItem(votedKey, "true");
+              this.checkVoted(votedKey);
+              await this.refreshStats();
+            }
+          } catch (e) {
+            console.error("Voting failed", e);
+          } finally {
+            // STOP LOADING STATE
+            this.setLoading(false);
+          }
+        });
+      });
+    }
+
+    setLoading(isLoading: boolean) {
+      const container = this.querySelector(".rating-container");
+      if (isLoading) {
+        container?.classList.add("is-loading");
+      } else {
+        container?.classList.remove("is-loading");
+      }
+    }
+
+    checkVoted(key: string) {
+      if (localStorage.getItem(key)) {
+        this.querySelector(".rating-container")?.classList.add("is-voted");
+      }
+    }
+
+    async refreshStats() {
+      const recipeId = this.dataset.recipeId;
+      const spinner = this.querySelector("#spinner");
+      spinner?.classList.add("active");
+
+      try {
+        const res = await fetch(`/api/recipe/get-rating?id=${recipeId}`);
+        const data = await res.json();
+
+        const avgEl = this.querySelector(".avg-value");
+        const countEl = this.querySelector(".count-value");
+
+        if (avgEl) {
+          avgEl.textContent =
+            data.ratingValue > 0
+              ? Number(data.ratingValue).toFixed(1)
+              : "No ratings";
+        }
+        if (countEl) countEl.textContent = `(${data.ratingCount})`;
+      } catch (e) {
+        console.error("Could not fetch ratings");
+      } finally {
+        spinner?.classList.remove("active");
+      }
+    }
+  }
+
+  customElements.define("recipe-rating", RecipeRating);
+</script>
+
+<style>
+  .rating-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--sl-color-gray-6, #1e293b);
+    border-radius: 99px;
+    border: 1px solid var(--sl-color-gray-5);
+    transition: all 0.3s ease;
+  }
+
+  /* --- LOADING EFFECTS --- */
+  .is-loading {
+    pointer-events: none;
+    opacity: 0.8;
+  }
+
+  .is-loading .star-icon {
+    animation: star-pulse 1.5s infinite ease-in-out;
+  }
+
+  @keyframes star-pulse {
+    0% {
+      color: var(--sl-color-gray-4);
+      transform: scale(1);
+    }
+    50% {
+      color: #facc15;
+      transform: scale(1.1);
+    }
+    100% {
+      color: var(--sl-color-gray-4);
+      transform: scale(1);
+    }
+  }
+
+  .loading-spinner {
+    display: none;
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--sl-color-gray-4);
+    border-top: 2px solid #facc15;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .loading-spinner.active {
+    display: inline-block;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* --- EXISTING STYLES --- */
+  .rating-container.is-voted {
+    filter: grayscale(1);
+    opacity: 0.7;
+  }
+
+  .is-voted .star-btn {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .stars-wrapper {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+  }
+
+  .star-btn {
+    background: none;
+    border: none;
+    padding: 0 1px;
+    cursor: pointer;
+    color: var(--sl-color-gray-4);
+    transition:
+      transform 0.1s ease,
+      color 0.2s ease;
+    display: flex;
+    align-items: center;
+  }
+
+  .star-btn:hover {
+    transform: scale(1.2);
+  }
+
+  .star-btn:hover,
+  .star-btn:hover ~ .star-btn {
+    color: #facc15;
+    filter: drop-shadow(0 0 4px rgba(250, 204, 21, 0.4));
+  }
+
+  .star-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .rating-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    line-height: 1;
+  }
+
+  .avg-value {
+    font-weight: 700;
+    color: var(--sl-color-white);
+  }
+
+  .count-value {
+    color: var(--sl-color-gray-3);
+  }
+</style>

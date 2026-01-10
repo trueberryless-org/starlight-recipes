@@ -21,6 +21,8 @@
     "./routes/Recipe.astro": "./routes/Recipe.astro",
     "./routes/Authors.astro": "./routes/Authors.astro",
     "./routes/Tags.astro": "./routes/Tags.astro",
+    "./routes/api/rating/get-rating.ts": "./routes/api/rating/get-rating.ts",
+    "./routes/api/rating/rate.ts": "./routes/api/rating/rate.ts",
     "./data": "./data.ts",
     "./middleware": "./middleware.ts",
     "./schema": "./schema.ts"
@@ -31,6 +33,7 @@
     "astro-remote": "^0.3.4",
     "github-slugger": "^2.0.0",
     "mdast-util-mdx-expression": "^2.0.1",
+    "schema-dts": "^1.1.5",
     "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {

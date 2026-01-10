@@ -7,6 +7,7 @@ import Cover from "./Cover.astro";
 import Excerpt from "./Excerpt.astro";
 import Metadata from "./Metadata.astro";
 import RecipeTags from "./RecipeTags.astro";
+import Rating from "./Rating.astro";
 
 interface Props {
   entry: StarlightRecipeEntry;
@@ -24,7 +25,11 @@ const { entry, locale } = Astro.props;
       >
     </h2>
     {entry.data.cover && <Cover cover={entry.data.cover} />}
-    <Metadata entry={entry} {locale} />
+
+    <div class="metadata-wrapper">
+      <Metadata entry={entry} {locale} />
+      <Rating recipeId={entry.id} />
+    </div>
   </header>
   {
     entry.data.excerpt && (
@@ -51,5 +56,14 @@ const { entry, locale } = Astro.props;
 
   h2 a {
     text-decoration: none;
+  }
+
+  .metadata-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
   }
 </style>

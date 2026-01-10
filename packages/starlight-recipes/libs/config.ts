@@ -9,7 +9,7 @@ const configSchema = z
     /**
      * A list of global author(s).
      *
-     * Global authors are keyed by a unique identifier that can also be referenced in a blog post `authors` frontmatter
+     * Global authors are keyed by a unique identifier that can also be referenced in a recipe `authors` frontmatter
      * field.
      */
     authors: z.record(recipesAuthorSchema).default({}),
@@ -36,9 +36,9 @@ const configSchema = z
      */
     recipeCount: z.number().min(1).default(5).transform(infinityToMax),
     /**
-     * The number of recent recipes to display in the sidebar.
+     * The number of popular recipes to display in the sidebar.
      */
-    recentRecipeCount: z.number().min(0).default(7).transform(infinityToMax),
+    popularRecipeCount: z.number().min(0).default(3).transform(infinityToMax),
   })
   .default({});
 

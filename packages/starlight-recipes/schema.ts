@@ -71,7 +71,7 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
     tags: z.string().array().optional(),
     /**
      * Defines whether the recipe is featured or not.
-     * Featured recipes are displayed in a dedicated sidebar group above recent recipes.
+     * Featured recipes are displayed in a dedicated sidebar group above popular recipes.
      */
     featured: z.boolean().optional(),
   });

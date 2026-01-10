@@ -4,7 +4,6 @@ import {
   getCollection,
   getEntry,
   render,
-  // @ts-ignore
 } from "astro:content";
 import config from "virtual:starlight-recipes-config";
 import context from "virtual:starlight-recipes-context";
@@ -51,17 +50,21 @@ export async function getSidebarRecipeEntries(locale: Locale) {
   const entries = await getRecipeEntries(locale);
 
   const featured: StarlightRecipeEntry[] = [];
-  const recent: StarlightRecipeEntry[] = [];
+  const popular: StarlightRecipeEntry[] = [];
+
+  entries.sort((a, b) => {
+    return a.data.title.localeCompare(b.data.title);
+  });
 
   for (const entry of entries) {
     if (entry.data.featured) {
       featured.push(entry);
     } else {
-      recent.push(entry);
+      popular.push(entry);
     }
   }
 
-  return { featured, recent: recent.slice(0, config.recentRecipeCount) };
+  return { featured, popular: popular.slice(0, config.popularRecipeCount) };
 }
 
 export async function getRecipeEntry(
@@ -175,10 +178,7 @@ export async function getRecipeEntries(
   validateRecipeEntries(recipeEntries);
 
   recipeEntries.sort((a, b) => {
-    return (
-      b.data.date.getTime() - a.data.date.getTime() ||
-      a.data.title.localeCompare(b.data.title)
-    );
+    return a.data.title.localeCompare(b.data.title);
   });
 
   recipeEntriesPerLocale.set(locale, recipeEntries);
@@ -267,15 +267,22 @@ function validateRecipeEntries(
 function validateRecipeEntry(
   entry: StarlightEntry
 ): asserts entry is StarlightRecipeEntry {
-  if (entry.data.date === undefined) {
-    throw new Error(`Missing date for recipe entry '${entry.id}'.`);
+  if (entry.data.cover === undefined) {
+    throw new Error(`Missing cover for recipe entry '${entry.id}'.`);
   }
 }
 
 type StarlightEntry = CollectionEntry<"docs">;
 
+export interface AggregateRating {
+  ratingValue: number;
+  ratingCount: number;
+}
+
 export type StarlightRecipeEntry = StarlightEntry & {
-  data: StarlightRecipesFrontmatter;
+  data: StarlightRecipesFrontmatter & {
+    aggregateRating?: AggregateRating;
+  };
 };
 
 export interface StarlightRecipeLink {

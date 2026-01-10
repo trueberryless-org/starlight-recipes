@@ -20,6 +20,7 @@ import {
   isRecipeRoot,
   isRecipeTagPage,
 } from "./libs/page";
+import { getHead } from "./libs/structured-data";
 import { getAllTags, getEntryTags } from "./libs/tags";
 
 const recipeDataPerLocale = new Map<Locale, StarlightRecipesData>();
@@ -28,10 +29,7 @@ export const onRequest = defineRouteMiddleware(async (context) => {
   const { starlightRoute } = context.locals;
   const { id } = starlightRoute;
 
-  context.locals.starlightRecipes = await getRecipesData(
-    starlightRoute,
-    context.locals.t
-  );
+  context.locals.starlightRecipes = await getRecipesData(starlightRoute);
 
   const isRecipe = isAnyRecipesPage(id);
   if (!isRecipe) return;
@@ -39,19 +37,18 @@ export const onRequest = defineRouteMiddleware(async (context) => {
   const isRecipeOverviewPage = isAnyRecipeRootPage(id);
   if (isRecipeOverviewPage) starlightRoute.toc = undefined;
 
-  starlightRoute.head.push();
+  starlightRoute.head.push(await getHead(context));
   starlightRoute.sidebar = await getRecipeSidebar(context);
 });
 
-export async function getRecipesData(
-  { locale }: StarlightRouteData,
-  t: App.Locals["t"]
-): Promise<StarlightRecipesData> {
+export async function getRecipesData({
+  locale,
+}: StarlightRouteData): Promise<StarlightRecipesData> {
   if (recipeDataPerLocale.has(locale)) {
     return recipeDataPerLocale.get(locale) as StarlightRecipesData;
   }
 
-  const recipes = await getRecipeEntriesData(locale, t);
+  const recipes = await getRecipeEntriesData(locale);
 
   const authors = new Map<string, StarlightRecipesData["authors"][number]>();
 
@@ -73,8 +70,7 @@ export async function getRecipesData(
 }
 
 async function getRecipeEntriesData(
-  locale: Locale,
-  t: App.Locals["t"]
+  locale: Locale
 ): Promise<StarlightRecipesData["recipes"]> {
   const entries = await getRecipeEntries(locale);
 
@@ -120,7 +116,7 @@ async function getRecipeSidebar(
   const { starlightRoute, t } = context.locals;
   const { id, locale } = starlightRoute;
 
-  const { featured, recent } = await getSidebarRecipeEntries(locale);
+  const { featured, popular } = await getSidebarRecipeEntries(locale);
 
   const sidebar: StarlightRouteData["sidebar"] = [
     makeSidebarLink(
@@ -139,11 +135,11 @@ async function getRecipeSidebar(
     );
   }
 
-  if (recent.length > 0) {
+  if (popular.length > 0) {
     sidebar.push(
       makeSidebarGroup(
-        t("starlightRecipes.sidebar.recent"),
-        getSidebarProps(id, recent, locale)
+        t("starlightRecipes.sidebar.popular"),
+        getSidebarProps(id, popular, locale)
       )
     );
   }
