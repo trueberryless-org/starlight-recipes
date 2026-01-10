@@ -2,8 +2,8 @@
 import type { InferGetStaticPropsType } from "astro";
 
 import Page from "../components/Page.astro";
-import PostCount from "../components/PostCount.astro";
-import Posts from "../components/Posts.astro";
+import RecipeCount from "../components/RecipeCount.astro";
+import Recipes from "../components/Recipes.astro";
 import { getPageProps } from "../libs/page";
 import { getTagsStaticPaths } from "../libs/tags";
 
@@ -21,14 +21,14 @@ const pageProps = getPageProps(label);
 ---
 
 <Page {...pageProps}>
-  <PostCount
+  <RecipeCount
     >{
-      Astro.locals.t("starlightBlog.tags.count", {
+      Astro.locals.t("starlightRecipes.tags.count", {
         interpolation: { escapeValue: false },
         count: entries.length,
         tag: label,
       })
-    }</PostCount
+    }</RecipeCount
   >
-  <Posts {entries} {locale} />
+  <Recipes {entries} {locale} />
 </Page>

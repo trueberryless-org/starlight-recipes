@@ -1,7 +1,13 @@
 declare namespace App {
   type StarlightLocals = import("@astrojs/starlight").StarlightLocals;
-  // Define the `locals.t` object in the context of a plugin.
-  interface Locals extends StarlightLocals {}
+  interface Locals extends StarlightLocals {
+    /**
+     * Starlight Recipes data.
+     *
+     * @see https://starlight-recipes.trueberryless.org/guides/recipes-data/
+     */
+    starlightRecipes: import("./data").StarlightRecipesData;
+  }
 }
 
 declare namespace StarlightApp {

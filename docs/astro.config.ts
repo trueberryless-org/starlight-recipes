@@ -9,7 +9,20 @@ export default defineConfig({
         baseUrl:
           "https://github.com/trueberryless-org/starlight-recipes/edit/main/docs/",
       },
-      plugins: [starlightRecipes()],
+      plugins: [
+        starlightRecipes({
+          recentRecipeCount: 3,
+          authors: {
+            trueberryless: {
+              name: "Felix Schneider",
+              title: "trueberryless",
+              picture: "./src/assets/trueberryless.png",
+              url: "https://trueberryless.org",
+            },
+          },
+        }),
+      ],
+      // routeMiddleware: "./src/routeData.ts",
       sidebar: [
         {
           label: "Start Here",
@@ -17,7 +30,15 @@ export default defineConfig({
         },
         {
           label: "Guides",
-          items: ["guides/frontmatter", "guides/structured-data"],
+          items: [
+            "guides/frontmatter",
+            "guides/structured-data",
+            "guides/recipes-data",
+          ],
+        },
+        {
+          label: "Demo Recipes",
+          link: "/recipes",
         },
       ],
       social: [

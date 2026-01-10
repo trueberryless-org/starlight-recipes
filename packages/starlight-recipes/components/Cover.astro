@@ -12,7 +12,10 @@ const { cover } = Astro.props;
 
 const image = cover.image;
 
-const commonImageProps = { alt: cover.alt, loading: "eager" } as const;
+const commonImageProps = {
+  alt: cover.alt,
+  loading: "eager",
+} as const;
 
 const imageProps: ComponentProps<typeof Image> =
   typeof image === "string"
@@ -21,11 +24,14 @@ const imageProps: ComponentProps<typeof Image> =
 ---
 
 <figure>
-  <Image {...imageProps} />
+  <Image class="sl-recipes-cover-image" {...imageProps} />
 </figure>
 
 <style>
   figure {
     margin-bottom: 1.5rem;
+  }
+  .sl-recipes-cover-image {
+    border-radius: 20px;
   }
 </style>

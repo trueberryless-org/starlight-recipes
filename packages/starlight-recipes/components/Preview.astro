@@ -26,9 +26,13 @@ const { entry, locale } = Astro.props;
     {entry.data.cover && <Cover cover={entry.data.cover} />}
     <Metadata entry={entry} {locale} />
   </header>
-  <div class="sl-markdown-content">
-    <Excerpt {entry} />
-  </div>
+  {
+    entry.data.excerpt && (
+      <div class="sl-markdown-content">
+        <Excerpt {entry} />
+      </div>
+    )
+  }
   <footer>
     <RecipeTags {entry} {locale} />
   </footer>

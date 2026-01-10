@@ -86,6 +86,14 @@ export function isAnyRecipePage(slug: string) {
   );
 }
 
+export function isAnyRecipeRootPage(slug: string) {
+  return (
+    new RegExp(
+      `^${getPathWithLocale(config.prefix, getLocaleFromPath(slug))}(/?|/\\d+/?|/(tags|authors)/.+/?)$`
+    ).exec(slug) !== null
+  );
+}
+
 export function isRecipeRoot(slug: string) {
   return slug === getPathWithLocale(config.prefix, getLocaleFromPath(slug));
 }

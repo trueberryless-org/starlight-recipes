@@ -12,14 +12,14 @@ interface Props {
 const { entries, locale } = Astro.props;
 ---
 
-<div class="posts">
+<div class="recipes">
   {entries.map((entry) => <Preview {entry} {locale} />)}
 </div>
 
 <style>
-  .posts {
+  .recipes {
     display: flex;
     flex-direction: column;
-    gap: 3rem;
+    gap: 1rem;
   }
 </style>

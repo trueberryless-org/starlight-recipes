@@ -10,6 +10,7 @@ import config from "virtual:starlight-recipes-config";
 import context from "virtual:starlight-recipes-context";
 import starlightConfig from "virtual:starlight/user-config";
 
+import type { StarlightRecipesFrontmatter } from "../schema";
 import { DefaultLocale, type Locale } from "./i18n";
 import {
   getPathWithLocale,
@@ -274,9 +275,7 @@ function validateRecipeEntry(
 type StarlightEntry = CollectionEntry<"docs">;
 
 export type StarlightRecipeEntry = StarlightEntry & {
-  data: {
-    date: Date;
-  };
+  data: StarlightRecipesFrontmatter;
 };
 
 export interface StarlightRecipeLink {

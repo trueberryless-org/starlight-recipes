@@ -38,7 +38,7 @@ const configSchema = z
     /**
      * The number of recent recipes to display in the sidebar.
      */
-    recentRecipeCount: z.number().min(1).default(10).transform(infinityToMax),
+    recentRecipeCount: z.number().min(0).default(7).transform(infinityToMax),
   })
   .default({});
 

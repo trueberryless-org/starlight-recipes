@@ -2,6 +2,7 @@ import type {
   StarlightPlugin,
   StarlightUserConfig,
 } from "@astrojs/starlight/types";
+import type { AstroIntegrationLogger } from "astro";
 
 import {
   type StarlightRecipesConfig,
@@ -26,10 +27,21 @@ export default function starlightRecipes(
       },
       "config:setup"({
         addIntegration,
+        addRouteMiddleware,
         logger,
         astroConfig,
         config: starlightConfig,
+        updateConfig: updateStarlightConfig,
       }) {
+        addRouteMiddleware({ entrypoint: "starlight-recipes/middleware" });
+
+        const components: StarlightUserConfig["components"] = {
+          ...starlightConfig.components,
+        };
+        overrideComponent(components, logger, "MarkdownContent");
+
+        updateStarlightConfig({ components });
+
         addIntegration({
           name: "starlight-recipes-integration",
           hooks: {
@@ -59,4 +71,22 @@ export default function starlightRecipes(
       },
     },
   };
+}
+
+function overrideComponent(
+  components: NonNullable<StarlightUserConfig["components"]>,
+  logger: AstroIntegrationLogger,
+  component: keyof NonNullable<StarlightUserConfig["components"]>
+) {
+  if (components[component]) {
+    logger.warn(
+      `It looks like you already have a \`${component}\` component override in your Starlight configuration.`
+    );
+    logger.warn(
+      `To use \`starlight-recipes\`, either remove your override or update it to render the content from \`starlight-recipes/components/${component}.astro\`.`
+    );
+    return;
+  }
+
+  components[component] = `starlight-recipes/overrides/${component}.astro`;
 }

@@ -38,7 +38,7 @@ export const collections = {
 
 ## Frontmatter fields
 
-import DocField from '../../../components/DocField.astro';
+import DocField from '@/components/DocField.astro';
 
 ### `cover`
 
@@ -50,7 +50,7 @@ import DocField from '../../../components/DocField.astro';
   linkedProperty="image"
 />
 
-You can add a single high-quality image of the completed dish at the top of the recipe:
+Add high-quality image of the completed dish at the top of the recipe:
 
 ```md
 ---
@@ -60,28 +60,14 @@ cover:
 ---
 ```
 
-Or -- the [**recommended**](https://developers.google.com/search/docs/appearance/structured-data/recipe/#:~:text=aspect%20ratios) way -- you provide the same image with three different aspect ratios:
-
-```md
----
-cover:
-  alt: "A beautiful Virgin Colada"
-  images:
-    - "../../../assets/virgin-colada-16x9.png"
-    - "../../../assets/virgin-colada-4x3.png"
-    - "../../../assets/virgin-colada-1x1.png"
----
-```
-
 #### `CoverConfig`
 
 ```ts
 type CoverConfig = {
-  // Universal alternative text describing the cover images for assistive technologies.
+  // Alternative text describing the cover image for assistive technologies.
   alt: string;
-  // The cover images for the recipe.
-  // Provide either relative paths to image files in your project,
-  // e.g. `../../assets/cover.png`, or URLs to remote images.
-  images: string | string[];
+  // Relative path to an image file in your project,
+  // e.g. `../../assets/cover.png`, or a URL to a remote image.
+  image: string;
 };
 ```

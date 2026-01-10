@@ -1,0 +1,278 @@
+---
+title: Recipes Data
+description: Learn how to use Starlight Recipes’ data to access information about your recipes and authors.
+tableOfContents:
+  maxHeadingLevel: 5
+---
+
+Starlight Recipes exposes information about the recipes and authors in your project.
+This guide explains how to use Starlight Recipes’ data.
+
+## What is recipes data?
+
+Starlight Recipes data is an object containing the information about all the recipes and authors in your project.
+It includes information like a list of all the recipe authors, a list of all the recipes, the title of each recipe, the date it was published, and the author.
+
+## Using recipe data
+
+The [`recipes`](#recipes) property contains an array of all the recipe in your project while the [`authors`](#authors-1) property contains an array of all the authors.
+
+You can access this data from the `Astro.locals.starlightRecipes` global in Astro components:
+
+```astro title="example.astro"
+---
+const { recipes, authors } = Astro.locals.starlightRecipes
+//        │        └─ The list of all recipe authors
+//        └─ The list of all recipes
+---
+```
+
+This can be useful for example to create a widget that lists recent recipe with their word count on your homepage:
+
+import Preview from '@/components/Preview.astro'
+import RecipesDataPostsExample from '@/components/RecipesDataExample.astro'
+
+<Preview>
+
+```astro title="RecentRecipesPosts.astro" "Astro.locals.starlightRecipes.recipes"
+<ul>
+  {
+    Astro.locals.starlightRecipes.recipes.slice(0, 5).map((post) => (
+      <li>
+        <a href={post.href}>{post.title}</a>
+        // TODO
+        <!-- <em>({post.metrics.words.total} words)</em> -->
+      </li>
+    ))
+  }
+</ul>
+```
+
+<Fragment slot="preview">
+
+<RecipesDataPostsExample />
+
+</Fragment>
+
+</Preview>
+
+Another example is to create a list of all the known authors of your recipe:
+
+import RecipesDataAuthorsExample from '@/components/RecipesDataAuthorsExample.astro'
+
+<Preview>
+
+```astro title="RecipesAuthors.astro" "Astro.locals.starlightRecipes.authors"
+---
+const authorNames = Astro.locals.starlightRecipes.authors
+  .map((author) => author.name)
+  .sort((a, b) => a.localeCompare(b, Astro.currentLocale))
+
+const authorList = new Intl.ListFormat(Astro.currentLocale, {
+  style: 'long',
+  type: 'conjunction',
+}).format(authorNames)
+---
+
+<p><b>Authors:</b> {authorList}</p>
+```
+
+<Fragment slot="preview">
+
+<RecipesDataAuthorsExample />
+
+</Fragment>
+
+</Preview>
+
+## `starlightRecipes` object
+
+The `starlightRecipes` object contains information about all and authors.
+Here is a summary of the whole type of the object:
+
+```graphql
+{
+    recipes: {
+        title: string;
+        href: string;
+        createdAt: Date;
+        updatedAt: Date | undefined;
+        draft: boolean;
+        featured: boolean:
+        cover: { alt: string; image: ImageMetadata | string } | { alt: string; dark: ImageMetadata | string; light: ImageMetadata | string } | undefined;
+        entry: CollectionEntry;
+        authors: { name: string; title: string | undefined; url: string | undefined; }[];
+        tags: { label: string; href: string; }[];
+        metrics: { readingTime: { minutes: number; seconds: number; }; words: { rounded: number; total: number; }; };
+    }[];
+    authors: { name: string; title: string | undefined; url: string | undefined; }[];
+}
+```
+
+Below you can find details about each property:
+
+### `recipes`
+
+A list of all the recipe in your project ordered by descending [publication date](/guides/frontmatter#date-required/).
+
+Each post has the following properties:
+
+#### `title`
+
+**Type:** `string`
+
+The [title](/guides/frontmatter#title-required/) of the recipe post.
+
+#### `href`
+
+**Type:** `string`
+
+The link to the recipe post.
+
+#### `createdAt`
+
+**Type:** `Date`
+
+The [date](/guides/frontmatter#date-required/) of the recipe post.
+
+#### `updatedAt`
+
+**Type:** `Date | undefined`
+
+The last update date of the recipe post.
+It is only defined if the [`lastUpdated`](/guides/frontmatter#lastupdated/) frontmatter field is specified and different from the [`date`](/guides/frontmatter#date-required/) frontmatter field.
+
+#### `draft`
+
+**Type:** `boolean`
+
+Whether the recipe post is a [draft](/guides/frontmatter/#draft).
+Draft recipe are only visible in development mode.
+
+#### `featured`
+
+**Type:** `boolean`
+
+Whether the recipe post is [featured](/guides/frontmatter/#featured).
+
+#### `cover`
+
+**Type:** `{ alt: string; image: ImageMetadata | string } | { alt: string; dark: ImageMetadata | string; light: ImageMetadata | string } | undefined`
+
+The optional cover image of the recipe post.
+
+Based on how the cover image is [defined](/guides/frontmatter#cover) in the frontmatter of the recipe post, it can either be a single image or a pair of images for dark and light themes.
+Local images are imported and transformed into metadata while remote images are defined as a string URL that you can pass as a `src` to `<Image/>` or `getImage()`.
+
+Check the Starlight Recipes [`<Cover>` component](https://github.com/HiDeoo/starlight-recipe/blob/main/packages/starlight-recipe/components/Cover.astro) to see an example of how to use the cover image or learn more about [images in content collections](https://docs.astro.build/en/guides/images/#images-in-content-collections) in the Astro docs.
+
+#### `entry`
+
+The Astro content collection entry for the recipe post which includes frontmatter values at `entry.data`.
+
+```js
+entry: {
+  data: {
+    description: string | undefined
+    // etc.
+  }
+}
+```
+
+Learn more about the shape of this object in [Astro’s Collection Entry Type](https://docs.astro.build/en/reference/modules/astro-content/#collectionentry) reference.
+
+#### `authors`
+
+**Type:** <code><a href="#starlightrecipeauthordata">StarlightRecipesAuthorData</a>[]</code>
+
+The list of authors of the recipe post.
+
+#### `tags`
+
+**Type:** `{ label: string; href: string; }[]`
+
+The list of tags of the recipe post.
+
+Each tag has the following properties:
+
+##### `label`
+
+**Type:** `string`
+
+The label of the tag.
+
+##### `href`
+
+**Type:** `string`
+
+The link to the tag page.
+
+#### `metrics`
+
+**Type:** `{ readingTime: { minutes: number; seconds: number; }; words: { rounded: number; total: number; }; }`
+
+The metrics of the recipe post.
+
+##### `readingTime`
+
+**Type:** `{ minutes: number; seconds: number; }`
+
+The estimated reading time of the recipe post.
+
+###### `minutes`
+
+**Type:** `number`
+
+The estimated reading time of the recipe post in minutes, rounded up to the nearest minute.
+
+###### `seconds`
+
+**Type:** `number`
+
+The estimated reading time of the recipe post in seconds, rounded up to the nearest second.
+
+##### `words`
+
+**Type:** `{ rounded: number; total: number; }`
+
+The word count of the recipe post.
+
+###### `rounded`
+
+**Type:** `number`
+
+The word count of the recipe post rounded up to the nearest multiple of 100.
+
+###### `total`
+
+**Type:** `number`
+
+The total word count of the recipe post.
+
+### `authors`
+
+**Type:** <code><a href="#starlightrecipeauthordata">StarlightRecipesAuthorData</a>[]</code>
+
+An unordered list of all the known authors in your recipe.
+
+## `StarlightRecipesAuthorData`
+
+Recipes post authors are represented by a `StarlightRecipesAuthorData` object with the following properties:
+
+### `name`
+
+**Type:** `string`
+
+The [name](/configuration/#name) of the author.
+
+### `title`
+
+**Type:** `string | undefined`
+
+The optional [title](/configuration/#title-1) of the author.
+
+### `url`
+
+**Type:** `string | undefined`
+
+The optional [URL](/configuration/#url) to link the author to.

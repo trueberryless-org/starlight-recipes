@@ -100,7 +100,7 @@ Structured data is widely used among different services. Some further examples i
 
 ## Supported properties
 
-import DocField from '../../../components/DocField.astro';
+import DocField from '@/components/DocField.astro';
 
 Starlight Recipes mainly focuses on [Google-supported and -recommended properties](https://developers.google.com/search/docs/appearance/structured-data/recipe#structured-data-type-definitions) as Google's convention is the most influential -- though this is likely a mix of market dominance, [citogenesis](https://xkcd.com/978/) and a "[Reiteration](https://en.wikipedia.org/wiki/Illusory_truth_effect) Loop".
 
@@ -121,4 +121,4 @@ Starlight Recipes mainly focuses on [Google-supported and -recommended propertie
   backlinking={true}
 />
 
-For best results, it is recommended to provide multiple high-resolution images (minimum of 50K pixels when multiplying width and height) with the following aspect ratios: 16x9, 4x3, and 1x1.
+Starlight Recipes will use the cover image to generate three images with the following aspect ratios for [best results](https://developers.google.com/search/docs/appearance/structured-data/recipe/#:~:text=aspect%20ratios): 16x9, 4x3, and 1x1.

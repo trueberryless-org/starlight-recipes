@@ -34,21 +34,13 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
      */
     cover: z.object({
       /**
-       * Universal alternative text describing the cover images for assistive technologies.
+       * Alternative text describing the cover image for assistive technologies.
        */
       alt: z.string(),
       /**
-       * The cover images for the recipe.
-       *
-       * Provide either relative paths to image files in your project, e.g. `../../assets/cover.png`, or URLs to remote images.
-       *
-       * Google recommends providing high-resolution images (minimum of 50K pixels when multiplying width and height)
-       * with the following aspect ratios: 16x9, 4x3, and 1x1.
+       * Relative path to an image file in your project, e.g. `../../assets/cover.png`, or a URL to a remote image.
        */
-      images: z.union([
-        z.union([image(), z.string()]),
-        z.array(z.union([image(), z.string()])),
-      ]),
+      image: z.union([image(), z.string()]),
     }),
     /**
      * The publish date of the recipe which must be a valid YAML timestamp.
@@ -67,11 +59,21 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
       ])
       .optional(),
     /**
+     * The excerpt of the blog post used in the blog post list and tags pages.
+     * If not provided, the entire blog post content will be rendered.
+     */
+    excerpt: z.string().optional(),
+    /**
      * A list of tags associated with the recipe.
      *
      * These tags will used as keywords for structured data: https://schema.org/keywords
      */
     tags: z.string().array().optional(),
+    /**
+     * Defines whether the recipe is featured or not.
+     * Featured recipes are displayed in a dedicated sidebar group above recent recipes.
+     */
+    featured: z.boolean().optional(),
   });
 
 export function recipesSchema(context: SchemaContext) {
@@ -92,6 +94,9 @@ If you believe this is a bug, please file an issue at https://github.com/trueber
 }
 
 export type StarlightRecipesAuthor = z.infer<typeof recipesAuthorSchema>;
+export type StarlightRecipesFrontmatter = z.infer<
+  ReturnType<typeof recipeEntrySchema>
+>;
 
 interface SchemaContext {
   image: ImageFunction;
