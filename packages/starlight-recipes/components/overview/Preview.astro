@@ -1,15 +1,16 @@
 ---
 import context from "virtual:starlight-recipes-context";
 
-import type { StarlightRecipeEntry } from "../libs/content";
-import type { Locale } from "../libs/i18n";
-import { getPathWithLocale, getRelativeUrl } from "../libs/page";
+import type { StarlightRecipeEntry } from "../../libs/content";
+import type { Locale } from "../../libs/i18n";
+import { getPathWithLocale, getRelativeUrl } from "../../libs/page";
 
-import Cover from "./Cover.astro";
+import Authors from "./../metadata/Authors.astro";
+import Cover from "./../Cover.astro";
 import Excerpt from "./Excerpt.astro";
-import Metadata from "./Metadata.astro";
-import RecipeTags from "./RecipeTags.astro";
-import Rating from "./Rating.astro";
+import RecipeTags from "./../RecipeTags.astro";
+import RecipeCuisines from "./../RecipeCuisines.astro";
+import Rating from "./../Rating.astro";
 
 interface Props {
   entry: StarlightRecipeEntry;
@@ -35,15 +36,19 @@ const { entry, locale } = Astro.props;
         />
       )
     }
-
     {
-      context.ratingEnabled && entry.data.featured ? (
+      context.ratingEnabled && entry.data.featured && (
         <div class="metadata-wrapper">
-          <Metadata entry={entry} {locale} />
+          <Authors entry={entry} />
           <Rating recipeId={entry.id} />
         </div>
-      ) : (
-        <Metadata entry={entry} {locale} />
+      )
+    }
+    {
+      !entry.data.featured && entry.data.cuisine && (
+        <div class="metadata-wrapper">
+          <RecipeCuisines {entry} {locale} />
+        </div>
       )
     }
   </header>

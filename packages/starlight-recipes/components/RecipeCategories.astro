@@ -1,8 +1,8 @@
 ---
+import { getEntryCategory } from "../libs/categories";
 import type { StarlightRecipeEntry } from "../libs/content";
 import type { Locale } from "../libs/i18n";
 import { getRelativeRecipeUrl } from "../libs/page";
-import { getEntryTags } from "../libs/tags";
 
 interface Props {
   entry: StarlightRecipeEntry;
@@ -11,34 +11,21 @@ interface Props {
 
 const { entry, locale } = Astro.props;
 
-const tags = getEntryTags(entry);
+const category = getEntryCategory(entry);
 ---
 
 {
-  tags.length > 0 ? (
-    <div>
-      <b>{Astro.locals.t("starlightRecipes.recipe.tags")}</b>
-      <ul>
-        {tags.map((tag) => (
-          <li>
-            <a href={getRelativeRecipeUrl(`/tags/${tag.slug}`, locale)}>
-              {tag.label}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
-  ) : null
+  category && (
+    <span>
+      <a href={getRelativeRecipeUrl(`/categories/${category.slug}`, locale)}>
+        {category.label}
+      </a>
+    </span>
+  )
 }
 
 <style>
-  ul {
-    display: inline;
-    margin-inline-start: 0.25rem;
-    padding: 0;
-  }
-
-  li {
+  span {
     display: inline-block;
     margin-bottom: 0.25rem;
     padding: 0;

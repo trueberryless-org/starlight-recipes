@@ -37,6 +37,21 @@ export default defineConfig({
               picture: "./src/assets/trueberryless.png",
               url: "https://trueberryless.org",
             },
+            calmChef: {
+              name: "Ms. Glenda",
+              title: "Professional Ceiling Starer",
+              picture: "./src/assets/calm-chef.png",
+            },
+            coolChef: {
+              name: "Chef Hiro",
+              title: "Let Him Cook",
+              picture: "./src/assets/cool-chef.jpg",
+            },
+            japaneseChef: {
+              name: "爆裂サトシ",
+              title: "究極の白米マスター",
+              picture: "./src/assets/japanese-chef.jpg",
+            },
           },
         }),
       ],

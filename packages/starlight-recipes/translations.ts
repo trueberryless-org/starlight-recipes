@@ -4,10 +4,10 @@ export const Translations = {
     "starlightRecipes.authors.count_other": "{{count}} recipes by {{author}}",
     "starlightRecipes.pagination.prev": "Prior recipes",
     "starlightRecipes.pagination.next": "Further recipes",
-    "starlightRecipes.post.draft": "Draft",
-    "starlightRecipes.post.featured": "Featured",
-    "starlightRecipes.post.tags": "Tags:",
-    "starlightRecipes.post.date": "{{date, datetime(dateStyle: medium)}}",
+    "starlightRecipes.recipe.draft": "Draft",
+    "starlightRecipes.recipe.featured": "Featured",
+    "starlightRecipes.recipe.tags": "Tags:",
+    "starlightRecipes.recipe.date": "{{date, datetime(dateStyle: medium)}}",
     "starlightRecipes.sidebar.all": "All recipes",
     "starlightRecipes.sidebar.featured": "Featured recipes",
     "starlightRecipes.sidebar.popular": "Popular recipes",
@@ -18,5 +18,13 @@ export const Translations = {
       "{{count}} recipe with the tag “{{tag}}”",
     "starlightRecipes.tags.count_other":
       "{{count}} recipes with the tag “{{tag}}”",
+    "starlightRecipes.cuisines.count_one":
+      "{{count}} recipe with the cuisine “{{cuisine}}”",
+    "starlightRecipes.cuisines.count_other":
+      "{{count}} recipes with the cuisine “{{cuisine}}”",
+    "starlightRecipes.categories.count_one":
+      "{{count}} recipe with the category “{{category}}”",
+    "starlightRecipes.categories.count_other":
+      "{{count}} recipes with the category “{{category}}”",
   },
 };

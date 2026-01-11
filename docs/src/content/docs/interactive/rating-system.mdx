@@ -34,3 +34,22 @@ import GuidGenerator from '@/components/GuidGenerator.astro';
    :::
 
 </Steps>
+
+## How the rating system works
+
+When the [setup](#setup-rating-system) is completed, a hash of each recipe is generated based on the [id](https://docs.astro.build/en/reference/modules/astro-content/#id) of the recipe - aka the slugified file name.
+
+Based on this hash and your secret GUID, two counters are initialized for each recipe:
+
+- `sum`: Increases by the amount of stars voted by the user
+- `count`: Increases by one with each vote
+
+The average rating value therefore calculates with:
+
+```bash
+Average = sum / count
+```
+
+:::danger
+Because the filename is used to make the rating work, the rating will reset when you rename the file.
+:::

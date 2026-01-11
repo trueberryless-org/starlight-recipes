@@ -27,6 +27,47 @@ export const recipesAuthorSchema = z.object({
   url: z.string().url().optional(),
 });
 
+export const RecipeCategorySchema = z
+  .enum([
+    "Breakfast",
+    "Lunch",
+    "Dinner",
+    "Main Course",
+    "Side Dish",
+    "Appetizer",
+    "Snack",
+    "Dessert",
+    "Beverage",
+    "Salad",
+    "Soup",
+    "Marinade",
+    "Sauce",
+    "Stew",
+    "Bread",
+    "Drink",
+  ])
+  .optional();
+
+export const IngredientSchema = z.union([
+  z.string(),
+  z.object({
+    quantity: z.number().optional(),
+    unit: z.string().optional(),
+    name: z.string(),
+  }),
+]);
+
+export const InstructionStepSchema = z.union([
+  z.string(),
+  z.object({
+    name: z.string().optional(),
+    text: z.string(),
+    image: z.string().optional(),
+    alt: z.string().optional(),
+    url: z.string().url().optional(),
+  }),
+]);
+
 export const recipeEntrySchema = ({ image }: SchemaContext) =>
   z.object({
     /**
@@ -59,8 +100,9 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
       ])
       .optional(),
     /**
-     * The excerpt of the blog post used in the blog post list and tags pages.
-     * If not provided, the entire blog post content will be rendered.
+     * The excerpt of the recipe used on overview pages, author, tag and cuisine pages.
+     * If not provided, only the metadata will be shown.
+     * Only shown when the recipe is featured.
      */
     excerpt: z.string().optional(),
     /**
@@ -74,6 +116,51 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
      * Featured recipes are displayed in a dedicated sidebar group above popular recipes.
      */
     featured: z.boolean().optional(),
+    /**
+     * The type of meal or course your recipe is about.
+     */
+    category: RecipeCategorySchema,
+    /**
+     * The region associated with your recipe.
+     *
+     * If a valid ISO 3166-1 two-letter country code is provided (e.g., "AT" or "JP"),
+     * the localized country name will be returned with the corresponding country emoji flag appended.
+     * For non-ISO strings (e.g., "Mediterranean"), the text will be returned as-is.
+     */
+    cuisine: z.string().optional(),
+
+    /**
+     * The length of time it takes to prepare ingredients and workspace for the dish.
+     *
+     *
+     */
+    prepTime: z.number().optional(),
+    /**
+     * The time it takes to actually cook the dish.
+     *
+     *
+     */
+    cookTime: z.number().optional(),
+    /**
+     * The quantity produced by the recipe.
+     */
+    yield: z.object({}),
+    /**
+     * The number of calories in each serving produced with this recipe.
+     */
+    calories: z.number().optional(),
+    /**
+     * List of ingredients used in the recipe.
+     */
+    ingredients: z.array(IngredientSchema).default([]),
+    /**
+     * The steps to make the dish.
+     */
+    instructions: z.array(InstructionStepSchema).default([]),
+    /**
+     * A YouTube URL of a video depicting the steps to make the dish.
+     */
+    video: z.string().url().optional(),
   });
 
 export function recipesSchema(context: SchemaContext) {

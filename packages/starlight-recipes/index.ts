@@ -84,6 +84,18 @@ export default function starlightRecipes(
               }
 
               injectRoute({
+                entrypoint: "starlight-recipes/routes/Categories.astro",
+                pattern: "/[...prefix]/categories/[category]",
+                prerender: true,
+              });
+
+              injectRoute({
+                entrypoint: "starlight-recipes/routes/Cuisines.astro",
+                pattern: "/[...prefix]/cuisines/[cuisine]",
+                prerender: true,
+              });
+
+              injectRoute({
                 entrypoint: "starlight-recipes/routes/Tags.astro",
                 pattern: "/[...prefix]/tags/[tag]",
                 prerender: true,

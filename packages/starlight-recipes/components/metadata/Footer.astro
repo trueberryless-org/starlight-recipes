@@ -1,0 +1,36 @@
+---
+import type {
+  StarlightRecipeEntry,
+  StarlightRecipeEntryPaginated,
+} from "../../libs/content";
+import type { Locale } from "../../libs/i18n";
+import PrevNextLinks from "../PrevNextLinks.astro";
+import RecipeCategories from "../RecipeCategories.astro";
+import RecipeCuisines from "../RecipeCuisines.astro";
+import RecipeTags from "../RecipeTags.astro";
+
+interface Props {
+  entry: StarlightRecipeEntry;
+  locale: Locale;
+  nextLink: StarlightRecipeEntryPaginated["nextLink"];
+  prevLink: StarlightRecipeEntryPaginated["prevLink"];
+}
+
+const { entry, locale, nextLink, prevLink } = Astro.props;
+---
+
+<div class="recipe-footer">
+  <RecipeCuisines {entry} {locale} />
+  <RecipeCategories {entry} {locale} />
+  <RecipeTags entry={entry} {locale} />
+  <PrevNextLinks next={nextLink} prev={prevLink} />
+</div>
+
+<style>
+  .recipe-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-block-start: 2rem !important;
+  }
+</style>

@@ -24,7 +24,8 @@ const trailingSlashTransformers: Record<
 
 const base = stripTrailingSlash(import.meta.env.BASE_URL);
 
-/** Get the relative URL of a recipe page taking into account the locale, base URL and trailing slash configuration. */
+const RECIPE_SYSTEM_PATHS = ["tags", "authors", "cuisines"];
+
 export function getRelativeRecipeUrl(
   path: string,
   locale: Locale,
@@ -41,7 +42,6 @@ export function getRelativeRecipeUrl(
   );
 }
 
-/** Get the relative URL of a page taking into account the base URL and the trailing slash configuration. */
 export function getRelativeUrl(path: string, ignoreTrailingSlash = false) {
   path = stripLeadingSlash(path);
   path = path ? `${base}/${path}` : `${base}/`;
@@ -71,26 +71,25 @@ export function getPathWithLocale(path: string, locale: Locale): string {
 }
 
 export function isAnyRecipesPage(slug: string) {
-  return (
-    new RegExp(
-      `^${getPathWithLocale(config.prefix, getLocaleFromPath(slug))}(/?$|/.+/?$)`
-    ).exec(slug) !== null
-  );
+  return new RegExp(
+    `^${getPathWithLocale(config.prefix, getLocaleFromPath(slug))}(/?$|/.+/?$)`
+  ).test(slug);
 }
 
 export function isAnyRecipePage(slug: string) {
-  return (
-    new RegExp(
-      `^${getPathWithLocale(config.prefix, getLocaleFromPath(slug))}/(?!(\\d+/?|tags/.+|authors/.+)$).+$`
-    ).exec(slug) !== null
-  );
+  const prefix = getPathWithLocale(config.prefix, getLocaleFromPath(slug));
+  const excludedPatterns = [
+    ...RECIPE_SYSTEM_PATHS.map((path) => `${path}/.+`),
+    "\\d+/?",
+  ].join("|");
+  return new RegExp(`^${prefix}/(?!(?:${excludedPatterns})$).+$`).test(slug);
 }
 
 export function isAnyRecipeRootPage(slug: string) {
-  return (
-    new RegExp(
-      `^${getPathWithLocale(config.prefix, getLocaleFromPath(slug))}(/?|/\\d+/?|/(tags|authors)/.+/?)$`
-    ).exec(slug) !== null
+  const prefix = getPathWithLocale(config.prefix, getLocaleFromPath(slug));
+  const systemPaths = RECIPE_SYSTEM_PATHS.join("|");
+  return new RegExp(`^${prefix}(/?|/\\d+/?|/(${systemPaths})/.+/?)$`).test(
+    slug
   );
 }
 
@@ -113,6 +112,13 @@ export function isRecipeAuthorPage(slug: string, author: string) {
   return (
     slug ===
     `${getPathWithLocale(config.prefix, getLocaleFromPath(slug))}/authors/${author}`
+  );
+}
+
+export function isRecipeCuisinePage(slug: string, cuisine: string) {
+  return (
+    slug ===
+    `${getPathWithLocale(config.prefix, getLocaleFromPath(slug))}/cuisines/${cuisine}`
   );
 }
 

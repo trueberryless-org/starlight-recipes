@@ -10,12 +10,14 @@ import {
   getRecipeEntries,
   getRecipeEntry,
 } from "./content";
+import { getAllCuisines, resolveCuisine } from "./cuisines";
 import type { Locale } from "./i18n";
 import {
   getPathWithLocale,
   getRelativeUrl,
   isAnyRecipeRootPage,
   isRecipeAuthorPage,
+  isRecipeCuisinePage,
   isRecipeTagPage,
 } from "./page";
 import { stripTrailingSlash } from "./path";
@@ -44,8 +46,8 @@ export async function getRecipesHead(
 
   const allTags = await getAllTags(locale);
   const allAuthors = await getAllAuthors(locale);
+  const allCuisines = await getAllCuisines(locale);
 
-  // Check if current slug matches any known Tag page
   for (const [tagSlug, tagData] of allTags.entries()) {
     if (isRecipeTagPage(slug, tagSlug)) {
       filteredEntries = tagData.entries;
@@ -54,7 +56,6 @@ export async function getRecipesHead(
     }
   }
 
-  // Check if current slug matches any known Author page
   for (const authorData of allAuthors.values()) {
     if (isRecipeAuthorPage(slug, authorData.author.slug)) {
       filteredEntries = authorData.entries;
@@ -63,9 +64,15 @@ export async function getRecipesHead(
     }
   }
 
-  // siteURL ensures Google can resolve the links correctly
-  const siteUrl = context.site ? stripTrailingSlash(context.site) : "";
+  for (const [cuisineSlug, cuisineData] of allCuisines.entries()) {
+    if (isRecipeCuisinePage(slug, cuisineSlug)) {
+      filteredEntries = cuisineData.entries;
+      baseListName = `Recipes with cuisine ${cuisineData.label}`;
+      break;
+    }
+  }
 
+  const siteUrl = context.site ? stripTrailingSlash(context.site) : "";
   const listName = `${baseListName} | ${context.title}`;
 
   const itemList: ItemList = {
@@ -114,6 +121,14 @@ export async function getRecipeHead(
   const tags = data.tags?.join(", ");
   if (tags) recipeStructuredData.keywords = tags;
 
+  if (data.category) recipeStructuredData.recipeCategory = data.category;
+
+  if (data.cuisine) {
+    const cuisine = resolveCuisine(data.cuisine, locale);
+    recipeStructuredData.recipeCuisine =
+      typeof cuisine === "string" ? cuisine : cuisine!.name;
+  }
+
   const images = await getRecommendedImages(data.cover);
   if (images) {
     recipeStructuredData.image = images;
@@ -137,7 +152,6 @@ async function getRecommendedImages(
 
   const siteUrl = context.site ? context.site.replace(/\/+$/, "") : "";
 
-  // The specific ratios Google wants
   const ratios = [
     { name: "1x1", width: 1000, height: 1000 },
     { name: "4x3", width: 1152, height: 864 },
@@ -154,7 +168,6 @@ async function getRecommendedImages(
         fit: "cover",
       });
 
-      // Construct the absolute URL
       const isAbsolute = result.src.startsWith("http");
       return isAbsolute ? result.src : `${siteUrl}${result.src}`;
     })
@@ -178,7 +191,6 @@ function mapAuthors(
       return { "@type": "Person", name: a };
     }
 
-    // Build Person object using the same safe pattern
     const person: Person = { "@type": "Person", name: a.name };
     if (a.url) person.url = a.url;
     if (a.picture) person.image = a.picture;

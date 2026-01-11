@@ -76,8 +76,12 @@ type CoverConfig = {
 
 **Type:** `Date`
 
-The date of the recipe which must be a valid [YAML timestamp](https://yaml.org/type/timestamp.html).
-Recipes are sorted by descending date in the recipe list.
+<DocField
+  description="The date the recipe was published."
+  linkedProperty="datePublished"
+/>
+
+Must be a valid [YAML timestamp](https://yaml.org/type/timestamp.html).
 
 ```md
 ---
@@ -99,45 +103,63 @@ lastUpdated: 2024-07-01
 ---
 ```
 
+### `category`
+
+**Type:** `"Breakfast" | "Lunch" | "Dinner" | "Main Course" | "Side Dish" | "Appetizer" | "Snack" | "Dessert" | "Beverage" | "Salad" | "Soup" | "Marinade" | "Sauce"`
+
+<DocField
+  description="The type of meal or course your recipe is about."
+  linkedProperty="recipeCategory"
+/>
+
+```md
+---
+category: "Main Course"
+---
+```
+
+### `cuisine`
+
+**Type:** `string`
+
+<DocField
+  description="The region associated with your recipe."
+  linkedProperty="recipeCuisine"
+/>
+
+```md
+---
+cuisine: "Mediterranean"
+---
+```
+
+If a valid [ISO 3166-1 two-letter country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements) is provided (e.g., "AT" or "JP"), the localized country name will be displayed with the corresponding country emoji flag appended.
+
+```md
+---
+cuisine: "FR"
+---
+```
+
 ### `tags`
 
 **Type:** `string[]`
 
-A list of tags associated with the recipe displayed at the bottom of a recipe and in the recipe list.
+<DocField
+  description="A list of tags associated with the recipe."
+  linkedProperty="datePublished"
+/>
+
+Other terms for your recipe such as the season ("summer"), the holiday ("Halloween"), or other descriptors ("quick", "easy", "authentic").
+Displayed at the bottom of a recipe and in the recipe list.
+
+Don't use a tag that's actually a `category` or `cuisine`.
 
 ```md
 ---
 tags:
   - Tag
   - Another tag
----
-```
-
-### `excerpt`
-
-**Type:** `string`
-
-The excerpt of the recipe used in the recipe list, authors, and tags pages which supports basic Markdown formatting.
-
-```md
----
-excerpt: A small excerpt of the recipe…
----
-```
-
-If not provided, excerpt delimiters will be used if present in the recipe content or the entire recipe content will be rendered otherwise.
-To learn more about excerpts, check the ["Excerpts" guide](/guides/excerpts).
-
-### `authors`
-
-**Type:** [`StarlightBlogAuthorsConfig`](/configuration#author-configuration)
-
-The author(s) of the recipe. Check the ["Authors" guide](/guides/authors) for more informations.
-
-```md
----
-authors:
-  - Bob
 ---
 ```
 
@@ -155,6 +177,32 @@ If a recipe is featured and also popular, it will be displayed only in the featu
 ```md
 ---
 featured: true
+---
+```
+
+### `excerpt`
+
+**Type:** `string`
+
+The excerpt of the recipe used in the recipe list, authors, and tags pages which supports basic Markdown formatting.
+Only shown when the recipe is [`featured`](#featured).
+
+```md
+---
+excerpt: A small excerpt of the recipe…
+---
+```
+
+### `authors`
+
+**Type:** [`StarlightBlogAuthorsConfig`](/configuration#author-configuration)
+
+The author(s) of the recipe. Check the ["Authors" guide](/guides/authors) for more informations.
+
+```md
+---
+authors:
+  - Bob
 ---
 ```
 

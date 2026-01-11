@@ -12,8 +12,8 @@ const { description, linkedProperty, link, backlinking } = Astro.props;
 const finalLink =
   link ||
   (backlinking
-    ? `/guides/frontmatter#${linkedProperty}`
-    : `/guides/structured-data#${linkedProperty}`);
+    ? `/guides/frontmatter#${linkedProperty.toLowerCase()}`
+    : `/guides/structured-data#${linkedProperty.toLowerCase()}`);
 ---
 
 <p class="doc-item">

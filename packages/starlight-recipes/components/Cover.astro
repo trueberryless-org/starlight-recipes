@@ -33,7 +33,9 @@ const imageProps: ComponentProps<typeof Image> =
   {
     featured && (
       <div class="featured-badge">
-        <span class="shiny-text">Featured</span>
+        <span class="shiny-text">
+          {Astro.locals.t("starlightRecipes.recipe.featured")}
+        </span>
         <div class="corner-cut top-left" />
         <div class="corner-cut bottom-right" />
       </div>
