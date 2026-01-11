@@ -9,6 +9,7 @@ import config from "virtual:starlight-recipes-config";
 import context from "virtual:starlight-recipes-context";
 import starlightConfig from "virtual:starlight/user-config";
 
+import { getRecipeRating } from "../routes/api/rating/get-rating";
 import type { StarlightRecipesFrontmatter } from "../schema";
 import { DefaultLocale, type Locale } from "./i18n";
 import {
@@ -52,11 +53,18 @@ export async function getSidebarRecipeEntries(locale: Locale) {
   const featured: StarlightRecipeEntry[] = [];
   const popular: StarlightRecipeEntry[] = [];
 
-  entries.sort((a, b) => {
-    return a.data.title.localeCompare(b.data.title);
+  const entriesWithRatings = await Promise.all(
+    entries.map(async (entry) => {
+      const rating = await getRecipeRating(entry.id);
+      return { entry, rating: rating.ratingValue };
+    })
+  );
+
+  entriesWithRatings.sort((a, b) => {
+    return b.rating - a.rating;
   });
 
-  for (const entry of entries) {
+  for (const { entry } of entriesWithRatings) {
     if (entry.data.featured) {
       featured.push(entry);
     } else {
@@ -262,15 +270,8 @@ function validateRecipeEntry(
 
 type StarlightEntry = CollectionEntry<"docs">;
 
-export interface AggregateRating {
-  ratingValue: number;
-  ratingCount: number;
-}
-
 export type StarlightRecipeEntry = StarlightEntry & {
-  data: StarlightRecipesFrontmatter & {
-    aggregateRating?: AggregateRating;
-  };
+  data: StarlightRecipesFrontmatter;
 };
 
 export interface StarlightRecipeLink {

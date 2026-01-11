@@ -22,6 +22,7 @@ import {
 } from "./libs/page";
 import { getHead } from "./libs/structuredData";
 import { getAllTags, getEntryTags } from "./libs/tags";
+import { getRecipeRating } from "./routes/api/rating/get-rating";
 
 const recipeDataPerLocale = new Map<Locale, StarlightRecipesData>();
 
@@ -79,6 +80,8 @@ async function getRecipeEntriesData(
       const authors = getEntryAuthors(entry);
       const tags = getEntryTags(entry);
 
+      const averageRating = await getRecipeRating(entry.id);
+
       const recipesData: StarlightRecipesData["recipes"][number] = {
         authors: authors.map(({ name, title, url }) => ({
           name,
@@ -95,6 +98,7 @@ async function getRecipeEntriesData(
           label,
           href: getRelativeRecipeUrl(`/tags/${slug}`, locale),
         })),
+        averageRating,
         title: entry.data.title,
       };
 

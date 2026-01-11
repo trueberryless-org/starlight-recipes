@@ -5,7 +5,6 @@ import { COUNTIFY_PREFIX, generateRatingHash } from "../../../libs/rating";
 export const prerender = false;
 
 export const GET: APIRoute = async ({ url }) => {
-  // Wir holen die recipeId aus den Query-Parametern (z.B. /api/recipe/get-rating?id=mein-rezept)
   const recipeId = url.searchParams.get("id");
 
   if (!recipeId) {
@@ -32,8 +31,9 @@ export const GET: APIRoute = async ({ url }) => {
   });
 };
 
-// Deine ursprüngliche Logik bleibt als interne Hilfsfunktion erhalten
-async function getRecipeRating(recipeId: string) {
+export async function getRecipeRating(
+  recipeId: string
+): Promise<AggregateRating> {
   const NAMESPACE = import.meta.env.STARLIGHT_RECIPES_RATING_SECRET;
 
   if (!NAMESPACE) {
@@ -71,4 +71,9 @@ async function getRecipeRating(recipeId: string) {
     );
     return { ratingValue: 0, ratingCount: 0 };
   }
+}
+
+export interface AggregateRating {
+  ratingValue: number;
+  ratingCount: number;
 }
