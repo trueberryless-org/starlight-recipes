@@ -144,7 +144,10 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
     /**
      * The quantity produced by the recipe.
      */
-    yield: z.object({}),
+    yield: z.object({
+      amount: z.number(),
+      unit: z.string(),
+    }),
     /**
      * The number of calories in each serving produced with this recipe.
      */

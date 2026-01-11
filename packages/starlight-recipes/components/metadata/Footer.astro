@@ -5,9 +5,7 @@ import type {
 } from "../../libs/content";
 import type { Locale } from "../../libs/i18n";
 import PrevNextLinks from "../PrevNextLinks.astro";
-import RecipeCategories from "../RecipeCategories.astro";
-import RecipeCuisines from "../RecipeCuisines.astro";
-import RecipeTags from "../RecipeTags.astro";
+import Buttons from "./Buttons.astro";
 
 interface Props {
   entry: StarlightRecipeEntry;
@@ -20,9 +18,7 @@ const { entry, locale, nextLink, prevLink } = Astro.props;
 ---
 
 <div class="recipe-footer">
-  <RecipeCuisines {entry} {locale} />
-  <RecipeCategories {entry} {locale} />
-  <RecipeTags entry={entry} {locale} />
+  <Buttons {entry} {locale} />
   <PrevNextLinks next={nextLink} prev={prevLink} />
 </div>
 

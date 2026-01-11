@@ -8,9 +8,8 @@ import { getPathWithLocale, getRelativeUrl } from "../../libs/page";
 import Authors from "./../metadata/Authors.astro";
 import Cover from "./../Cover.astro";
 import Excerpt from "./Excerpt.astro";
-import RecipeTags from "./../RecipeTags.astro";
-import RecipeCuisines from "./../RecipeCuisines.astro";
 import Rating from "./../Rating.astro";
+import Buttons from "../metadata/Buttons.astro";
 
 interface Props {
   entry: StarlightRecipeEntry;
@@ -44,13 +43,6 @@ const { entry, locale } = Astro.props;
         </div>
       )
     }
-    {
-      !entry.data.featured && entry.data.cuisine && (
-        <div class="metadata-wrapper">
-          <RecipeCuisines {entry} {locale} />
-        </div>
-      )
-    }
   </header>
   {
     entry.data.featured && entry.data.excerpt && (
@@ -59,13 +51,7 @@ const { entry, locale } = Astro.props;
       </div>
     )
   }
-  {
-    entry.data.featured && !!entry.data.tags && (
-      <footer>
-        <RecipeTags {entry} {locale} />
-      </footer>
-    )
-  }
+  <Buttons {entry} {locale} />
 </article>
 
 <style>
@@ -90,6 +76,12 @@ const { entry, locale } = Astro.props;
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
+  }
+
+  .flex {
+    display: flex;
+    flex-direction: row;
+    gap: 0.2rem;
   }
 
   footer {

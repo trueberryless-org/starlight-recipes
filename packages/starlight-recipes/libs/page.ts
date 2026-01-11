@@ -24,7 +24,7 @@ const trailingSlashTransformers: Record<
 
 const base = stripTrailingSlash(import.meta.env.BASE_URL);
 
-const RECIPE_SYSTEM_PATHS = ["tags", "authors", "cuisines"];
+const RECIPE_SYSTEM_PATHS = ["tags", "authors", "cuisines", "categories"];
 
 export function getRelativeRecipeUrl(
   path: string,
@@ -119,6 +119,13 @@ export function isRecipeCuisinePage(slug: string, cuisine: string) {
   return (
     slug ===
     `${getPathWithLocale(config.prefix, getLocaleFromPath(slug))}/cuisines/${cuisine}`
+  );
+}
+
+export function isRecipeCategoryPage(slug: string, category: string) {
+  return (
+    slug ===
+    `${getPathWithLocale(config.prefix, getLocaleFromPath(slug))}/categories/${category}`
   );
 }
 
