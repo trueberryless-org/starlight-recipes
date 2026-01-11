@@ -18,7 +18,7 @@
     ".": "./index.ts",
     "./components/MarkdownContent.astro": "./components/starlight/MarkdownContent.astro",
     "./overrides/MarkdownContent.astro": "./overrides/MarkdownContent.astro",
-    "./routes/Recipe.astro": "./routes/Recipe.astro",
+    "./routes/Recipes.astro": "./routes/Recipes.astro",
     "./routes/Authors.astro": "./routes/Authors.astro",
     "./routes/Tags.astro": "./routes/Tags.astro",
     "./routes/api/rating/get-rating.ts": "./routes/api/rating/get-rating.ts",
@@ -38,7 +38,8 @@
   },
   "devDependencies": {
     "@astrojs/starlight": "^0.37.2",
-    "astro": "^5.16.7"
+    "astro": "^5.16.7",
+    "vite": "^7.3.1"
   },
   "peerDependencies": {
     "@astrojs/starlight": ">=0.37"

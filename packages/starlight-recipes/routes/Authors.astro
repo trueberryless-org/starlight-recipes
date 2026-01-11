@@ -3,7 +3,7 @@ import type { InferGetStaticPropsType } from "astro";
 
 import Page from "../components/Page.astro";
 import RecipeCount from "../components/RecipeCount.astro";
-import Recipes from "../components/Recipes.astro";
+import RecipesGrid from "../components/RecipesGrid.astro";
 import { getAuthorsStaticPaths } from "../libs/authors";
 import { getPageProps } from "../libs/page";
 
@@ -30,5 +30,5 @@ const pageProps = getPageProps(author.name);
       })
     }</RecipeCount
   >
-  <Recipes {entries} {locale} />
+  <RecipesGrid {entries} {locale} />
 </Page>

@@ -1,0 +1,31 @@
+---
+title: Rating System
+description: Learn how Starlight Recipes' rating system works and what you need to set up.
+---
+
+Starlight Recipes integrates a rating system based on [Countify](https://countify.xyz/).
+Every user can submit one vote from one to five stars and the average stars together with the count of votes will be shown on overview pages and recipe pages.
+
+In this guide you will learn what you need to do to enable this rating system.
+
+## Setup rating system
+
+import { Steps } from '@astrojs/starlight/components';
+import GuidGenerator from '@/components/GuidGenerator.astro';
+
+<Steps>
+
+1. In order for the rating system to work, you need to have any [Astro Server Adapter](https://docs.astro.build/en/guides/on-demand-rendering/#server-adapters) setup.
+
+2. Additionally, you must generate a random GUID and set the environment variable `STARLIGHT_RECIPES_RATING_SECRET` to this string.
+   This GUID acts as a secret to prevent people from guessing the Countify ID so they could spam ratings.
+
+   Click on this button to generate a random variable for you:
+
+   <GuidGenerator />
+
+   :::danger
+   If you change this GUID, all your ratings will be reset as a different GUID represents another namespace.
+   :::
+
+</Steps>

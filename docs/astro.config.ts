@@ -1,11 +1,14 @@
 import netlify from "@astrojs/netlify";
+import node from "@astrojs/node";
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import starlightRecipes from "starlight-recipes";
 
 export default defineConfig({
   site: "https://starlight-recipe.trueberryless.org",
-  adapter: netlify(),
+  adapter: node({
+    mode: "standalone",
+  }),
   integrations: [
     starlight({
       title: "Starlight Recipes",
@@ -27,7 +30,6 @@ export default defineConfig({
       },
       plugins: [
         starlightRecipes({
-          prevNextLinksOrder: "chronological",
           authors: {
             trueberryless: {
               name: "Felix Schneider",
@@ -52,6 +54,10 @@ export default defineConfig({
             "guides/structured-data",
             "guides/recipes-data",
           ],
+        },
+        {
+          label: "Interactive Features",
+          items: ["interactive/rating-system"],
         },
         {
           label: "Demo Recipes",

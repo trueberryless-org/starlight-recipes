@@ -34,7 +34,7 @@ export const GET: APIRoute = async ({ url }) => {
 
 // Deine ursprüngliche Logik bleibt als interne Hilfsfunktion erhalten
 async function getRecipeRating(recipeId: string) {
-  const NAMESPACE = import.meta.env.STARLIGHT_RECIPES_RATING_RANDOM_GUID;
+  const NAMESPACE = import.meta.env.STARLIGHT_RECIPES_RATING_SECRET;
 
   if (!NAMESPACE) {
     return { ratingValue: 0, ratingCount: 0 };

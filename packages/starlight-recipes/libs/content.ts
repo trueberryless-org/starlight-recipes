@@ -110,14 +110,8 @@ export async function getRecipeEntry(
 
   return {
     entry,
-    nextLink:
-      config.prevNextLinksOrder === "reverse-chronological"
-        ? nextLink
-        : prevLink,
-    prevLink:
-      config.prevNextLinksOrder === "reverse-chronological"
-        ? prevLink
-        : nextLink,
+    nextLink,
+    prevLink,
   };
 }
 
@@ -220,14 +214,8 @@ function getRecipesStaticPath(
     props: {
       entries,
       locale,
-      nextLink:
-        config.prevNextLinksOrder === "reverse-chronological"
-          ? nextLink
-          : prevLink,
-      prevLink:
-        config.prevNextLinksOrder === "reverse-chronological"
-          ? prevLink
-          : nextLink,
+      nextLink,
+      prevLink,
     } satisfies StarlightRecipesStaticProps,
   };
 }

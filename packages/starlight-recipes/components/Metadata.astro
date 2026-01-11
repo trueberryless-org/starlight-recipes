@@ -1,6 +1,4 @@
 ---
-import { Badge } from "@astrojs/starlight/components";
-
 import { getEntryAuthors } from "../libs/authors";
 import type { StarlightRecipeEntry } from "../libs/content";
 import type { Locale } from "../libs/i18n";
@@ -10,17 +8,16 @@ import Author from "./Author.astro";
 interface Props {
   entry: StarlightRecipeEntry;
   locale: Locale;
-  showBadges?: boolean;
 }
 
-const { entry, showBadges = true } = Astro.props;
+const { entry } = Astro.props;
 const authors = getEntryAuthors(entry);
 
 const hasAuthors = authors.length > 0;
 ---
 
 <div class="metadata not-content">
-  {
+  <!-- {
     entry.data.date && (
       <div class="dates">
         <time datetime={entry.data.date.toISOString()}>
@@ -30,7 +27,7 @@ const hasAuthors = authors.length > 0;
         </time>
       </div>
     )
-  }
+  } -->
   {
     hasAuthors ? (
       <div class="authors">
@@ -39,26 +36,6 @@ const hasAuthors = authors.length > 0;
         ))}
       </div>
     ) : null
-  }
-  {
-    showBadges && (entry.data?.draft || entry.data.featured) && (
-      <div class="badges">
-        {entry.data.draft && (
-          <Badge
-            size="medium"
-            text={Astro.locals.t("starlightRecipes.post.draft")}
-            variant="caution"
-          />
-        )}
-        {entry.data.featured && (
-          <Badge
-            size="medium"
-            text={Astro.locals.t("starlightRecipes.post.featured")}
-            variant="note"
-          />
-        )}
-      </div>
-    )
   }
 </div>
 

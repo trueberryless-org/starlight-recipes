@@ -1,14 +1,15 @@
 ---
 import type { ComponentProps } from "astro/types";
 import { Image } from "astro:assets";
-
 import type { StarlightRecipeEntry } from "../libs/content";
 
 interface Props {
   cover: NonNullable<StarlightRecipeEntry["data"]["cover"]>;
+  aspectRatio?: string;
+  featured?: boolean;
 }
 
-const { cover } = Astro.props;
+const { cover, aspectRatio, featured = false } = Astro.props;
 
 const image = cover.image;
 
@@ -23,15 +24,98 @@ const imageProps: ComponentProps<typeof Image> =
     : { ...commonImageProps, src: image };
 ---
 
-<figure>
-  <Image class="sl-recipes-cover-image" {...imageProps} />
+<figure class={featured ? "featured" : ""}>
+  <Image
+    class="sl-recipes-cover-image"
+    {...imageProps}
+    style={{ aspectRatio: aspectRatio }}
+  />
+  {
+    featured && (
+      <div class="featured-badge">
+        <span class="shiny-text">Featured</span>
+        <div class="corner-cut top-left" />
+        <div class="corner-cut bottom-right" />
+      </div>
+    )
+  }
 </figure>
 
 <style>
   figure {
     margin-bottom: 1.5rem;
+    position: relative;
+    border-radius: 20px;
   }
+
   .sl-recipes-cover-image {
     border-radius: 20px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    display: block;
+  }
+
+  .featured-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: var(--sl-color-bg);
+    padding: 0.4rem 1.1rem;
+    margin: 0;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08rem;
+    z-index: 2;
+    border-bottom-left-radius: 1rem;
+  }
+
+  .shiny-text {
+    /* We set the base color to the accent color, but make it slightly transparent
+       so the white 'shine' behind it pops through without losing accessibility.
+    */
+    background: linear-gradient(
+      120deg,
+      var(--sl-color-accent-high) 35%,
+      var(--sl-color-gray-1) 50%,
+      var(--sl-color-accent-high) 65%
+    );
+    background-size: 300% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 4s linear infinite;
+  }
+
+  @keyframes shine {
+    0% {
+      background-position: 100% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  .corner-cut {
+    position: absolute;
+    width: 1rem;
+    height: 1rem;
+    background: transparent;
+    pointer-events: none;
+  }
+
+  .top-left {
+    top: 0;
+    left: -1rem;
+    box-shadow: 0.5rem -0.5rem 0 0.5rem var(--sl-color-bg);
+    border-top-right-radius: 1rem;
+  }
+
+  .bottom-right {
+    bottom: -1rem;
+    right: 0;
+    box-shadow: 0.5rem -0.5rem 0 0.5rem var(--sl-color-bg);
+    border-top-right-radius: 1rem;
   }
 </style>

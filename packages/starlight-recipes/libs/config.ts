@@ -23,15 +23,6 @@ const configSchema = z
       .default("recipes")
       .transform((value) => stripTrailingSlash(stripLeadingSlash(value))),
     /**
-     * The order of the previous and next links on the recipes page.
-     *
-     * By default, next links will point to the next recipe towards the past (`reverse-chronological`).
-     * Setting this option to `chronological` will make next links point to the next recipe towards the future.
-     */
-    prevNextLinksOrder: z
-      .union([z.literal("chronological"), z.literal("reverse-chronological")])
-      .default("reverse-chronological"),
-    /**
      * The number of recipes to display per page on the recipes page.
      */
     recipeCount: z.number().min(1).default(5).transform(infinityToMax),

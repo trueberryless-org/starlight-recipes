@@ -1,4 +1,6 @@
 ---
+import context from "virtual:starlight-recipes-context";
+
 import Default from "@astrojs/starlight/components/MarkdownContent.astro";
 
 import { getRecipeEntry } from "../../libs/content";
@@ -21,10 +23,16 @@ const { entry, nextLink, prevLink } = await getRecipeEntry(id, locale);
 <Default>
   {entry.data.cover && <Cover cover={entry.data.cover} />}
 
-  <div class="metadata-wrapper">
-    <Metadata entry={entry} {locale} showBadges={false} />
-    <Rating recipeId={id} />
-  </div>
+  {
+    context.ratingEnabled ? (
+      <div class="metadata-wrapper">
+        <Metadata entry={entry} {locale} />
+        <Rating recipeId={entry.id} />
+      </div>
+    ) : (
+      <Metadata entry={entry} {locale} />
+    )
+  }
 
   <slot />
 

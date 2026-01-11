@@ -2,7 +2,7 @@
 import type { InferGetStaticPropsType } from "astro";
 
 import Page from "../components/Page.astro";
-import Recipes from "../components/Recipes.astro";
+import RecipesGrid from "../components/RecipesGrid.astro";
 import PrevNextLinks from "../components/PrevNextLinks.astro";
 import { getRecipesStaticPaths } from "../libs/content";
 import { getPageProps } from "../libs/page";
@@ -22,7 +22,7 @@ const pageProps = getPageProps(getSiteTitle(locale));
 ---
 
 <Page {...pageProps}>
-  <Recipes {entries} {locale} />
+  <RecipesGrid {entries} {locale} />
   <footer class="not-content">
     <PrevNextLinks next={nextLink} prev={prevLink} />
   </footer>

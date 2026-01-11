@@ -1,6 +1,5 @@
 ---
 import { LinkCard, CardGrid } from "@astrojs/starlight/components";
-import config from "virtual:starlight-recipes-config";
 
 import type { StarlightRecipeLink } from "../libs/content";
 
@@ -21,10 +20,7 @@ const { next, prev } = Astro.props;
             href={prev.href}
             rel="prev"
             title={
-              prev.label ??
-              (config.prevNextLinksOrder === "reverse-chronological"
-                ? Astro.locals.t("starlightRecipes.pagination.prev")
-                : Astro.locals.t("starlightRecipes.pagination.next"))
+              prev.label ?? Astro.locals.t("starlightRecipes.pagination.prev")
             }
           />
         )}
@@ -33,10 +29,7 @@ const { next, prev } = Astro.props;
             href={next.href}
             rel="next"
             title={
-              next.label ??
-              (config.prevNextLinksOrder === "reverse-chronological"
-                ? Astro.locals.t("starlightRecipes.pagination.next")
-                : Astro.locals.t("starlightRecipes.pagination.prev"))
+              next.label ?? Astro.locals.t("starlightRecipes.pagination.next")
             }
           />
         )}

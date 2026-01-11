@@ -3,6 +3,7 @@ import type {
   StarlightUserConfig,
 } from "@astrojs/starlight/types";
 import type { AstroIntegrationLogger } from "astro";
+import { loadEnv } from "vite";
 
 import {
   type StarlightRecipesConfig,
@@ -41,7 +42,16 @@ export default function starlightRecipes(
 
         if (astroConfig.adapter === undefined) {
           logger.warn(
-            "Starlight Recipes: No Astro Server Adapter found. All on-demand features will be disabled. Setup an adapter for interactivity.\nSee https://docs.astro.build/en/guides/on-demand-rendering/ for more information."
+            "No Astro Server Adapter found. All on-demand features will be disabled. Setup an adapter for interactivity.\nSee https://docs.astro.build/en/guides/on-demand-rendering/ for more information."
+          );
+        }
+
+        const env = loadEnv(astroConfig.mode, process.cwd(), "");
+        const ratingSecret = env.STARLIGHT_RECIPES_RATING_SECRET;
+
+        if (astroConfig.adapter !== undefined && !ratingSecret) {
+          logger.warn(
+            "Secret STARLIGHT_RECIPES_RATING_SECRET not set in `.env` file. Rating feature will be disabled. Create a random GUID as a secret to enable the rating system.\nSee https://starlight-recipes.trueberryless.org/interactive/rating-system/ for more information."
           );
         }
 
@@ -58,24 +68,6 @@ export default function starlightRecipes(
           name: "starlight-recipes-integration",
           hooks: {
             "astro:config:setup": ({ injectRoute, updateConfig }) => {
-              injectRoute({
-                entrypoint: "starlight-recipes/routes/Tags.astro",
-                pattern: "/[...prefix]/tags/[tag]",
-                prerender: true,
-              });
-
-              injectRoute({
-                entrypoint: "starlight-recipes/routes/Authors.astro",
-                pattern: "/[...prefix]/authors/[author]",
-                prerender: true,
-              });
-
-              injectRoute({
-                entrypoint: "starlight-recipes/routes/Recipe.astro",
-                pattern: "/recipes/[...slug]",
-                prerender: true,
-              });
-
               if (astroConfig.adapter !== undefined) {
                 injectRoute({
                   entrypoint: "starlight-recipes/routes/api/rating/rate.ts",
@@ -91,6 +83,24 @@ export default function starlightRecipes(
                 });
               }
 
+              injectRoute({
+                entrypoint: "starlight-recipes/routes/Tags.astro",
+                pattern: "/[...prefix]/tags/[tag]",
+                prerender: true,
+              });
+
+              injectRoute({
+                entrypoint: "starlight-recipes/routes/Authors.astro",
+                pattern: "/[...prefix]/authors/[author]",
+                prerender: true,
+              });
+
+              injectRoute({
+                entrypoint: "starlight-recipes/routes/Recipes.astro",
+                pattern: "/[...prefix]/[...page]",
+                prerender: true,
+              });
+
               updateConfig({
                 vite: {
                   plugins: [
@@ -101,6 +111,8 @@ export default function starlightRecipes(
                       title: starlightConfig.title,
                       adapter: astroConfig.adapter,
                       trailingSlash: astroConfig.trailingSlash,
+                      ratingEnabled:
+                        astroConfig.adapter !== undefined && !!ratingSecret,
                     }),
                   ],
                 },

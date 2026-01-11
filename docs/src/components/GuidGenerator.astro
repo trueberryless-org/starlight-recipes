@@ -1,0 +1,130 @@
+---
+import { Code } from "@astrojs/starlight/components";
+
+const placeholder = "CLICK_GENERATE_TO_CREATE_SECRET";
+const codeSnippet = `STARLIGHT_RECIPES_RATING_SECRET=${placeholder}`;
+---
+
+<div class="magic-container not-content">
+  <button
+    id="generate-btn"
+    class="magic-button"
+    aria-label="Generate new secret"
+  >
+    <span class="magic-text">Generate Magic Secret</span>
+  </button>
+
+  <div class="code-stable-container">
+    <Code code={codeSnippet} lang="bash" title=".env" />
+  </div>
+</div>
+
+<style>
+  .magic-container {
+    margin: 1.5rem 0;
+  }
+
+  /* The "Old Shiny" Magic Button */
+  .magic-button {
+    position: relative;
+    cursor: pointer;
+    padding: 6px 16px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: white;
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4);
+    margin-bottom: 1rem;
+    display: inline-block;
+  }
+
+  /* 3D Hover Effect */
+  .magic-button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(124, 58, 237, 0.6);
+  }
+
+  .magic-button:active {
+    transform: translateY(0) scale(1);
+  }
+
+  /* The Intense Shiny Shimmer */
+  .magic-button::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      to bottom right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 40%,
+      rgba(255, 255, 255, 0.6) 50%,
+      rgba(255, 255, 255, 0.1) 60%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(45deg);
+    animation: magic-shimmer 4s infinite;
+  }
+
+  @keyframes magic-shimmer {
+    0% {
+      transform: translateX(-100%) rotate(45deg);
+    }
+    20%,
+    100% {
+      transform: translateX(100%) rotate(45deg);
+    }
+  }
+
+  /* Keeping the Code Block height stable */
+  .code-stable-container {
+    min-height: 4.5rem;
+  }
+
+  /* Animation for the generated text */
+  :global(.code-stable-container span) {
+    transition: color 0.4s ease;
+  }
+</style>
+
+<script define:vars={{ placeholder }}>
+  const genBtn = document.getElementById("generate-btn");
+  const uuidRegex =
+    /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+
+  genBtn?.addEventListener("click", () => {
+    // Look for the placeholder text or an existing UUID inside the code block
+    const spans = document.querySelectorAll(".code-stable-container span");
+    const targetSpan = Array.from(spans).find(
+      (span) =>
+        span.textContent.includes(placeholder) ||
+        uuidRegex.test(span.textContent)
+    );
+
+    if (targetSpan) {
+      const newGuid = crypto.randomUUID();
+      targetSpan.textContent = newGuid;
+
+      // Update the color to Starlight's accent blue
+      targetSpan.style.color = "var(--sl-color-text-accent)";
+
+      // Magical "pop" animation
+      targetSpan.animate(
+        [
+          { filter: "brightness(3) blur(2px)", transform: "scale(1.1)" },
+          { filter: "brightness(1) blur(0px)", transform: "scale(1)" },
+        ],
+        {
+          duration: 400,
+          easing: "ease-out",
+        }
+      );
+    }
+  });
+</script>

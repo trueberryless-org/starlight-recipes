@@ -6,44 +6,45 @@ interface Props {
 }
 
 const { recipeId } = Astro.props;
-const isInteractive =
-  !!import.meta.env.STARLIGHT_RECIPES_RATING_RANDOM_GUID && !!context.adapter;
 ---
 
 <recipe-rating
   data-recipe-id={recipeId}
-  data-interactive={isInteractive ? "true" : "false"}
+  data-interactive={context.ratingEnabled ? "true" : "false"}
   class="not-content"
   style="margin: 0"
 >
-  <div class="rating-container" id="main-container">
-    <div class="stars-wrapper" id="stars-container">
-      {
-        [5, 4, 3, 2, 1].map((num) => (
-          <button
-            type="button"
-            class="star-btn"
-            data-value={num}
-            aria-label={`Rate ${num} stars`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              class="star-icon"
+  <div class="rating-wrapper">
+    <div class="rating-container" id="main-container">
+      <div class="stars-wrapper" id="stars-container">
+        {
+          [5, 4, 3, 2, 1].map((num) => (
+            <button
+              type="button"
+              class="star-btn"
+              data-value={num}
+              aria-label={`Rate ${num} stars`}
             >
-              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-            </svg>
-          </button>
-        ))
-      }
-    </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="star-icon"
+              >
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+              </svg>
+            </button>
+          ))
+        }
+      </div>
 
-    <div class="rating-stats">
-      <div class="loading-spinner" id="spinner"></div>
-      <span class="avg-value">...</span>
-      <span class="count-value"></span>
+      <div class="rating-stats">
+        <div class="loading-spinner" id="spinner"></div>
+        <span class="avg-value">...</span>
+        <span class="count-value"></span>
+      </div>
     </div>
+    <div class="error-msg" id="error-display">Already voted!</div>
   </div>
 </recipe-rating>
 
@@ -63,9 +64,11 @@ const isInteractive =
       const buttons = this.querySelectorAll(".star-btn");
       buttons.forEach((btn) => {
         btn.addEventListener("click", async () => {
-          if (localStorage.getItem(votedKey)) return;
+          if (localStorage.getItem(votedKey)) {
+            this.showError();
+            return;
+          }
 
-          // START LOADING STATE
           this.setLoading(true);
 
           const stars = btn.getAttribute("data-value");
@@ -77,18 +80,33 @@ const isInteractive =
             });
 
             if (res.ok) {
+              const updatedData = await res.json();
               localStorage.setItem(votedKey, "true");
               this.checkVoted(votedKey);
-              await this.refreshStats();
+              this.updateUI(updatedData.ratingValue, updatedData.ratingCount);
+            } else if (res.status === 403) {
+              localStorage.setItem(votedKey, "true");
+              this.checkVoted(votedKey);
+              this.showError();
             }
           } catch (e) {
             console.error("Voting failed", e);
           } finally {
-            // STOP LOADING STATE
             this.setLoading(false);
           }
         });
       });
+    }
+
+    showError() {
+      const container = this.querySelector(".rating-container");
+      const errorMsg = this.querySelector("#error-display");
+      container?.classList.add("shake-error");
+      errorMsg?.classList.add("visible");
+      setTimeout(() => {
+        container?.classList.remove("shake-error");
+        errorMsg?.classList.remove("visible");
+      }, 2000);
     }
 
     setLoading(isLoading: boolean) {
@@ -101,8 +119,39 @@ const isInteractive =
     }
 
     checkVoted(key: string) {
-      if (localStorage.getItem(key)) {
+      const isInteractive = this.dataset.interactive === "true";
+      if (localStorage.getItem(key) || !isInteractive) {
         this.querySelector(".rating-container")?.classList.add("is-voted");
+      }
+    }
+
+    highlightStars(rating: number) {
+      this.querySelectorAll(".star-btn").forEach((btn) =>
+        btn.classList.remove("selected")
+      );
+      const roundedRating = Math.round(rating);
+      if (roundedRating > 0) {
+        const starToSelect = this.querySelector(
+          `.star-btn[data-value="${roundedRating}"]`
+        );
+        starToSelect?.classList.add("selected");
+      }
+    }
+
+    updateUI(avg: number, count: number) {
+      const avgEl = this.querySelector(".avg-value");
+      const countEl = this.querySelector(".count-value");
+      const recipeId = this.dataset.recipeId;
+      const votedKey = `sl-recipes-voted-${recipeId}`;
+      const isInteractive = this.dataset.interactive === "true";
+
+      if (avgEl) {
+        avgEl.textContent = avg > 0 ? Number(avg).toFixed(1) : "No ratings";
+      }
+      if (countEl) countEl.textContent = `(${count})`;
+
+      if (localStorage.getItem(votedKey) || !isInteractive) {
+        this.highlightStars(avg);
       }
     }
 
@@ -114,17 +163,7 @@ const isInteractive =
       try {
         const res = await fetch(`/api/recipe/get-rating?id=${recipeId}`);
         const data = await res.json();
-
-        const avgEl = this.querySelector(".avg-value");
-        const countEl = this.querySelector(".count-value");
-
-        if (avgEl) {
-          avgEl.textContent =
-            data.ratingValue > 0
-              ? Number(data.ratingValue).toFixed(1)
-              : "No ratings";
-        }
-        if (countEl) countEl.textContent = `(${data.ratingCount})`;
+        this.updateUI(data.ratingValue, data.ratingCount);
       } catch (e) {
         console.error("Could not fetch ratings");
       } finally {
@@ -137,6 +176,13 @@ const isInteractive =
 </script>
 
 <style>
+  .rating-wrapper {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
   .rating-container {
     display: inline-flex;
     align-items: center;
@@ -148,7 +194,47 @@ const isInteractive =
     transition: all 0.3s ease;
   }
 
-  /* --- LOADING EFFECTS --- */
+  .error-msg {
+    position: absolute;
+    bottom: -1.5rem;
+    font-size: 0.75rem;
+    color: #ef4444;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .error-msg.visible {
+    opacity: 1;
+  }
+
+  .shake-error {
+    animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    border-color: #ef4444 !important;
+  }
+
+  @keyframes shake {
+    10%,
+    90% {
+      transform: translate3d(-1px, 0, 0);
+    }
+    20%,
+    80% {
+      transform: translate3d(2px, 0, 0);
+    }
+    30%,
+    50%,
+    70% {
+      transform: translate3d(-3px, 0, 0);
+    }
+    40%,
+    60% {
+      transform: translate3d(3px, 0, 0);
+    }
+  }
+
   .is-loading {
     pointer-events: none;
     opacity: 0.8;
@@ -196,15 +282,22 @@ const isInteractive =
     }
   }
 
-  /* --- EXISTING STYLES --- */
+  /* Greyed out state */
   .rating-container.is-voted {
-    filter: grayscale(1);
+    background: var(--sl-color-gray-6, #1e293b);
     opacity: 0.7;
+    filter: grayscale(0.4);
+    border-color: transparent;
   }
 
   .is-voted .star-btn {
     cursor: default;
     pointer-events: none;
+  }
+
+  .is-voted .avg-value,
+  .is-voted .count-value {
+    color: var(--sl-color-gray-3);
   }
 
   .stars-wrapper {
@@ -231,9 +324,10 @@ const isInteractive =
   }
 
   .star-btn:hover,
-  .star-btn:hover ~ .star-btn {
+  .star-btn:hover ~ .star-btn,
+  .star-btn.selected,
+  .star-btn.selected ~ .star-btn {
     color: #facc15;
-    filter: drop-shadow(0 0 4px rgba(250, 204, 21, 0.4));
   }
 
   .star-icon {
@@ -253,7 +347,6 @@ const isInteractive =
     font-weight: 700;
     color: var(--sl-color-white);
   }
-
   .count-value {
     color: var(--sl-color-gray-3);
   }

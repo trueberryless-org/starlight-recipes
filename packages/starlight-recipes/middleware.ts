@@ -20,7 +20,7 @@ import {
   isRecipeRoot,
   isRecipeTagPage,
 } from "./libs/page";
-import { getHead } from "./libs/structured-data";
+import { getHead } from "./libs/structuredData";
 import { getAllTags, getEntryTags } from "./libs/tags";
 
 const recipeDataPerLocale = new Map<Locale, StarlightRecipesData>();

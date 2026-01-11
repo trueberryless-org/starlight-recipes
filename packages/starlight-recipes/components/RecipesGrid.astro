@@ -1,0 +1,69 @@
+---
+import type { StarlightRecipeEntry } from "../libs/content";
+import type { Locale } from "../libs/i18n";
+import Preview from "./Preview.astro";
+import { getSmartGridData } from "../libs/smartGrid";
+
+interface Props {
+  entries: StarlightRecipeEntry[];
+  locale: Locale;
+}
+
+const { entries, locale } = Astro.props;
+const { smartEntries } = getSmartGridData(entries);
+---
+
+<div class="mobile-only">
+  {entries.map((entry) => <Preview {entry} {locale} />)}
+</div>
+
+<div class="desktop-only grid">
+  {
+    smartEntries.map((entry) => (
+      <div class={entry.data.featured ? "span-full" : "span-half"}>
+        <Preview {entry} {locale} />
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .desktop-only {
+    display: none;
+  }
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (min-width: 500px) {
+    .mobile-only {
+      display: none;
+    }
+    .desktop-only {
+      display: grid;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .grid > div {
+      margin-top: 0;
+    }
+
+    .span-full {
+      grid-column: span 2;
+    }
+  }
+
+  h2 {
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--sl-color-gray-5);
+    padding-bottom: 0.5rem;
+  }
+</style>
