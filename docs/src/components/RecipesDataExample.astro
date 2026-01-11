@@ -1,0 +1,11 @@
+<ul>
+  {
+    Astro.locals.starlightRecipes.recipes.slice(0, 5).map((recipe) => (
+      <li>
+        <a href={recipe.href}>{recipe.title}</a>
+        // TODO
+        <!-- <em>({post.metrics.words.total} words)</em> -->
+      </li>
+    ))
+  }
+</ul>

@@ -19,8 +19,12 @@ hero:
   image:
     html: '🍕'
   actions:
-    - text: Get Started
+    - text: Getting Started
       link: /getting-started/
+      icon: rocket
+    - text: Demo
+      link: /recipes
+      variant: minimal
       icon: right-arrow
 ---
 
@@ -33,6 +37,12 @@ import { Card, CardGrid } from '@astrojs/starlight/components'
     Check the [getting started guide](/getting-started/) for installation instructions.
   </Card>
   <Card title="Configure the plugin" icon="setting">
-    Edit your config in the `astro.config.mjs` file.
+    Edit your config in `astro.config.mjs` with the available [configuration options](/configuration/).
+  </Card>
+  <Card title="Write your favorite recipes" icon="rocket">
+    Define your recipes with many [frontmatter fields](/guides/frontmatter/).
+  </Card>
+  <Card title="Read best practices" icon="open-book">
+    Learn more about [structured data](/guides/structured-data/) and it's benefits.
   </Card>
 </CardGrid>

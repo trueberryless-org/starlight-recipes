@@ -1,0 +1,42 @@
+---
+interface Props {
+  description: string;
+  linkedProperty: string;
+  link?: string;
+  backlinking?: boolean;
+}
+
+const { description, linkedProperty, link, backlinking } = Astro.props;
+
+// Use the provided link, or fallback to the documentation schema fragment
+const finalLink =
+  link ||
+  (backlinking
+    ? `/guides/frontmatter#${linkedProperty}`
+    : `/guides/structured-data#${linkedProperty}`);
+---
+
+<p class="doc-item">
+  <span>{description}</span>
+  <span class="divider">—</span>
+  <small>
+    {backlinking ? "Generated from " : "Used to generate "}<code
+      ><a href={finalLink}>{linkedProperty}</a></code
+    >{backlinking ? "." : " for Structured Data."}
+  </small>
+</p>
+
+<style>
+  .doc-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .divider {
+    color: var(--sl-color-gray-4);
+  }
+  small {
+    color: var(--sl-color-gray-3);
+  }
+</style>

@@ -1,0 +1,68 @@
+---
+import { getEntryAuthors } from "../libs/authors";
+import type { StarlightRecipeEntry } from "../libs/content";
+import type { Locale } from "../libs/i18n";
+
+import Author from "./Author.astro";
+
+interface Props {
+  entry: StarlightRecipeEntry;
+  locale: Locale;
+}
+
+const { entry } = Astro.props;
+const authors = getEntryAuthors(entry);
+
+const hasAuthors = authors.length > 0;
+---
+
+<div class="metadata not-content">
+  <!-- {
+    entry.data.date && (
+      <div class="dates">
+        <time datetime={entry.data.date.toISOString()}>
+          {Astro.locals.t("starlightRecipes.post.date", {
+            date: entry.data.date,
+          })}
+        </time>
+      </div>
+    )
+  } -->
+  {
+    hasAuthors ? (
+      <div class="authors">
+        {authors.map((author) => (
+          <Author {author} />
+        ))}
+      </div>
+    ) : null
+  }
+</div>
+
+<style>
+  .metadata {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .dates {
+    font-size: var(--sl-text-sm);
+  }
+
+  .metadata-alt {
+    color: var(--sl-color-gray-3);
+  }
+
+  .authors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+  }
+
+  .badges {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+</style>

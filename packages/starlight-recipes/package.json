@@ -15,11 +15,31 @@
   "author": "trueberryless <trueberryless@gmail.com> (https://trueberryless.org)",
   "type": "module",
   "exports": {
-    ".": "./index.ts"
+    ".": "./index.ts",
+    "./components/MarkdownContent.astro": "./components/starlight/MarkdownContent.astro",
+    "./overrides/MarkdownContent.astro": "./overrides/MarkdownContent.astro",
+    "./routes/Recipes.astro": "./routes/Recipes.astro",
+    "./routes/Authors.astro": "./routes/Authors.astro",
+    "./routes/Tags.astro": "./routes/Tags.astro",
+    "./routes/api/rating/get-rating.ts": "./routes/api/rating/get-rating.ts",
+    "./routes/api/rating/rate.ts": "./routes/api/rating/rate.ts",
+    "./data": "./data.ts",
+    "./middleware": "./middleware.ts",
+    "./schema": "./schema.ts"
+  },
+  "dependencies": {
+    "@astrojs/markdown-remark": "^6.3.10",
+    "@astrojs/mdx": "^4.3.13",
+    "astro-remote": "^0.3.4",
+    "github-slugger": "^2.0.0",
+    "mdast-util-mdx-expression": "^2.0.1",
+    "schema-dts": "^1.1.5",
+    "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
     "@astrojs/starlight": "^0.37.2",
-    "astro": "^5.16.7"
+    "astro": "^5.16.7",
+    "vite": "^7.3.1"
   },
   "peerDependencies": {
     "@astrojs/starlight": ">=0.37"
@@ -29,5 +49,12 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "sideEffects": false,
+  "keywords": [
+    "starlight",
+    "plugin",
+    "recipe",
+    "astro"
+  ]
 }

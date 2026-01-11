@@ -1,0 +1,68 @@
+---
+title: Authors
+description: Learn how to define authors for your recipes.
+---
+
+## Recipe authors
+
+Authors can be defined in a recipe using the `authors` frontmatter property and must at least have a `name` property:
+
+```md
+---
+// src/content/docs/recipes/virgin-colada.md
+authors:
+  name: trueberryless
+  title: Starlight Aficionado
+  picture: https://avatars.githubusercontent.com/u/99918022?v=4
+  url: https://trueberryless.org
+---
+```
+
+Multiple authors can be defined using an array, although this is not recommended as too many cooks spoil the broth:
+
+```md
+---
+// src/content/docs/recipes/virgin-colada.md
+authors:
+  - name: HiDeoo
+    title: Starlight Aficionado
+    picture: https://avatars.githubusercontent.com/u/99918022?v=4
+    url: https://trueberryless.org
+  - name: Ghost
+    picture: https://avatars.githubusercontent.com/u/10137?s=200
+    url: https://github.com/ghost
+---
+```
+
+## Global authors
+
+Regular authors can also be defined globally in the Starlight Recipes plugin configuration:
+
+```js
+// astro.config.mjs
+starlightRecipes({
+  authors: {
+    hideoo: {
+      name: 'trueberryless',
+      title: 'Starlight Aficionado',
+      picture: '/trueberryless.png', // Images in the `public` directory are supported.
+      url: 'https://trueberryless.org',
+    },
+  },
+})
+```
+
+When a recipe frontmatter does not define an author, the global authors from the configuration will be used instead.
+
+A recipe frontmatter can also reference a global author using the key of the author in the configuration:
+
+```md
+---
+// src/content/docs/recipes/virgin-colada.md
+authors:
+  - trueberryless # Will use the author defined in the configuration with the `hideoo` key.
+  - name: Ghost
+    picture: https://avatars.githubusercontent.com/u/10137?s=200
+    url: https://github.com/ghost
+---
+```

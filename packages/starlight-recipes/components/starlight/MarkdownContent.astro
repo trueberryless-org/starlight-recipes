@@ -1,0 +1,61 @@
+---
+import context from "virtual:starlight-recipes-context";
+
+import Default from "@astrojs/starlight/components/MarkdownContent.astro";
+
+import { getRecipeEntry } from "../../libs/content";
+import { isAnyRecipePage } from "../../libs/page";
+import Cover from "../Cover.astro";
+import Metadata from "../Metadata.astro";
+import RecipeTags from "../RecipeTags.astro";
+import PrevNextLinks from "../PrevNextLinks.astro";
+import Rating from "../Rating.astro";
+
+const { id, locale } = Astro.locals.starlightRoute;
+
+if (!isAnyRecipePage(id)) {
+  return null;
+}
+
+const { entry, nextLink, prevLink } = await getRecipeEntry(id, locale);
+---
+
+<Default>
+  {entry.data.cover && <Cover cover={entry.data.cover} />}
+
+  {
+    context.ratingEnabled ? (
+      <div class="metadata-wrapper">
+        <Metadata entry={entry} {locale} />
+        <Rating recipeId={entry.id} />
+      </div>
+    ) : (
+      <Metadata entry={entry} {locale} />
+    )
+  }
+
+  <slot />
+
+  <div class="post-footer">
+    <RecipeTags entry={entry} {locale} />
+    <PrevNextLinks next={nextLink} prev={prevLink} />
+  </div>
+</Default>
+
+<style>
+  .metadata-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .post-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-block-start: 2rem !important;
+  }
+</style>

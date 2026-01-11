@@ -1,0 +1,34 @@
+---
+import type { InferGetStaticPropsType } from "astro";
+
+import Page from "../components/Page.astro";
+import RecipeCount from "../components/RecipeCount.astro";
+import RecipesGrid from "../components/RecipesGrid.astro";
+import { getPageProps } from "../libs/page";
+import { getTagsStaticPaths } from "../libs/tags";
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return getTagsStaticPaths();
+}
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+
+const { entries, label, locale } = Astro.props;
+
+const pageProps = getPageProps(label);
+---
+
+<Page {...pageProps}>
+  <RecipeCount
+    >{
+      Astro.locals.t("starlightRecipes.tags.count", {
+        interpolation: { escapeValue: false },
+        count: entries.length,
+        tag: label,
+      })
+    }</RecipeCount
+  >
+  <RecipesGrid {entries} {locale} />
+</Page>

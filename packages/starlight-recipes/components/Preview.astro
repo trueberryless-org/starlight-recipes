@@ -1,0 +1,94 @@
+---
+import context from "virtual:starlight-recipes-context";
+
+import type { StarlightRecipeEntry } from "../libs/content";
+import type { Locale } from "../libs/i18n";
+import { getPathWithLocale, getRelativeUrl } from "../libs/page";
+
+import Cover from "./Cover.astro";
+import Excerpt from "./Excerpt.astro";
+import Metadata from "./Metadata.astro";
+import RecipeTags from "./RecipeTags.astro";
+import Rating from "./Rating.astro";
+
+interface Props {
+  entry: StarlightRecipeEntry;
+  locale: Locale;
+}
+
+const { entry, locale } = Astro.props;
+---
+
+<article class="preview">
+  <header>
+    <h3>
+      <a href={getRelativeUrl(`/${getPathWithLocale(entry.id, locale)}`)}
+        >{entry.data.title}</a
+      >
+    </h3>
+    {
+      entry.data.cover && (
+        <Cover
+          cover={entry.data.cover}
+          aspectRatio="16/9"
+          featured={entry.data.featured ? true : false}
+        />
+      )
+    }
+
+    {
+      context.ratingEnabled && entry.data.featured ? (
+        <div class="metadata-wrapper">
+          <Metadata entry={entry} {locale} />
+          <Rating recipeId={entry.id} />
+        </div>
+      ) : (
+        <Metadata entry={entry} {locale} />
+      )
+    }
+  </header>
+  {
+    entry.data.featured && entry.data.excerpt && (
+      <div class="sl-markdown-content">
+        <Excerpt {entry} />
+      </div>
+    )
+  }
+  {
+    entry.data.featured && !!entry.data.tags && (
+      <footer>
+        <RecipeTags {entry} {locale} />
+      </footer>
+    )
+  }
+</article>
+
+<style>
+  .preview {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  h3 {
+    margin-bottom: 1.5rem;
+  }
+
+  h3 a {
+    text-decoration: none;
+  }
+
+  .metadata-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  footer {
+    margin-top: 0;
+    margin-bottom: 2rem;
+  }
+</style>
