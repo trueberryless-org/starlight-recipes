@@ -1,0 +1,20 @@
+---
+import type { StarlightRecipeEntry } from "../../libs/content";
+import type { Locale } from "../../libs/i18n";
+import { resolveCuisine } from "../../libs/cuisines";
+import Blob from "./Blob.astro";
+
+interface Props {
+  entry: StarlightRecipeEntry;
+  locale: Locale;
+}
+
+const { entry, locale } = Astro.props;
+const cuisine = resolveCuisine(entry.data.cuisine);
+---
+
+{
+  cuisine && (
+    <Blob slug={`/cuisine/${cuisine.slug}`} label={cuisine.label} {locale} />
+  )
+}

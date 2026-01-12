@@ -1,0 +1,171 @@
+---
+import { Code } from "@astrojs/starlight/components";
+
+const managers = [
+  { id: "npm", base: "npx astro add" },
+  { id: "pnpm", base: "pnpm astro add" },
+  { id: "yarn", base: "yarn astro add" },
+];
+
+const adapters = ["Cloudflare", "Netlify", "Node", "Vercel"];
+
+const allCommands = managers.flatMap((m) =>
+  adapters.map((a) => ({
+    id: `${m.id}-${a.toLowerCase()}`,
+    cmd: `${m.base} ${a.toLowerCase()}`,
+  }))
+);
+---
+
+<div class="installer-wrapper not-prose not-content">
+  <div class="controls">
+    <div class="selector" id="pkg-selector">
+      {
+        managers.map((m) => (
+          <button class="pill pkg-btn" data-value={m.id}>
+            {m.id}
+          </button>
+        ))
+      }
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="selector" id="adapter-selector">
+      {
+        adapters.map((a) => (
+          <button class="pill adapter-btn" data-value={a.toLowerCase()}>
+            {a}
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="code-stack">
+    {
+      allCommands.map((c) => (
+        <div class="command-variant" id={c.id} style="display: none">
+          <Code code={c.cmd} lang="sh" />
+        </div>
+      ))
+    }
+  </div>
+</div>
+
+<script>
+  const PKG_KEY = "starlight-synced-tabs__pkg";
+  const ADAPTER_KEY = "starlight-synced-tabs__adapter";
+
+  const pkgButtons = document.querySelectorAll(".pkg-btn");
+  const adapterButtons = document.querySelectorAll(".adapter-btn");
+  const variants = document.querySelectorAll(".command-variant");
+
+  let activePkg = localStorage.getItem(PKG_KEY) || "npm";
+  let activeAdapter = localStorage.getItem(ADAPTER_KEY) || "netlify";
+
+  function updateUI() {
+    const targetId = `${activePkg}-${activeAdapter}`;
+
+    variants.forEach((v) => {
+      (v as HTMLElement).style.display = v.id === targetId ? "block" : "none";
+    });
+
+    pkgButtons.forEach((btn) => {
+      btn.classList.toggle(
+        "active",
+        btn.getAttribute("data-value") === activePkg
+      );
+    });
+
+    adapterButtons.forEach((btn) => {
+      btn.classList.toggle(
+        "active",
+        btn.getAttribute("data-value") === activeAdapter
+      );
+    });
+  }
+
+  updateUI();
+
+  pkgButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      activePkg = btn.getAttribute("data-value") || "npm";
+      localStorage.setItem(PKG_KEY, activePkg);
+      updateUI();
+    });
+  });
+
+  adapterButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      activeAdapter = btn.getAttribute("data-value") || "netlify";
+      localStorage.setItem(ADAPTER_KEY, activeAdapter);
+      updateUI();
+    });
+  });
+
+  window.addEventListener("storage", (event) => {
+    if (event.key === PKG_KEY || event.key === ADAPTER_KEY) {
+      activePkg = localStorage.getItem(PKG_KEY) || "npm";
+      activeAdapter = localStorage.getItem(ADAPTER_KEY) || "netlify";
+      updateUI();
+    }
+  });
+</script>
+
+<style>
+  .installer-wrapper {
+    margin: 1.5rem 0;
+    border: 1px solid var(--sl-color-gray-6);
+    border-radius: 0.75rem;
+    background-color: var(--sl-color-gray-7);
+    padding: 1rem;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .selector {
+    display: flex;
+    gap: 0.25rem;
+    background: var(--sl-color-gray-6);
+    padding: 0.2rem;
+    border-radius: 0.5rem;
+  }
+
+  .pill {
+    background: transparent;
+    border: none;
+    color: var(--sl-color-gray-3);
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .pill:hover {
+    color: var(--sl-color-white);
+  }
+
+  .pill.active {
+    background: var(--sl-color-accent-high);
+    color: var(--sl-color-black);
+  }
+
+  :global([data-theme="light"]) .pill.active {
+    background: var(--sl-color-accent);
+  }
+
+  .divider {
+    width: 1px;
+    height: 1.5rem;
+    background: var(--sl-color-gray-5);
+  }
+</style>

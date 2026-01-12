@@ -1,0 +1,27 @@
+---
+import type { StarlightRecipeEntry } from "../../libs/content";
+import type { Locale } from "../../libs/i18n";
+import CuisineCategoryBlobs from "./CuisineCategoryBlobs.astro";
+import RecipeTags from "./RecipeTags.astro";
+
+interface Props {
+  entry: StarlightRecipeEntry;
+  locale: Locale;
+}
+
+const { entry, locale } = Astro.props;
+---
+
+<div class="blobs">
+  <CuisineCategoryBlobs {entry} {locale} />
+  <RecipeTags entry={entry} {locale} />
+</div>
+
+<style>
+  .blobs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0;
+  }
+</style>

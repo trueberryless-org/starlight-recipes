@@ -1,0 +1,21 @@
+---
+import { getEntryCategory } from "../../libs/categories";
+import type { StarlightRecipeEntry } from "../../libs/content";
+import type { Locale } from "../../libs/i18n";
+import Blob from "./Blob.astro";
+
+interface Props {
+  entry: StarlightRecipeEntry;
+  locale: Locale;
+}
+
+const { entry, locale } = Astro.props;
+
+const category = getEntryCategory(entry);
+---
+
+{
+  category && (
+    <Blob slug={`/category/${category.slug}`} label={category.label} {locale} />
+  )
+}

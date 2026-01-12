@@ -1,0 +1,26 @@
+---
+import type { StarlightRecipeEntry } from "../../libs/content";
+import type { Locale } from "../../libs/i18n";
+import RecipeCategories from "./RecipeCategories.astro";
+import RecipeCuisines from "./RecipeCuisines.astro";
+
+interface Props {
+  entry: StarlightRecipeEntry;
+  locale: Locale;
+}
+
+const { entry, locale } = Astro.props;
+---
+
+<div class="flex">
+  <RecipeCuisines {entry} {locale} />
+  <RecipeCategories {entry} {locale} />
+</div>
+
+<style>
+  .flex {
+    display: flex;
+    flex-direction: row;
+    gap: 0.2rem;
+  }
+</style>
