@@ -38,7 +38,7 @@ export const onRequest = defineRouteMiddleware(async (context) => {
   const isRecipeOverviewPage = isAnyRecipeRootPage(id);
   if (isRecipeOverviewPage) starlightRoute.toc = undefined;
 
-  starlightRoute.head.push(await getHead(context));
+  if (context.site) starlightRoute.head.push(await getHead(context));
   starlightRoute.sidebar = await getRecipeSidebar(context);
 });
 

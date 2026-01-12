@@ -130,17 +130,22 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
     cuisine: z.string().optional(),
 
     /**
-     * The length of time it takes to prepare ingredients and workspace for the dish.
-     *
-     *
+     * Duration related data about the recipe.
      */
-    prepTime: z.number().optional(),
-    /**
-     * The time it takes to actually cook the dish.
-     *
-     *
-     */
-    cookTime: z.number().optional(),
+    time: z.object({
+      /**
+       * The length of time it takes to prepare ingredients and workspace for the dish.
+       *
+       *
+       */
+      preparation: z.number().optional(),
+      /**
+       * The time it takes to actually cook the dish.
+       *
+       *
+       */
+      cooking: z.number(),
+    }),
     /**
      * The quantity produced by the recipe.
      */

@@ -28,6 +28,7 @@ export default defineConfig({
         baseUrl:
           "https://github.com/trueberryless-org/starlight-recipes/edit/main/docs/",
       },
+      customCss: ["./src/styles/custom.css"],
       plugins: [
         starlightRecipes({
           authors: {
@@ -72,7 +73,7 @@ export default defineConfig({
         },
         {
           label: "Interactive Features",
-          items: ["interactive/rating-system"],
+          items: ["interactive", "interactive/rating-system"],
         },
         {
           label: "Demo Recipes",

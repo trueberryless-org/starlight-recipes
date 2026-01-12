@@ -31,7 +31,7 @@ const { entry } = Astro.props;
     context.ratingEnabled ? (
       <div class="metadata-wrapper">
         <Authors entry={entry} />
-        <Rating recipeId={entry.id} />
+        <Rating recipeId={entry.id} votingEnabled={true} />
       </div>
     ) : (
       <Authors entry={entry} />

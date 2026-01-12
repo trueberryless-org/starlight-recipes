@@ -24,7 +24,7 @@ const trailingSlashTransformers: Record<
 
 const base = stripTrailingSlash(import.meta.env.BASE_URL);
 
-const RECIPE_SYSTEM_PATHS = ["tags", "authors", "cuisines", "categories"];
+const RECIPE_SYSTEM_PATHS = ["tags", "authors", "cuisine", "category"];
 
 export function getRelativeRecipeUrl(
   path: string,

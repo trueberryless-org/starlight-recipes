@@ -1,16 +1,15 @@
 ---
-import context from "virtual:starlight-recipes-context";
-
 interface Props {
   recipeId: string;
+  votingEnabled?: boolean;
 }
 
-const { recipeId } = Astro.props;
+const { recipeId, votingEnabled } = Astro.props;
 ---
 
 <recipe-rating
   data-recipe-id={recipeId}
-  data-interactive={context.ratingEnabled ? "true" : "false"}
+  data-interactive={votingEnabled ? "true" : "false"}
   class="not-content"
   style="margin: 0"
 >

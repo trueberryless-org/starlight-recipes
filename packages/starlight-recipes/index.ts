@@ -35,7 +35,7 @@ export default function starlightRecipes(
         updateConfig: updateStarlightConfig,
       }) {
         if (astroConfig.site === undefined) {
-          throw new Error(
+          logger.warn(
             "The 'site' property must be set in your Astro config for starlight-recipes to generate valid SEO images.\nSee https://docs.astro.build/en/reference/configuration-reference/#site for more information."
           );
         }
@@ -84,14 +84,14 @@ export default function starlightRecipes(
               }
 
               injectRoute({
-                entrypoint: "starlight-recipes/routes/Categories.astro",
-                pattern: "/[...prefix]/categories/[category]",
+                entrypoint: "starlight-recipes/routes/Category.astro",
+                pattern: "/[...prefix]/category/[category]",
                 prerender: true,
               });
 
               injectRoute({
-                entrypoint: "starlight-recipes/routes/Cuisines.astro",
-                pattern: "/[...prefix]/cuisines/[cuisine]",
+                entrypoint: "starlight-recipes/routes/Cuisine.astro",
+                pattern: "/[...prefix]/cuisine/[cuisine]",
                 prerender: true,
               });
 

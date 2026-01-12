@@ -21,7 +21,11 @@ const { smartEntries } = getSmartGridData(entries);
   {
     smartEntries.map((entry) => (
       <div class={entry.data.featured ? "span-full" : "span-half"}>
-        <Preview {entry} {locale} />
+        <Preview
+          {entry}
+          {locale}
+          bigPreview={entry.data.featured ? true : false}
+        />
       </div>
     ))
   }
