@@ -6,6 +6,7 @@ import { isAnyRecipePage } from "../../libs/page";
 import Cover from "../Cover.astro";
 import Metadata from "../metadata/Metadata.astro";
 import Footer from "../metadata/Footer.astro";
+import TimedSteps from "../content/TimedSteps.astro";
 
 const { id, locale } = Astro.locals.starlightRoute;
 
@@ -19,6 +20,8 @@ const { entry, nextLink, prevLink } = await getRecipeEntry(id, locale);
 <Default>
   {entry.data.cover && <Cover cover={entry.data.cover} />}
   <Metadata entry={entry} {locale} />
+
+  <TimedSteps steps={entry.data.instructions} />
 
   <slot />
 

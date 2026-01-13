@@ -6,9 +6,7 @@ import starlightRecipes from "starlight-recipes";
 
 export default defineConfig({
   site: "https://starlight-recipe.trueberryless.org",
-  adapter: node({
-    mode: "standalone",
-  }),
+  adapter: netlify(),
   integrations: [
     starlight({
       title: "Starlight Recipes",

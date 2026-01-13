@@ -67,7 +67,7 @@ export async function getSidebarRecipeEntries(locale: Locale) {
   for (const { entry } of entriesWithRatings) {
     if (entry.data.featured) {
       featured.push(entry);
-    } else {
+    } else if (!!import.meta.env.STARLIGHT_RECIPES_RATING_SECRET) {
       popular.push(entry);
     }
   }

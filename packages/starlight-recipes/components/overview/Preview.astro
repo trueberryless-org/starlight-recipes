@@ -40,12 +40,10 @@ const url = getRelativeUrl(`/${getPathWithLocale(entry.id, locale)}`);
       {
         bigPreview && (
           <div class="big-preview-meta">
-            {context.ratingEnabled && (
-              <div class="space-between">
-                <h2>{entry.data.title}</h2>
-                <Rating recipeId={entry.id} />
-              </div>
-            )}
+            <div class="space-between">
+              <h2>{entry.data.title}</h2>
+              {context.ratingEnabled && <Rating recipeId={entry.id} />}
+            </div>
             <Authors entry={entry} />
 
             {entry.data.excerpt && (
@@ -78,8 +76,8 @@ const url = getRelativeUrl(`/${getPathWithLocale(entry.id, locale)}`);
     flex-direction: column;
     background-color: var(--sl-color-gray-7);
     border-radius: 19px;
-    /*overflow: hidden;*/
-    height: 100%;
+    /*height: 100%;*/
+    margin-block: 1rem;
   }
 
   /* Image Handling */

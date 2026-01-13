@@ -27,7 +27,7 @@ export const recipesAuthorSchema = z.object({
   url: z.string().url().optional(),
 });
 
-export const RecipeCategorySchema = z
+export const recipeCategorySchema = z
   .enum([
     "Breakfast",
     "Lunch",
@@ -48,7 +48,7 @@ export const RecipeCategorySchema = z
   ])
   .optional();
 
-export const IngredientSchema = z.union([
+export const ingredientSchema = z.union([
   z.string(),
   z.object({
     quantity: z.number().optional(),
@@ -57,7 +57,7 @@ export const IngredientSchema = z.union([
   }),
 ]);
 
-export const InstructionStepSchema = z.union([
+export const instructionStepSchema = z.union([
   z.string(),
   z.object({
     name: z.string().optional(),
@@ -65,6 +65,7 @@ export const InstructionStepSchema = z.union([
     image: z.string().optional(),
     alt: z.string().optional(),
     url: z.string().url().optional(),
+    time: z.number().optional(),
   }),
 ]);
 
@@ -119,7 +120,7 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
     /**
      * The type of meal or course your recipe is about.
      */
-    category: RecipeCategorySchema,
+    category: recipeCategorySchema,
     /**
      * The region associated with your recipe.
      *
@@ -134,15 +135,11 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
      */
     time: z.object({
       /**
-       * The length of time it takes to prepare ingredients and workspace for the dish.
-       *
-       *
+       * The length of time it takes to prepare ingredients and workspace for the dish in minutes.
        */
       preparation: z.number().optional(),
       /**
-       * The time it takes to actually cook the dish.
-       *
-       *
+       * The time it takes to actually cook the dish in minutes.
        */
       cooking: z.number(),
     }),
@@ -160,11 +157,11 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
     /**
      * List of ingredients used in the recipe.
      */
-    ingredients: z.array(IngredientSchema).default([]),
+    ingredients: z.array(ingredientSchema).default([]),
     /**
      * The steps to make the dish.
      */
-    instructions: z.array(InstructionStepSchema).default([]),
+    instructions: z.array(instructionStepSchema).default([]),
     /**
      * A YouTube URL of a video depicting the steps to make the dish.
      */
@@ -189,6 +186,9 @@ If you believe this is a bug, please file an issue at https://github.com/trueber
 }
 
 export type StarlightRecipesAuthor = z.infer<typeof recipesAuthorSchema>;
+export type StarlightRecipesInstructionStepSchema = z.infer<
+  typeof instructionStepSchema
+>;
 export type StarlightRecipesFrontmatter = z.infer<
   ReturnType<typeof recipeEntrySchema>
 >;
