@@ -57,17 +57,18 @@ export const ingredientSchema = z.union([
   }),
 ]);
 
-export const instructionStepSchema = z.union([
-  z.string(),
-  z.object({
-    name: z.string().optional(),
-    text: z.string(),
-    image: z.string().optional(),
-    alt: z.string().optional(),
-    url: z.string().url().optional(),
-    time: z.number().optional(),
-  }),
-]);
+export const instructionStepSchema = (image: ImageFunction) =>
+  z.union([
+    z.string(),
+    z.object({
+      name: z.string().optional(),
+      text: z.string(),
+      image: z.union([image(), z.string()]).optional(),
+      alt: z.string().optional(),
+      url: z.string().url().optional(),
+      time: z.number().optional(),
+    }),
+  ]);
 
 export const recipeEntrySchema = ({ image }: SchemaContext) =>
   z.object({
@@ -161,7 +162,7 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
     /**
      * The steps to make the dish.
      */
-    instructions: z.array(instructionStepSchema).default([]),
+    instructions: z.array(instructionStepSchema(image)).default([]),
     /**
      * A YouTube URL of a video depicting the steps to make the dish.
      */
@@ -187,7 +188,7 @@ If you believe this is a bug, please file an issue at https://github.com/trueber
 
 export type StarlightRecipesAuthor = z.infer<typeof recipesAuthorSchema>;
 export type StarlightRecipesInstructionStepSchema = z.infer<
-  typeof instructionStepSchema
+  ReturnType<typeof instructionStepSchema>
 >;
 export type StarlightRecipesFrontmatter = z.infer<
   ReturnType<typeof recipeEntrySchema>

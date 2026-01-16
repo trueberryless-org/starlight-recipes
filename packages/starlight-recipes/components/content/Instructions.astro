@@ -1,8 +1,11 @@
 ---
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
 import AnchorHeading from "@astrojs/starlight/components/AnchorHeading.astro";
 import type { StarlightRecipesInstructionStepSchema } from "../../schema";
 import { slug } from "github-slugger";
 import type { StarlightRecipeEntry } from "../../libs/content";
+import { getRelativeUrl } from "../../libs/page";
 
 type Props = {
   entry: StarlightRecipeEntry;
@@ -12,8 +15,31 @@ const { entry } = Astro.props;
 const { instructions: steps } = entry.data;
 
 const normalizeStep = (step: StarlightRecipesInstructionStepSchema) => {
-  if (typeof step === "string") return { text: step };
-  return step;
+  if (typeof step === "string")
+    return {
+      text: step,
+      name: undefined,
+      image: undefined,
+      alt: undefined,
+      url: undefined,
+      time: undefined,
+    };
+
+  const picture = step.image;
+  const pictureSrc = (
+    picture === undefined
+      ? undefined
+      : typeof picture === "string"
+        ? picture.startsWith("http")
+          ? picture
+          : getRelativeUrl(picture, true)
+        : picture
+  ) as ImageMetadata | undefined;
+
+  return {
+    ...step,
+    image: pictureSrc,
+  };
 };
 
 // New helper for natural language duration
@@ -84,14 +110,14 @@ const formatNaturalTime = (totalMinutes: number) => {
               <div class="step-content">
                 {step.name && <strong>{step.name}</strong>}
                 <p set:html={step.text} />
-                {step.image && <img src={step.image} alt={step.alt || ""} />}
+                {step.image && <Image src={step.image} alt={step.alt || ""} />}
               </div>
             </step-timer>
           ) : (
             <div class="step-content">
               {step.name && <strong>{step.name}</strong>}
               <p set:html={step.text} />
-              {step.image && <img src={step.image} alt={step.alt || ""} />}
+              {step.image && <Image src={step.image} alt={step.alt || ""} />}
             </div>
           )}
         </li>
@@ -199,11 +225,19 @@ const formatNaturalTime = (totalMinutes: number) => {
     content: "";
     position: absolute;
     top: 2rem;
-    bottom: 0;
+    bottom: 0.25rem;
     left: 0.875rem;
     width: 1px;
     background-color: var(--sl-color-hairline-light);
     transform: translateX(-50%);
+  }
+
+  .sl-steps > li.is-timed::after {
+    top: 2.4rem;
+  }
+
+  .sl-steps > li:has(+ li.is-timed)::after {
+    bottom: 0.5rem;
   }
 
   .sl-steps > li:last-child::after {
@@ -345,8 +379,9 @@ const formatNaturalTime = (totalMinutes: number) => {
 
   .step-content img {
     margin-top: 0.5rem;
-    border-radius: 0.5rem;
-    max-width: 100%;
-    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 20px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
   }
 </style>
