@@ -3,9 +3,10 @@ import context from "virtual:starlight-recipes-context";
 
 import type { StarlightRecipeEntry } from "../../libs/content";
 import type { Locale } from "../../libs/i18n";
-import Rating from "../Rating.astro";
+import Rating from "./Rating.astro";
 
 import Authors from "./Authors.astro";
+import RecipeStats from "./RecipeStats.astro";
 
 interface Props {
   entry: StarlightRecipeEntry;
@@ -16,17 +17,6 @@ const { entry } = Astro.props;
 ---
 
 <div class="metadata not-content">
-  <!-- {
-    entry.data.date && (
-      <div class="dates">
-        <time datetime={entry.data.date.toISOString()}>
-          {Astro.locals.t("starlightRecipes.recipe.date", {
-            date: entry.data.date,
-          })}
-        </time>
-      </div>
-    )
-  } -->
   {
     context.ratingEnabled ? (
       <div class="metadata-wrapper">
@@ -37,6 +27,8 @@ const { entry } = Astro.props;
       <Authors entry={entry} />
     )
   }
+
+  <RecipeStats {entry} />
 </div>
 
 <style>
@@ -53,10 +45,16 @@ const { entry } = Astro.props;
     justify-content: space-between;
     align-items: start;
     gap: 1rem;
-    margin-bottom: 1.5rem;
   }
 
   .dates {
     font-size: var(--sl-text-sm);
+  }
+
+  @media (max-width: 500px) {
+    .metadata-wrapper {
+      flex-direction: column;
+      gap: 1.5rem;
+    }
   }
 </style>

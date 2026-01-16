@@ -1,0 +1,113 @@
+---
+import type { StarlightRecipeEntry } from "../../libs/content";
+
+interface Props {
+  entry: StarlightRecipeEntry;
+}
+
+const { entry } = Astro.props;
+const { time, date, calories } = entry.data;
+
+const totalMinutes = (time?.preparation || 0) + (time?.cooking || 0);
+const formattedTime =
+  totalMinutes > 60
+    ? `${Math.floor(totalMinutes / 60)}h ${totalMinutes % 60}m`
+    : `${totalMinutes}m`;
+
+const hasStats = totalMinutes > 0 || date || calories;
+---
+
+{
+  hasStats && (
+    <div class="recipe-stats-container">
+      {/* Total Time */}
+      {totalMinutes > 0 && (
+        <div class="stat-item">
+          <span class="stat-label">
+            {Astro.locals.t("starlightRecipes.recipe.totalTime")}
+          </span>
+          <span class="stat-value">{formattedTime}</span>
+        </div>
+      )}
+
+      {/* Published Date */}
+      {date && (
+        <div class="stat-item">
+          <span class="stat-label">
+            {Astro.locals.t("starlightRecipes.recipe.published")}
+          </span>
+          <span class="stat-value">
+            <time datetime={date.toISOString()}>
+              {Astro.locals.t("starlightRecipes.recipe.date", { date })}
+            </time>
+          </span>
+        </div>
+      )}
+
+      {/* Calories */}
+      {calories && (
+        <div class="stat-item">
+          <span class="stat-label">
+            {Astro.locals.t("starlightRecipes.recipe.calories")}
+          </span>
+          <span class="stat-value">{calories} kcal</span>
+        </div>
+      )}
+    </div>
+  )
+}
+
+<style>
+  .recipe-stats-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 1.5rem 0;
+    /*border-top: 1px solid var(--sl-color-gray-5);
+    border-bottom: 1px solid var(--sl-color-gray-5);*/
+    color: var(--sl-color-white);
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    text-align: center;
+  }
+
+  /* Horizontal Bar Logic:
+     Add a border to the left of any item that comes AFTER another item.
+  */
+  .stat-item + .stat-item {
+    border-left: 1px solid var(--sl-color-gray-5);
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--sl-color-gray-3);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+  }
+
+  .stat-value {
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 500px) {
+    .recipe-stats-container {
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .stat-item + .stat-item {
+      border-left: none;
+      border-top: 1px solid var(--sl-color-gray-5);
+      width: 100%;
+      padding-top: 1rem;
+    }
+  }
+</style>

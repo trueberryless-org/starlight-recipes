@@ -1,13 +1,15 @@
 ---
+import AnchorHeading from "@astrojs/starlight/components/AnchorHeading.astro";
 import type { StarlightRecipesInstructionStepSchema } from "../../schema";
+import { slug } from "github-slugger";
+import type { StarlightRecipeEntry } from "../../libs/content";
 
 type Props = {
-  steps: StarlightRecipesInstructionStepSchema[];
+  entry: StarlightRecipeEntry;
 };
 
-const { steps } = Astro.props;
-
-console.log(steps);
+const { entry } = Astro.props;
+const { instructions: steps } = entry.data;
 
 const normalizeStep = (step: StarlightRecipesInstructionStepSchema) => {
   if (typeof step === "string") return { text: step };
@@ -28,7 +30,13 @@ const formatNaturalTime = (totalMinutes: number) => {
 };
 ---
 
-<ol class="sl-steps sl-steps-interactive not-content">
+<AnchorHeading
+  level="2"
+  id={slug(Astro.locals.t("starlightRecipes.recipe.instructions"))}
+>
+  {Astro.locals.t("starlightRecipes.recipe.instructions")}
+</AnchorHeading>
+<ol class="sl-steps not-content">
   {
     steps.map((rawStep, index) => {
       const step = normalizeStep(rawStep);
@@ -173,20 +181,21 @@ const formatNaturalTime = (totalMinutes: number) => {
 </script>
 
 <style>
-  .sl-steps-interactive {
+  .sl-steps {
     list-style: none;
     padding-inline-start: 0;
     counter-reset: steps-counter 0;
+    margin-top: 2rem;
   }
 
-  .sl-steps-interactive > li {
+  .sl-steps > li {
     position: relative;
     padding-inline-start: 3rem;
     padding-bottom: 1.5rem;
     min-height: 2.5rem;
   }
 
-  .sl-steps-interactive > li::after {
+  .sl-steps > li::after {
     content: "";
     position: absolute;
     top: 2rem;
@@ -197,15 +206,15 @@ const formatNaturalTime = (totalMinutes: number) => {
     transform: translateX(-50%);
   }
 
-  .sl-steps-interactive > li:last-child::after {
+  .sl-steps > li:last-child::after {
     display: none;
   }
 
-  .sl-steps-interactive > li:not(.is-timed) {
+  .sl-steps > li:not(.is-timed) {
     counter-increment: steps-counter;
   }
 
-  .sl-steps-interactive > li:not(.is-timed)::before {
+  .sl-steps > li:not(.is-timed)::before {
     content: counter(steps-counter);
     position: absolute;
     top: 0;
@@ -223,12 +232,12 @@ const formatNaturalTime = (totalMinutes: number) => {
     z-index: 2;
   }
 
-  .sl-steps-interactive > li.is-timed {
+  .sl-steps > li.is-timed {
     counter-increment: steps-counter;
     padding-inline-start: 0;
   }
 
-  .sl-steps-interactive > li.is-timed::before {
+  .sl-steps > li.is-timed::before {
     content: none;
   }
 

@@ -1,14 +1,53 @@
 ---
 import Default from "@astrojs/starlight/components/MarkdownContent.astro";
+import { slug } from "github-slugger";
 
 import { getRecipeEntry } from "../../libs/content";
 import { isAnyRecipePage } from "../../libs/page";
 import Cover from "../Cover.astro";
 import Metadata from "../metadata/Metadata.astro";
 import Footer from "../metadata/Footer.astro";
-import TimedSteps from "../content/TimedSteps.astro";
+import Instructions from "../content/Instructions.astro";
+import Ingredients from "../content/Ingredients.astro";
 
-const { id, locale } = Astro.locals.starlightRoute;
+const { id, locale, entry: docsEntry } = Astro.locals.starlightRoute;
+let { toc } = Astro.locals.starlightRoute;
+
+if (toc && toc.items) {
+  const overviewIndex = toc.items.findIndex(
+    (item) => item.slug === "_top" && item.text === "Overview"
+  );
+
+  console.log(overviewIndex);
+
+  const newItems = [];
+
+  if (docsEntry.data.ingredients && docsEntry.data.ingredients.length > 0) {
+    newItems.push({
+      depth: 2,
+      slug: slug(Astro.locals.t("starlightRecipes.recipe.ingredients")),
+      text: Astro.locals.t("starlightRecipes.recipe.ingredients"),
+      children: [],
+    });
+  }
+
+  if (docsEntry.data.instructions && docsEntry.data.instructions.length > 0) {
+    newItems.push({
+      depth: 2,
+      slug: slug(Astro.locals.t("starlightRecipes.recipe.instructions")),
+      text: Astro.locals.t("starlightRecipes.recipe.instructions"),
+      children: [],
+    });
+  }
+
+  if (overviewIndex !== -1 && newItems.length > 0) {
+    toc.items.splice(overviewIndex + 1, 0, ...newItems);
+  } else if (newItems.length > 0) {
+    toc.items.unshift(...newItems);
+  }
+}
+
+console.log(toc);
 
 if (!isAnyRecipePage(id)) {
   return null;
@@ -21,7 +60,8 @@ const { entry, nextLink, prevLink } = await getRecipeEntry(id, locale);
   {entry.data.cover && <Cover cover={entry.data.cover} />}
   <Metadata entry={entry} {locale} />
 
-  <TimedSteps steps={entry.data.instructions} />
+  <Ingredients {entry} />
+  <Instructions {entry} />
 
   <slot />
 

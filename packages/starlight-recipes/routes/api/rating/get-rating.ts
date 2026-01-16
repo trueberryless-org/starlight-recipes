@@ -44,13 +44,12 @@ export async function getRecipeRating(
   const countKey = generateRatingHash(recipeId, NAMESPACE, "count");
 
   try {
+    const sumUrl = `https://api.countify.xyz/get-total/${COUNTIFY_PREFIX}_${NAMESPACE}_${sumKey}`;
+    const countUrl = `https://api.countify.xyz/get-total/${COUNTIFY_PREFIX}_${NAMESPACE}_${countKey}`;
+
     const [sumRes, countRes] = await Promise.all([
-      fetch(
-        `https://api.countify.xyz/get-total/${COUNTIFY_PREFIX}_${NAMESPACE}_${sumKey}`
-      ),
-      fetch(
-        `https://api.countify.xyz/get-total/${COUNTIFY_PREFIX}_${NAMESPACE}_${countKey}`
-      ),
+      fetch(sumUrl),
+      fetch(countUrl),
     ]);
 
     const sumData = await sumRes.json();

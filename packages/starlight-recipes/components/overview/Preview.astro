@@ -8,7 +8,7 @@ import { getPathWithLocale, getRelativeUrl } from "../../libs/page";
 import Authors from "./../metadata/Authors.astro";
 import Cover from "./../Cover.astro";
 import Excerpt from "./Excerpt.astro";
-import Rating from "./../Rating.astro";
+import Rating from "../metadata/Rating.astro";
 import CuisineCategoryBlobs from "../metadata/CuisineCategoryBlobs.astro";
 
 interface Props {
@@ -74,10 +74,15 @@ const url = getRelativeUrl(`/${getPathWithLocale(entry.id, locale)}`);
   .preview-card {
     display: flex;
     flex-direction: column;
-    background-color: var(--sl-color-gray-7);
+    --card-bg: #1d1f26;
+    background-color: var(--card-bg);
     border-radius: 19px;
     /*height: 100%;*/
     margin-block: 1rem;
+  }
+
+  :global([data-theme="light"]) .preview-card {
+    --card-bg: #f5f6f8;
   }
 
   /* Image Handling */
