@@ -41,30 +41,43 @@ const managers = [
 <script>
   class PackageManagers extends HTMLElement {
     static STORAGE_KEY = "starlight-synced-tabs__pkg";
+    _bound = false;
+    _onStorage = (e: any) => {
+      if (e.key === PackageManagers.STORAGE_KEY) {
+        this.updateUI();
+      }
+    };
 
     connectedCallback() {
       this.updateUI();
 
-      this.querySelectorAll(".pill").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const val = btn.getAttribute("data-value");
-          if (val) {
-            localStorage.setItem(PackageManagers.STORAGE_KEY, val);
-            window.dispatchEvent(
-              new StorageEvent("storage", {
-                key: PackageManagers.STORAGE_KEY,
-                newValue: val,
-              })
-            );
+      if (!this._bound) {
+        this._bound = true;
+        this.querySelectorAll(".pill").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const val = btn.getAttribute("data-value");
+            if (val) {
+              localStorage.setItem(PackageManagers.STORAGE_KEY, val);
+              window.dispatchEvent(
+                new StorageEvent("storage", {
+                  key: PackageManagers.STORAGE_KEY,
+                  newValue: val,
+                })
+              );
+            }
+          });
+        });
+
+        window.addEventListener("storage", (e) => {
+          if (e.key === PackageManagers.STORAGE_KEY) {
+            this.updateUI();
           }
         });
-      });
+      }
+    }
 
-      window.addEventListener("storage", (e) => {
-        if (e.key === PackageManagers.STORAGE_KEY) {
-          this.updateUI();
-        }
-      });
+    disconnectedCallback() {
+      window.removeEventListener("storage", this._onStorage);
     }
 
     updateUI() {

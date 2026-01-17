@@ -4,7 +4,18 @@ import { COUNTIFY_PREFIX, generateRatingHash } from "../../../libs/rating";
 
 export const prerender = false;
 
-const votedUsers = new Set<string>();
+const votedUsers = new Map<string, number>();
+const VOTE_TTL_MS = 24 * 60 * 60 * 1000;
+
+function hasRecentVote(key: string) {
+  const ts = votedUsers.get(key);
+  if (!ts) return false;
+  if (Date.now() - ts > VOTE_TTL_MS) {
+    votedUsers.delete(key);
+    return false;
+  }
+  return true;
+}
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
   const ip = clientAddress;
@@ -26,7 +37,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     }
 
     const voteKey = `${ip}:${recipeId}`;
-    if (votedUsers.has(voteKey)) {
+    if (hasRecentVote(voteKey)) {
       return new Response(JSON.stringify({ error: "Forbidden" }), {
         status: 403,
         headers: { "Content-Type": "application/json" },
@@ -51,7 +62,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     const sumData = await sumRes.json();
     const countData = await countRes.json();
 
-    votedUsers.add(voteKey);
+    votedUsers.set(voteKey, Date.now());
 
     return new Response(
       JSON.stringify({

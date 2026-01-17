@@ -46,7 +46,11 @@ export default function starlightRecipes(
           );
         }
 
-        const env = loadEnv(process.env.MODE!, process.cwd(), "");
+        const env = loadEnv(
+          process.env.MODE ?? "production",
+          process.cwd(),
+          ""
+        );
         const ratingSecret = env.STARLIGHT_RECIPES_RATING_SECRET;
 
         if (astroConfig.adapter !== undefined && !ratingSecret) {

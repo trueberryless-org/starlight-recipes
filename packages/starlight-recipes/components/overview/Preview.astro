@@ -29,7 +29,7 @@ const url = getRelativeUrl(`/${getPathWithLocale(entry.id, locale)}`);
           <Cover
             cover={entry.data.cover}
             aspectRatio="16/9"
-            featured={entry.data.featured ? true : false}
+            featured={entry.data.featured ?? false}
           />
         </div>
       )

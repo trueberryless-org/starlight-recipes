@@ -125,7 +125,7 @@ export function isRecipeCuisinePage(slug: string, cuisine: string) {
 export function isRecipeCategoryPage(slug: string, category: string) {
   return (
     slug ===
-    `${getPathWithLocale(config.prefix, getLocaleFromPath(slug))}/categories/${category}`
+    `${getPathWithLocale(config.prefix, getLocaleFromPath(slug))}/category/${category}`
   );
 }
 

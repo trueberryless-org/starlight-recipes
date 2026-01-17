@@ -134,6 +134,7 @@ const formatNaturalTime = (totalMinutes: number) => {
     private remainingSeconds: number;
     private interval: number | null = null;
     private isRunning: boolean = false;
+    private boundToggleTimer = this.toggleTimer.bind(this);
 
     constructor() {
       super();
@@ -144,7 +145,12 @@ const formatNaturalTime = (totalMinutes: number) => {
     }
 
     connectedCallback() {
-      this.button?.addEventListener("click", this.toggleTimer.bind(this));
+      this.button?.addEventListener("click", this.boundToggleTimer);
+    }
+
+    disconnectedCallback() {
+      if (this.interval) clearInterval(this.interval);
+      this.button?.removeEventListener("click", this.boundToggleTimer);
     }
 
     toggleTimer() {

@@ -60,7 +60,7 @@ export async function getAllCuisines(
   const entryCuisines: StarlightRecipeEntryCuisines = new Map();
 
   for (const entry of entries) {
-    const cuisine = resolveCuisine(entry.data.cuisine);
+    const cuisine = resolveCuisine(entry.data.cuisine, locale);
     if (cuisine === undefined) continue;
     const infos = entryCuisines.get(cuisine.slug) ?? {
       entries: [],

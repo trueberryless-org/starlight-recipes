@@ -11,7 +11,7 @@ const { time, date, calories } = entry.data;
 const totalMinutes = (time?.preparation || 0) + (time?.cooking || 0);
 const formattedTime =
   totalMinutes > 60
-    ? `${Math.floor(totalMinutes / 60)}h ${totalMinutes % 60}m`
+    ? `${Math.floor(totalMinutes / 60)}h${totalMinutes % 60 > 0 ? ` ${totalMinutes % 60}m` : ""}`
     : `${totalMinutes}m`;
 
 const hasStats = totalMinutes > 0 || date || calories;
@@ -50,7 +50,11 @@ const hasStats = totalMinutes > 0 || date || calories;
           <span class="stat-label">
             {Astro.locals.t("starlightRecipes.recipe.calories")}
           </span>
-          <span class="stat-value">{calories} kcal</span>
+          <span class="stat-value">
+            {Astro.locals.t("starlightRecipes.recipe.caloriesValue", {
+              calories,
+            })}
+          </span>
         </div>
       )}
     </div>
@@ -63,8 +67,6 @@ const hasStats = totalMinutes > 0 || date || calories;
     justify-content: space-around;
     align-items: center;
     padding: 1.5rem 0;
-    /*border-top: 1px solid var(--sl-color-gray-5);
-    border-bottom: 1px solid var(--sl-color-gray-5);*/
     color: var(--sl-color-white);
   }
 

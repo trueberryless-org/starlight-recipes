@@ -10,7 +10,7 @@ interface Props {
 }
 
 const { entry, locale } = Astro.props;
-const cuisine = resolveCuisine(entry.data.cuisine);
+const cuisine = resolveCuisine(entry.data.cuisine, locale);
 ---
 
 {

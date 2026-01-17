@@ -10,6 +10,7 @@ export const Translations = {
     "starlightRecipes.recipe.totalTime": "Total time",
     "starlightRecipes.recipe.published": "Published",
     "starlightRecipes.recipe.calories": "Calories",
+    "starlightRecipes.recipe.caloriesValue": "{{calories}} kcal",
     "starlightRecipes.recipe.ingredients": "Ingredients",
     "starlightRecipes.recipe.instructions": "Instructions",
     "starlightRecipes.recipe.date": "{{date, datetime(dateStyle: medium)}}",

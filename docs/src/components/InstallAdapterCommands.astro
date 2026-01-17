@@ -55,33 +55,41 @@ const allCommands = managers.flatMap((m) =>
   class AdapterInstaller extends HTMLElement {
     static PKG_KEY = "starlight-synced-tabs__pkg";
     static ADAPTER_KEY = "starlight-synced-tabs__adapter";
+    _bound = false;
+    _onStorage = (e: any) => {
+      if (
+        e.key === AdapterInstaller.PKG_KEY ||
+        e.key === AdapterInstaller.ADAPTER_KEY
+      ) {
+        this.updateUI();
+      }
+    };
 
     connectedCallback() {
       this.updateUI();
+      if (!this._bound) {
+        this._bound = true;
+        this.querySelectorAll(".pkg-btn").forEach((btn) => {
+          btn.addEventListener("click", () =>
+            this.save(AdapterInstaller.PKG_KEY, btn.getAttribute("data-value")!)
+          );
+        });
 
-      this.querySelectorAll(".pkg-btn").forEach((btn) => {
-        btn.addEventListener("click", () =>
-          this.save(AdapterInstaller.PKG_KEY, btn.getAttribute("data-value")!)
-        );
-      });
+        this.querySelectorAll(".adapter-btn").forEach((btn) => {
+          btn.addEventListener("click", () =>
+            this.save(
+              AdapterInstaller.ADAPTER_KEY,
+              btn.getAttribute("data-value")!
+            )
+          );
+        });
 
-      this.querySelectorAll(".adapter-btn").forEach((btn) => {
-        btn.addEventListener("click", () =>
-          this.save(
-            AdapterInstaller.ADAPTER_KEY,
-            btn.getAttribute("data-value")!
-          )
-        );
-      });
+        window.addEventListener("storage", this._onStorage);
+      }
+    }
 
-      window.addEventListener("storage", (e) => {
-        if (
-          e.key === AdapterInstaller.PKG_KEY ||
-          e.key === AdapterInstaller.ADAPTER_KEY
-        ) {
-          this.updateUI();
-        }
-      });
+    disconnectedCallback() {
+      window.removeEventListener("storage", this._onStorage);
     }
 
     save(key: string, value: string) {

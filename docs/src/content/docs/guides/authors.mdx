@@ -24,7 +24,7 @@ Multiple authors can be defined using an array, although this is not recommended
 ---
 // src/content/docs/recipes/virgin-colada.md
 authors:
-  - name: HiDeoo
+  - name: trueberryless
     title: Starlight Aficionado
     picture: https://avatars.githubusercontent.com/u/99918022?v=4
     url: https://trueberryless.org
@@ -42,7 +42,7 @@ Regular authors can also be defined globally in the Starlight Recipes plugin con
 // astro.config.mjs
 starlightRecipes({
   authors: {
-    hideoo: {
+    trueberryless: {
       name: 'trueberryless',
       title: 'Starlight Aficionado',
       picture: '/trueberryless.png', // Images in the `public` directory are supported.
@@ -60,7 +60,7 @@ A recipe frontmatter can also reference a global author using the key of the aut
 ---
 // src/content/docs/recipes/virgin-colada.md
 authors:
-  - trueberryless # Will use the author defined in the configuration with the `hideoo` key.
+  - trueberryless # Will use the author defined in the configuration with the `trueberryless` key.
   - name: Ghost
     picture: https://avatars.githubusercontent.com/u/10137?s=200
     url: https://github.com/ghost

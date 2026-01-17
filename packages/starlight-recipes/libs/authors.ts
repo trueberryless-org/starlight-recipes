@@ -16,14 +16,15 @@ export async function getAllAuthors(
 
   for (const entry of entries) {
     for (const author of getEntryAuthors(entry)) {
-      const infos = entryAuthors.get(author.name) ?? {
+      const authorSlug = slug(author.name);
+      const infos = entryAuthors.get(authorSlug) ?? {
         entries: [],
-        author: { ...author, slug: slug(author.name) },
+        author: { ...author, slug: authorSlug },
       };
 
       infos.entries.push(entry);
 
-      entryAuthors.set(author.name, infos);
+      entryAuthors.set(authorSlug, infos);
     }
   }
 

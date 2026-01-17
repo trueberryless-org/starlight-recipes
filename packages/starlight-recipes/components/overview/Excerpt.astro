@@ -18,7 +18,7 @@ const Content = await getRecipeEntryExcerpt(entry);
 ---
 
 {
-  typeof Content === "string" ? (
+  Content == null ? null : typeof Content === "string" ? (
     <Markdown content={Content} />
   ) : (
     <ExcerptContent>

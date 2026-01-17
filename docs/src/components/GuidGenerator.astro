@@ -19,12 +19,49 @@ const codeSnippet = `STARLIGHT_RECIPES_RATING_SECRET=${placeholder}`;
   </div>
 </div>
 
+<script define:vars={{ placeholder }}>
+  const genBtn = document.getElementById("generate-btn");
+  const uuidRegex =
+    /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+
+  genBtn?.addEventListener("click", () => {
+    const container = document.querySelector(".code-stable-container");
+    const spans = container.querySelectorAll("span");
+
+    const targetSpan = Array.from(spans).find(
+      (span) =>
+        span.textContent.includes(placeholder) ||
+        uuidRegex.test(span.textContent)
+    );
+
+    if (targetSpan) {
+      const newGuid = crypto.randomUUID();
+      const oldText = targetSpan.textContent;
+
+      targetSpan.textContent = newGuid;
+
+      const copyBtn = container.querySelector(".copy button");
+      if (copyBtn && copyBtn.dataset.code) {
+        copyBtn.dataset.code = copyBtn.dataset.code.replace(oldText, newGuid);
+      }
+
+      targetSpan.style.color = "var(--sl-color-text-accent)";
+      targetSpan.animate(
+        [
+          { filter: "brightness(3) blur(2px)", transform: "scale(1.1)" },
+          { filter: "brightness(1) blur(0px)", transform: "scale(1)" },
+        ],
+        { duration: 400, easing: "ease-out" }
+      );
+    }
+  });
+</script>
+
 <style>
   .magic-container {
     margin: 1.5rem 0;
   }
 
-  /* The "Old Shiny" Magic Button */
   .magic-button {
     position: relative;
     cursor: pointer;
@@ -42,7 +79,6 @@ const codeSnippet = `STARLIGHT_RECIPES_RATING_SECRET=${placeholder}`;
     display: inline-block;
   }
 
-  /* 3D Hover Effect */
   .magic-button:hover {
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 8px 25px rgba(124, 58, 237, 0.6);
@@ -52,7 +88,6 @@ const codeSnippet = `STARLIGHT_RECIPES_RATING_SECRET=${placeholder}`;
     transform: translateY(0) scale(1);
   }
 
-  /* The Intense Shiny Shimmer */
   .magic-button::after {
     content: "";
     position: absolute;
@@ -82,49 +117,11 @@ const codeSnippet = `STARLIGHT_RECIPES_RATING_SECRET=${placeholder}`;
     }
   }
 
-  /* Keeping the Code Block height stable */
   .code-stable-container {
     min-height: 4.5rem;
   }
 
-  /* Animation for the generated text */
   :global(.code-stable-container span) {
     transition: color 0.4s ease;
   }
 </style>
-
-<script define:vars={{ placeholder }}>
-  const genBtn = document.getElementById("generate-btn");
-  const uuidRegex =
-    /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
-
-  genBtn?.addEventListener("click", () => {
-    // Look for the placeholder text or an existing UUID inside the code block
-    const spans = document.querySelectorAll(".code-stable-container span");
-    const targetSpan = Array.from(spans).find(
-      (span) =>
-        span.textContent.includes(placeholder) ||
-        uuidRegex.test(span.textContent)
-    );
-
-    if (targetSpan) {
-      const newGuid = crypto.randomUUID();
-      targetSpan.textContent = newGuid;
-
-      // Update the color to Starlight's accent blue
-      targetSpan.style.color = "var(--sl-color-text-accent)";
-
-      // Magical "pop" animation
-      targetSpan.animate(
-        [
-          { filter: "brightness(3) blur(2px)", transform: "scale(1.1)" },
-          { filter: "brightness(1) blur(0px)", transform: "scale(1)" },
-        ],
-        {
-          duration: 400,
-          easing: "ease-out",
-        }
-      );
-    }
-  });
-</script>
