@@ -11,7 +11,7 @@ Starlight Recipes supports the following features:
 - Global and per-post authors
 - Cover images
 - Custom sidebar with popular/featured recipes and tags
-- Automatic generation of [Recipe Structured Data](/guides/structured-data)
+- Optimal SEO because of automatic generation of [Recipe Structured Data](/guides/structured-data)
 
 The following features are available when you allow [on-demand rendering](https://docs.astro.build/en/guides/on-demand-rendering/):
 
@@ -26,39 +26,15 @@ If you don't have one yet, you can follow the ["Getting Started"](https://starli
 
 ## Installation
 
-import { Steps, Tabs, TabItem } from '@astrojs/starlight/components'
+import { Steps, TabItem } from '@astrojs/starlight/components'
+import InstallAdapterCommands from '@/components/InstallAdapterCommands.astro'
+import PackageManagers from '@/components/PackageManagers.astro'
 
 <Steps>
 
 1. Starlight Recipes is a Starlight [plugin](https://starlight.astro.build/reference/plugins/). Install it by running the following command in your terminal:
 
-   <Tabs syncKey="pkg">
-
-   <TabItem label="npm">
-
-   ```sh
-   npm install starlight-recipes
-   ```
-
-   </TabItem>
-
-   <TabItem label="pnpm">
-
-   ```sh
-   pnpm add starlight-recipes
-   ```
-
-   </TabItem>
-
-   <TabItem label="Yarn">
-
-   ```sh
-   yarn add starlight-recipes
-   ```
-
-   </TabItem>
-
-   </Tabs>
+   <PackageManagers pkg="starlight-recipes" />
 
 2. Configure the plugin in your Starlight [configuration](https://starlight.astro.build/reference/configuration/#plugins) in the `astro.config.mjs` file.
 
@@ -123,35 +99,7 @@ import { Steps, Tabs, TabItem } from '@astrojs/starlight/components'
 
 5. Add any [Astro Server Adapter](https://docs.astro.build/en/guides/on-demand-rendering/#server-adapters) if you want to enable all the [interactive features](/interactive).
 
-    For example the [`@astrojs/node`](https://docs.astro.build/en/guides/integrations-guide/node/) adapter can be installed and set up with this command:
-
-    <Tabs syncKey="pkg">
-
-    <TabItem label="npm">
-
-    ```sh
-    npx astro add node
-    ```
-
-    </TabItem>
-
-    <TabItem label="pnpm">
-
-    ```sh
-    pnpm astro add node
-    ```
-
-    </TabItem>
-
-    <TabItem label="Yarn">
-
-    ```sh
-    yarn astro add node
-    ```
-
-    </TabItem>
-
-    </Tabs>
+    <InstallAdapterCommands />
 
 6. [Start the development server](https://starlight.astro.build/getting-started/#start-the-development-server) to preview the plugin in action.
 

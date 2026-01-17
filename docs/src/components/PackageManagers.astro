@@ -1,0 +1,141 @@
+---
+import { Code } from "@astrojs/starlight/components";
+
+interface Props {
+  pkg: string;
+}
+
+const { pkg } = Astro.props;
+
+const managers = [
+  { id: "npm", cmd: `npm install ${pkg}` },
+  { id: "pnpm", cmd: `pnpm add ${pkg}` },
+  { id: "yarn", cmd: `yarn add ${pkg}` },
+];
+---
+
+<package-managers class="installer-wrapper not-prose not-content">
+  <div class="controls">
+    <div class="selector">
+      {
+        managers.map((m) => (
+          <button class="pill" data-value={m.id}>
+            {m.id}
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="code-stack">
+    {
+      managers.map((m) => (
+        <div class="command-variant" data-id={m.id} style="display: none">
+          <Code code={m.cmd} lang="sh" />
+        </div>
+      ))
+    }
+  </div>
+</package-managers>
+
+<script>
+  class PackageManagers extends HTMLElement {
+    static STORAGE_KEY = "starlight-synced-tabs__pkg";
+
+    connectedCallback() {
+      this.updateUI();
+
+      this.querySelectorAll(".pill").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const val = btn.getAttribute("data-value");
+          if (val) {
+            localStorage.setItem(PackageManagers.STORAGE_KEY, val);
+            window.dispatchEvent(
+              new StorageEvent("storage", {
+                key: PackageManagers.STORAGE_KEY,
+                newValue: val,
+              })
+            );
+          }
+        });
+      });
+
+      window.addEventListener("storage", (e) => {
+        if (e.key === PackageManagers.STORAGE_KEY) {
+          this.updateUI();
+        }
+      });
+    }
+
+    updateUI() {
+      const active = localStorage.getItem(PackageManagers.STORAGE_KEY) || "npm";
+
+      this.querySelectorAll<HTMLElement>(".command-variant").forEach((v) => {
+        v.style.display = v.dataset.id === active ? "block" : "none";
+      });
+
+      this.querySelectorAll(".pill").forEach((btn) => {
+        btn.classList.toggle(
+          "active",
+          btn.getAttribute("data-value") === active
+        );
+      });
+    }
+  }
+
+  if (!customElements.get("package-managers")) {
+    customElements.define("package-managers", PackageManagers);
+  }
+</script>
+
+<style>
+  .installer-wrapper {
+    margin: 1.5rem 0;
+    border: 1px solid var(--sl-color-gray-6);
+    border-radius: 0.75rem;
+    background-color: var(--sl-color-gray-7);
+    padding: 1rem;
+    display: block;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .selector {
+    display: flex;
+    gap: 0.25rem;
+    background: var(--sl-color-gray-6);
+    padding: 0.2rem;
+    border-radius: 0.5rem;
+  }
+
+  .pill {
+    background: transparent;
+    border: none;
+    color: var(--sl-color-gray-3);
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .pill:hover {
+    color: var(--sl-color-white);
+  }
+
+  .pill.active {
+    background: var(--sl-color-accent-high);
+    color: var(--sl-color-black);
+  }
+
+  :global([data-theme="light"]) .pill.active {
+    background: var(--sl-color-accent);
+  }
+</style>
