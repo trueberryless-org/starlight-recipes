@@ -37,6 +37,7 @@
     "github-slugger": "^2.0.0",
     "mdast-util-mdx-expression": "^2.0.1",
     "schema-dts": "^1.1.5",
+    "tinyduration": "^3.4.1",
     "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {

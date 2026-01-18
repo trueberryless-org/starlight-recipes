@@ -30,6 +30,26 @@ const configSchema = z
      * The number of popular recipes to display in the sidebar.
      */
     popularRecipeCount: z.number().min(0).default(3).transform(infinityToMax),
+    /**
+     * Configuration for the interactive cooking experience.
+     */
+    cookingMode: z
+      .object({
+        /**
+         * Enables countdown timers for instructions. Requires a defined "time"
+         * field in the step frontmatter to initialize the interactive trigger.
+         */
+        stepTimer: z.boolean().default(true),
+        /**
+         * Toggles interactive checkboxes on step numbers. When enabled, checkboxes
+         * appear on hover and remain visible once toggled to track progress.
+         */
+        stepCheckbox: z.boolean().default(true),
+      })
+      .default({
+        stepTimer: true,
+        stepCheckbox: true,
+      }),
   })
   .default({});
 

@@ -4,7 +4,7 @@ import type { ItemList, Person, Recipe, WithContext } from "schema-dts";
 import context from "virtual:starlight-recipes-context";
 
 import type { StarlightRecipesFrontmatter } from "../schema";
-import { getAllAuthors } from "./authors";
+import { getAllAuthors, getEntryAuthors } from "./authors";
 import {
   type StarlightRecipeEntry,
   getRecipeEntries,
@@ -20,8 +20,13 @@ import {
   isRecipeCuisinePage,
   isRecipeTagPage,
 } from "./page";
-import { stripTrailingSlash } from "./path";
+import {
+  ensureTrailingSlash,
+  stripLeadingSlash,
+  stripTrailingSlash,
+} from "./path";
 import { getAllTags } from "./tags";
+import { addDurations, minutesToIsoDuration } from "./time";
 
 export async function getHead(context: APIContext): Promise<HeadConfig> {
   const { starlightRoute } = context.locals;
@@ -101,6 +106,14 @@ export async function getRecipesHead(
   return getRecipeHeadConfig(recipeWithContext);
 }
 
+/**
+ * Generates the SEO head configuration and [Structured Data](https://schema.org/Recipe)
+ * for a recipe page.
+ * * Complies with the [Google Search Recipe Guidelines](https://developers.google.com/search/docs/appearance/structured-data/recipe).
+ * @param slug - The unique identifier/URL segment for the recipe.
+ * @param locale - The target language/region for content localization.
+ * @returns A promise resolving to the {@link HeadConfig} for the page metadata.
+ */
 export async function getRecipeHead(
   slug: string,
   locale: Locale
@@ -122,19 +135,32 @@ export async function getRecipeHead(
   if (tags) recipeStructuredData.keywords = tags;
 
   if (data.category) recipeStructuredData.recipeCategory = data.category;
-
   if (data.cuisine) {
     const cuisine = resolveCuisine(data.cuisine, locale);
     recipeStructuredData.recipeCuisine =
       typeof cuisine === "string" ? cuisine : cuisine!.name;
   }
 
+  if (data.time.preparation && data.time.cooking) {
+    recipeStructuredData.prepTime = minutesToIsoDuration(data.time.preparation);
+    recipeStructuredData.cookTime = minutesToIsoDuration(data.time.cooking);
+    recipeStructuredData.totalTime = addDurations(
+      minutesToIsoDuration(data.time.cooking),
+      minutesToIsoDuration(data.time.preparation)
+    );
+  } else if (data.time.preparation)
+    recipeStructuredData.totalTime = minutesToIsoDuration(
+      data.time.preparation
+    );
+  else if (data.time.cooking)
+    recipeStructuredData.totalTime = minutesToIsoDuration(data.time.cooking);
+
   const images = await getRecommendedImages(data.cover);
   if (images) {
     recipeStructuredData.image = images;
   }
 
-  const authorData = mapAuthors(data.authors);
+  const authorData = mapAuthors(recipe.entry);
   if (authorData) recipeStructuredData.author = authorData;
 
   const recipeWithContext: WithContext<Recipe> = {
@@ -145,12 +171,18 @@ export async function getRecipeHead(
   return getRecipeHeadConfig(recipeWithContext);
 }
 
+function resolveImageUrl(src: string) {
+  const siteUrl = context.site ? context.site.replace(/\/+$/, "") : "";
+  const isAbsolute = src.startsWith("http");
+  return isAbsolute
+    ? src
+    : `${ensureTrailingSlash(siteUrl)}${stripLeadingSlash(src)}`;
+}
+
 async function getRecommendedImages(
   cover: StarlightRecipesFrontmatter["cover"]
 ) {
   if (!cover || !cover.image) return undefined;
-
-  const siteUrl = context.site ? context.site.replace(/\/+$/, "") : "";
 
   const ratios = [
     { name: "1x1", width: 1000, height: 1000 },
@@ -168,8 +200,7 @@ async function getRecommendedImages(
         fit: "cover",
       });
 
-      const isAbsolute = result.src.startsWith("http");
-      return isAbsolute ? result.src : `${siteUrl}${result.src}`;
+      return resolveImageUrl(result.src);
     })
   );
 
@@ -177,23 +208,15 @@ async function getRecommendedImages(
 }
 
 function mapAuthors(
-  authors: StarlightRecipesFrontmatter["authors"]
+  entry: StarlightRecipeEntry
 ): Person | Person[] | undefined {
-  if (!authors) return undefined;
+  const authors = getEntryAuthors(entry);
+  if (authors.length === 0) return undefined;
 
-  const authorArray = (Array.isArray(authors) ? authors : [authors]).filter(
-    Boolean
-  );
-  if (authorArray.length === 0) return undefined;
-
-  const mapped = authorArray.map((a): Person => {
-    if (typeof a === "string") {
-      return { "@type": "Person", name: a };
-    }
-
+  const mapped = authors.map((a): Person => {
     const person: Person = { "@type": "Person", name: a.name };
     if (a.url) person.url = a.url;
-    if (a.picture) person.image = a.picture;
+    if (a.picture) person.image = resolveImageUrl(a.picture);
 
     return person;
   });

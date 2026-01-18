@@ -2,6 +2,7 @@
 import type { ImageMetadata } from "astro";
 import { Image } from "astro:assets";
 import AnchorHeading from "@astrojs/starlight/components/AnchorHeading.astro";
+import config from "virtual:starlight-recipes-config";
 import type { StarlightRecipesInstructionStepSchema } from "../../schema";
 import { slug } from "github-slugger";
 import type { StarlightRecipeEntry } from "../../libs/content";
@@ -13,6 +14,8 @@ type Props = {
 
 const { entry } = Astro.props;
 const { instructions: steps } = entry.data;
+const recipeId = entry.id;
+const globalCookingModeConfig = config.cookingMode;
 
 const normalizeStep = (step: StarlightRecipesInstructionStepSchema) => {
   if (typeof step === "string")
@@ -42,26 +45,53 @@ const normalizeStep = (step: StarlightRecipesInstructionStepSchema) => {
   };
 };
 
-// New helper for natural language duration
 const formatNaturalTime = (totalMinutes: number) => {
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
-
-  // Exact hours (e.g., "12 h")
   if (hours > 0 && minutes === 0) return `${hours} h`;
-  // Hours and minutes (e.g., "1 h 30 min")
   if (hours > 0) return `${hours} h ${minutes} min`;
-  // Just minutes (e.g., "30 min")
   return `${minutes} min`;
 };
+
+const showReset =
+  globalCookingModeConfig.stepCheckbox || globalCookingModeConfig.stepTimer;
 ---
 
-<AnchorHeading
-  level="2"
-  id={slug(Astro.locals.t("starlightRecipes.recipe.instructions"))}
->
-  {Astro.locals.t("starlightRecipes.recipe.instructions")}
-</AnchorHeading>
+<div class="instructions-header">
+  <AnchorHeading
+    level="2"
+    id={slug(Astro.locals.t("starlightRecipes.recipe.instructions"))}
+  >
+    {Astro.locals.t("starlightRecipes.recipe.instructions")}
+  </AnchorHeading>
+
+  {
+    showReset && (
+      <reset-controller data-recipe={recipeId}>
+        <button type="button" class="reset-btn" aria-label="Reset progress">
+          <span class="reset-text">Reset</span>
+          <span class="reset-confirm">Confirm?</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="icon-reset"
+          >
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+            <path d="M3 3v5h5" />
+          </svg>
+        </button>
+      </reset-controller>
+    )
+  }
+</div>
+
 <ol class="sl-steps not-content">
   {
     steps.map((rawStep, index) => {
@@ -69,10 +99,27 @@ const formatNaturalTime = (totalMinutes: number) => {
       const stepNum = index + 1;
       const hasTimer = typeof step.time === "number";
 
+      const useTimer = globalCookingModeConfig.stepTimer && hasTimer;
+      const useCheckbox =
+        globalCookingModeConfig.stepCheckbox && (!hasTimer || !useTimer);
+      const isStatic = !useTimer && !useCheckbox;
+
       return (
-        <li class={hasTimer ? "is-timed" : ""}>
-          {hasTimer ? (
-            <step-timer data-time={step.time} data-step={stepNum}>
+        <li
+          class:list={[
+            {
+              "is-timed": useTimer,
+              "is-checkbox": useCheckbox,
+              "is-static": isStatic,
+            },
+          ]}
+        >
+          {useTimer ? (
+            <step-timer
+              data-time={step.time}
+              data-step={stepNum}
+              data-recipe={recipeId}
+            >
               <button
                 class="timer-pill"
                 aria-label={`Start ${step.time} minute timer`}
@@ -99,9 +146,22 @@ const formatNaturalTime = (totalMinutes: number) => {
                       <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
                     </svg>
                   </span>
+                  <span class="icon-check">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="3"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      height="1rem"
+                      width="1rem"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </span>
                 </span>
                 <span class="pill-right">
-                  {/* We now render the natural text initially */}
                   <span class="time-display">
                     {formatNaturalTime(step.time!)}
                   </span>
@@ -109,14 +169,44 @@ const formatNaturalTime = (totalMinutes: number) => {
               </button>
               <div class="step-content">
                 {step.name && <strong>{step.name}</strong>}
-                <p set:html={step.text} />
+                <div set:html={step.text} />
                 {step.image && <Image src={step.image} alt={step.alt || ""} />}
               </div>
             </step-timer>
+          ) : useCheckbox ? (
+            <step-checkbox data-recipe={recipeId} data-step={stepNum}>
+              <div class="step-marker">
+                <span class="marker-number">{stepNum}</span>
+                <span class="marker-check">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    width="14"
+                    height="14"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </span>
+                <input
+                  type="checkbox"
+                  class="step-input"
+                  aria-label={`Mark step ${stepNum} as done`}
+                />
+              </div>
+              <div class="step-content">
+                {step.name && <strong>{step.name}</strong>}
+                <div set:html={step.text} />
+                {step.image && <Image src={step.image} alt={step.alt || ""} />}
+              </div>
+            </step-checkbox>
           ) : (
             <div class="step-content">
-              {step.name && <strong>{step.name}</strong>}
-              <p set:html={step.text} />
+              {step.name && <strong class="step-title">{step.name}</strong>}
+              <div class="text-content" set:html={step.text} />
               {step.image && <Image src={step.image} alt={step.alt || ""} />}
             </div>
           )}
@@ -127,6 +217,127 @@ const formatNaturalTime = (totalMinutes: number) => {
 </ol>
 
 <script>
+  class ResetController extends HTMLElement {
+    private btn: HTMLButtonElement | null;
+    private recipeId: string;
+    private confirmTimeout: number | null = null;
+
+    constructor() {
+      super();
+      this.btn = this.querySelector(".reset-btn");
+      this.recipeId = this.dataset.recipe || "";
+    }
+
+    connectedCallback() {
+      this.btn?.addEventListener("click", () => this.handleClick());
+    }
+
+    handleClick() {
+      if (this.btn?.classList.contains("confirming")) {
+        this.executeReset();
+      } else {
+        this.requestConfirm();
+      }
+    }
+
+    requestConfirm() {
+      this.btn?.classList.add("confirming");
+      if (this.confirmTimeout) clearTimeout(this.confirmTimeout);
+      this.confirmTimeout = window.setTimeout(() => {
+        this.btn?.classList.remove("confirming");
+      }, 3000);
+    }
+
+    executeReset() {
+      this.btn?.classList.remove("confirming");
+      const keys = Object.keys(localStorage);
+      const prefix = `recipe-${this.recipeId}-step-`;
+      keys.forEach((key) => {
+        if (key.startsWith(prefix)) localStorage.removeItem(key);
+      });
+      window.dispatchEvent(
+        new CustomEvent("recipe-reset", { detail: { recipeId: this.recipeId } })
+      );
+    }
+  }
+
+  class StepCheckbox extends HTMLElement {
+    private input: HTMLInputElement | null;
+    private storageKey: string;
+    private recipeId: string;
+    private stepNum: number;
+
+    constructor() {
+      super();
+      this.recipeId = this.dataset.recipe || "";
+      this.stepNum = parseInt(this.dataset.step || "0");
+      this.storageKey = `recipe-${this.recipeId}-step-${this.stepNum}`;
+      this.input = this.querySelector(".step-input");
+    }
+
+    connectedCallback() {
+      this.loadState();
+
+      this.input?.addEventListener("change", (e) => {
+        const checked = (e.target as HTMLInputElement).checked;
+        this.setState(checked, true);
+      });
+
+      window.addEventListener("recipe-reset", (e: any) => {
+        if (e.detail.recipeId === this.recipeId) {
+          this.setState(false, false);
+        }
+      });
+
+      window.addEventListener("recipe-step-update", (e: any) => {
+        if (e.detail.recipeId !== this.recipeId) return;
+        const triggerStep = e.detail.step;
+        const isTriggerComplete = e.detail.isComplete;
+
+        const shouldComplete = isTriggerComplete && triggerStep > this.stepNum;
+        const shouldUncomplete =
+          !isTriggerComplete && triggerStep < this.stepNum;
+
+        if (shouldComplete) this.setState(true, false);
+        if (shouldUncomplete) this.setState(false, false);
+      });
+    }
+
+    loadState() {
+      const isChecked = localStorage.getItem(this.storageKey) === "true";
+      if (this.input) this.input.checked = isChecked;
+      this.updateVisuals(isChecked);
+    }
+
+    setState(checked: boolean, dispatch: boolean) {
+      if (this.input) this.input.checked = checked;
+
+      if (checked) {
+        localStorage.setItem(this.storageKey, "true");
+      } else {
+        localStorage.removeItem(this.storageKey);
+      }
+
+      this.updateVisuals(checked);
+
+      if (dispatch) {
+        window.dispatchEvent(
+          new CustomEvent("recipe-step-update", {
+            detail: {
+              recipeId: this.recipeId,
+              step: this.stepNum,
+              isComplete: checked,
+            },
+          })
+        );
+      }
+    }
+
+    updateVisuals(checked: boolean) {
+      this.toggleAttribute("data-completed", checked);
+    }
+  }
+
   class StepTimer extends HTMLElement {
     private button: HTMLButtonElement | null;
     private display: HTMLSpanElement | null;
@@ -134,10 +345,16 @@ const formatNaturalTime = (totalMinutes: number) => {
     private remainingSeconds: number;
     private interval: number | null = null;
     private isRunning: boolean = false;
+    private storageKey: string;
+    private recipeId: string;
+    private stepNum: number;
     private boundToggleTimer = this.toggleTimer.bind(this);
 
     constructor() {
       super();
+      this.recipeId = this.dataset.recipe || "";
+      this.stepNum = parseInt(this.dataset.step || "0");
+      this.storageKey = `recipe-${this.recipeId}-step-${this.stepNum}-timer`;
       this.button = this.querySelector(".timer-pill");
       this.display = this.querySelector(".time-display");
       this.durationMinutes = parseFloat(this.dataset.time || "0");
@@ -145,7 +362,24 @@ const formatNaturalTime = (totalMinutes: number) => {
     }
 
     connectedCallback() {
+      this.loadState();
       this.button?.addEventListener("click", this.boundToggleTimer);
+
+      window.addEventListener("recipe-reset", (e: any) => {
+        if (e.detail.recipeId === this.recipeId) this.reset();
+      });
+
+      window.addEventListener("recipe-step-update", (e: any) => {
+        if (e.detail.recipeId !== this.recipeId) return;
+        const triggerStep = e.detail.step;
+        const isTriggerComplete = e.detail.isComplete;
+
+        const shouldComplete = isTriggerComplete && triggerStep > this.stepNum;
+        const shouldReset = !isTriggerComplete && triggerStep < this.stepNum;
+
+        if (shouldComplete && this.remainingSeconds > 0) this.forceComplete();
+        if (shouldReset) this.reset();
+      });
     }
 
     disconnectedCallback() {
@@ -153,32 +387,59 @@ const formatNaturalTime = (totalMinutes: number) => {
       this.button?.removeEventListener("click", this.boundToggleTimer);
     }
 
-    toggleTimer() {
-      if (this.isRunning) {
-        this.pause();
-      } else {
-        this.start();
+    loadState() {
+      const saved = localStorage.getItem(this.storageKey);
+      if (saved) {
+        const state = JSON.parse(saved);
+        this.remainingSeconds = state.remaining;
+        if (this.remainingSeconds <= 0) {
+          this.setVisualsFinished();
+        } else {
+          this.updateDisplay();
+          if (state.running) this.start();
+        }
       }
+    }
+
+    saveState() {
+      const state = {
+        remaining: this.remainingSeconds,
+        running: this.isRunning,
+      };
+      localStorage.setItem(this.storageKey, JSON.stringify(state));
+    }
+
+    reset() {
+      this.pause();
+      localStorage.removeItem(this.storageKey);
+      this.remainingSeconds = this.durationMinutes * 60;
+      this.updateDisplay();
+      this.classList.remove("completed");
+      this.button?.removeAttribute("disabled");
+    }
+
+    toggleTimer() {
+      this.isRunning ? this.pause() : this.start();
+      this.saveState();
     }
 
     start() {
       if (this.remainingSeconds <= 0) {
         this.remainingSeconds = this.durationMinutes * 60;
       }
-
       this.isRunning = true;
       this.classList.add("running");
       this.button?.classList.add("active");
-
       this.updateDisplay();
 
+      this.dispatchUpdate(true);
+
+      if (this.interval) clearInterval(this.interval);
       this.interval = window.setInterval(() => {
         this.remainingSeconds--;
         this.updateDisplay();
-
-        if (this.remainingSeconds <= 0) {
-          this.finish();
-        }
+        this.saveState();
+        if (this.remainingSeconds <= 0) this.finish();
       }, 1000);
     }
 
@@ -187,16 +448,41 @@ const formatNaturalTime = (totalMinutes: number) => {
       this.classList.remove("running");
       this.button?.classList.remove("active");
       if (this.interval) clearInterval(this.interval);
+      this.saveState();
     }
 
     finish() {
       this.pause();
+      this.remainingSeconds = 0;
+      this.saveState();
+      this.setVisualsFinished();
+      this.dispatchUpdate(true);
+    }
+
+    forceComplete() {
+      this.finish();
+    }
+
+    dispatchUpdate(isComplete: boolean) {
+      window.dispatchEvent(
+        new CustomEvent("recipe-step-update", {
+          detail: {
+            recipeId: this.recipeId,
+            step: this.stepNum,
+            isComplete: isComplete,
+          },
+        })
+      );
+    }
+
+    setVisualsFinished() {
       if (this.display) this.display.textContent = "Done!";
+      this.classList.add("completed");
+      this.button?.setAttribute("disabled", "true");
     }
 
     updateDisplay() {
       if (!this.display) return;
-
       const h = Math.floor(this.remainingSeconds / 3600);
       const m = Math.floor((this.remainingSeconds % 3600) / 60);
       const s = this.remainingSeconds % 60;
@@ -209,14 +495,64 @@ const formatNaturalTime = (totalMinutes: number) => {
     }
   }
 
+  customElements.define("reset-controller", ResetController);
+  customElements.define("step-checkbox", StepCheckbox);
   customElements.define("step-timer", StepTimer);
 </script>
 
 <style>
+  .instructions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .reset-btn {
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--sl-color-gray-5);
+    color: var(--sl-color-gray-3);
+    border-radius: 999px;
+    padding: 0.25rem 0.75rem;
+    font-size: var(--sl-text-xs);
+    font-family: var(--sl-font-mono);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .reset-btn:hover {
+    border-color: var(--sl-color-gray-3);
+    color: var(--sl-color-gray-2);
+  }
+
+  .reset-confirm {
+    display: none;
+  }
+
+  .reset-btn.confirming {
+    background-color: var(--sl-color-red-low);
+    border-color: var(--sl-color-red);
+    color: var(--sl-color-red-high);
+  }
+
+  .reset-btn.confirming .reset-text,
+  .reset-btn.confirming .icon-reset {
+    display: none;
+  }
+  .reset-btn.confirming .reset-confirm {
+    display: inline;
+    font-weight: bold;
+  }
+
   .sl-steps {
     list-style: none;
     padding-inline-start: 0;
-    counter-reset: steps-counter 0;
     margin-top: 2rem;
   }
 
@@ -250,35 +586,81 @@ const formatNaturalTime = (totalMinutes: number) => {
     display: none;
   }
 
-  .sl-steps > li:not(.is-timed) {
-    counter-increment: steps-counter;
+  step-checkbox {
+    display: contents;
   }
 
-  .sl-steps > li:not(.is-timed)::before {
-    content: counter(steps-counter);
+  .step-marker {
     position: absolute;
     top: 0;
     left: 0;
     width: 1.75rem;
     height: 1.75rem;
-    line-height: 1.75rem;
     background-color: var(--sl-color-gray-6);
     color: var(--sl-color-white);
-    text-align: center;
     border-radius: 50%;
-    font-size: var(--sl-text-xs);
-    font-weight: 600;
     box-shadow: inset 0 0 0 1px var(--sl-color-gray-5);
     z-index: 2;
+    display: grid;
+    place-items: center;
+  }
+
+  .step-marker {
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .marker-number {
+    font-size: var(--sl-text-xs);
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .marker-check {
+    position: absolute;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .step-input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    margin: 0;
+  }
+
+  step-checkbox:hover .step-marker {
+    background-color: var(--sl-color-gray-5);
+    transform: scale(1.1);
+  }
+
+  step-checkbox[data-completed] .step-marker {
+    background-color: var(--sl-color-accent);
+    box-shadow: 0 0 0 2px var(--sl-color-accent-low);
+  }
+
+  step-checkbox[data-completed] .marker-number {
+    opacity: 0;
+  }
+
+  step-checkbox[data-completed] .marker-check {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  step-checkbox[data-completed] .step-content {
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+    filter: grayscale(1);
   }
 
   .sl-steps > li.is-timed {
-    counter-increment: steps-counter;
     padding-inline-start: 0;
-  }
-
-  .sl-steps > li.is-timed::before {
-    content: none;
   }
 
   step-timer {
@@ -290,26 +672,19 @@ const formatNaturalTime = (totalMinutes: number) => {
   .timer-pill {
     appearance: none;
     border: none;
-
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-
     background-color: var(--sl-color-gray-6);
     color: var(--sl-color-white);
     border: 1px solid var(--sl-color-gray-5);
     border-radius: 999px;
     padding: 0.25rem 0.75rem 0.25rem 0.25rem;
-
     cursor: pointer;
-    transition:
-      color 0.2s ease,
-      background-color 0.2s ease,
-      border-color 0.2s ease;
+    transition: all 0.2s ease;
     z-index: 2;
     font-size: var(--sl-text-xs);
     font-family: var(--sl-font-mono);
-
     flex-shrink: 0;
     margin-top: -0.25rem;
   }
@@ -321,10 +696,7 @@ const formatNaturalTime = (totalMinutes: number) => {
     height: 1.75rem;
     border-radius: 50%;
     background-color: var(--sl-color-black);
-    transition:
-      color 0.2s ease,
-      background-color 0.2s ease,
-      border-color 0.2s ease;
+    transition: all 0.2s ease;
     font-weight: 600;
   }
 
@@ -334,9 +706,9 @@ const formatNaturalTime = (totalMinutes: number) => {
   }
 
   .icon-play,
-  .icon-pause {
+  .icon-pause,
+  .icon-check {
     display: none;
-    font-size: 1rem;
     line-height: 0;
   }
 
@@ -360,18 +732,46 @@ const formatNaturalTime = (totalMinutes: number) => {
     display: block;
   }
 
-  step-timer.running .step-index {
-    display: none;
-  }
+  step-timer.running .step-index,
   step-timer.running .icon-play {
     display: none;
   }
   step-timer.running .icon-pause {
     display: block;
   }
-
   step-timer.running .time-display {
     font-variant-numeric: tabular-nums;
+  }
+
+  step-timer.completed .step-content {
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+    filter: grayscale(1);
+  }
+
+  step-timer.completed .timer-pill {
+    background-color: var(--sl-color-accent);
+    border-color: var(--sl-color-accent);
+    cursor: default;
+    opacity: 1;
+  }
+
+  :global([data-theme="light"]) step-timer.completed .timer-pill {
+    color: var(--sl-color-text-invert);
+  }
+
+  step-timer.completed .pill-left {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  step-timer.completed .step-index,
+  step-timer.completed .icon-pause,
+  step-timer.completed .icon-play {
+    display: none !important;
+  }
+
+  step-timer.completed .icon-check {
+    display: block;
   }
 
   .step-content {
@@ -379,7 +779,7 @@ const formatNaturalTime = (totalMinutes: number) => {
     min-width: 0;
   }
 
-  .step-content p {
+  .step-content :global(p) {
     margin-top: 0;
   }
 

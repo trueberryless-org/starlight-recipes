@@ -1,5 +1,4 @@
 import netlify from "@astrojs/netlify";
-import node from "@astrojs/node";
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import starlightRecipes from "starlight-recipes";
@@ -29,6 +28,10 @@ export default defineConfig({
       customCss: ["./src/styles/custom.css"],
       plugins: [
         starlightRecipes({
+          cookingMode: {
+            stepTimer: false,
+            stepCheckbox: true,
+          },
           authors: {
             trueberryless: {
               name: "Felix Schneider",
@@ -67,6 +70,7 @@ export default defineConfig({
             "guides/authors",
             "guides/structured-data",
             "guides/recipes-data",
+            "guides/i18n",
           ],
         },
         {

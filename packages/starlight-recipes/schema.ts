@@ -142,7 +142,7 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
       /**
        * The time it takes to actually cook the dish in minutes.
        */
-      cooking: z.number(),
+      cooking: z.number().optional(),
     }),
     /**
      * The quantity produced by the recipe.
