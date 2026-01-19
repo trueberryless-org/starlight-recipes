@@ -14,13 +14,13 @@ const formattedTime =
     ? `${Math.floor(totalMinutes / 60)}h${totalMinutes % 60 > 0 ? ` ${totalMinutes % 60}m` : ""}`
     : `${totalMinutes}m`;
 
-const hasStats = totalMinutes > 0 || date || calories;
+const hasStats =
+  totalMinutes > 0 || date || (calories !== undefined && calories !== null);
 ---
 
 {
   hasStats && (
     <div class="recipe-stats-container">
-      {/* Total Time */}
       {totalMinutes > 0 && (
         <div class="stat-item">
           <span class="stat-label">
@@ -30,7 +30,6 @@ const hasStats = totalMinutes > 0 || date || calories;
         </div>
       )}
 
-      {/* Published Date */}
       {date && (
         <div class="stat-item">
           <span class="stat-label">
@@ -44,8 +43,7 @@ const hasStats = totalMinutes > 0 || date || calories;
         </div>
       )}
 
-      {/* Calories */}
-      {calories && (
+      {calories !== undefined && calories !== null && (
         <div class="stat-item">
           <span class="stat-label">
             {Astro.locals.t("starlightRecipes.recipe.calories")}
@@ -78,9 +76,6 @@ const hasStats = totalMinutes > 0 || date || calories;
     text-align: center;
   }
 
-  /* Horizontal Bar Logic:
-     Add a border to the left of any item that comes AFTER another item.
-  */
   .stat-item + .stat-item {
     border-left: 1px solid var(--sl-color-gray-5);
   }

@@ -25,11 +25,16 @@ const configSchema = z
     /**
      * The number of recipes to display per page on the recipes page.
      */
-    recipeCount: z.number().min(1).default(5).transform(infinityToMax),
+    recipeCount: z.number().int().min(1).default(5).transform(infinityToMax),
     /**
      * The number of popular recipes to display in the sidebar.
      */
-    popularRecipeCount: z.number().min(0).default(3).transform(infinityToMax),
+    popularRecipeCount: z
+      .number()
+      .int()
+      .min(0)
+      .default(3)
+      .transform(infinityToMax),
     /**
      * Configuration for the interactive cooking experience.
      */
@@ -69,7 +74,7 @@ ${Object.entries(errors.fieldErrors)
   )
   .join("\n")}
   `,
-      `See the error report above for more informations.\n\nIf you believe this is a bug, please file an issue at https://github.com/trueberryless-org/starlight-recipes/issues/new/choose`
+      `See the error report above for more information.\n\nIf you believe this is a bug, please file an issue at https://github.com/trueberryless-org/starlight-recipes/issues/new/choose`
     );
   }
 

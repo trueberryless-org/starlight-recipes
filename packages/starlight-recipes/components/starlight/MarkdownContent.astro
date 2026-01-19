@@ -14,10 +14,12 @@ import Ingredients from "../content/Ingredients.astro";
 const { id, locale, entry: docsEntry } = Astro.locals.starlightRoute;
 let { toc } = Astro.locals.starlightRoute;
 
+if (!isAnyRecipePage(id)) {
+  return null;
+}
+
 if (toc && toc.items) {
-  const overviewIndex = toc.items.findIndex(
-    (item) => item.slug === "_top" && item.text === "Overview"
-  );
+  const overviewIndex = toc.items.findIndex((item) => item.slug === "_top");
 
   const newItems = [];
 
@@ -44,10 +46,6 @@ if (toc && toc.items) {
   } else if (newItems.length > 0) {
     toc.items.unshift(...newItems);
   }
-}
-
-if (!isAnyRecipePage(id)) {
-  return null;
 }
 
 const { entry, nextLink, prevLink } = await getRecipeEntry(id, locale);

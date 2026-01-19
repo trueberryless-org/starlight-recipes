@@ -127,7 +127,7 @@ Below you can find details about each property:
 
 ### `recipes`
 
-A list of all the recipes in your project ordered by descending [publication date](/guides/frontmatter#date-required/).
+A list of all the recipes in your project ordered by descending [publication date](/guides/frontmatter#date).
 
 Each recipe has the following properties:
 
@@ -135,7 +135,7 @@ Each recipe has the following properties:
 
 **Type:** `string`
 
-The [title](/guides/frontmatter#title-required/) of the recipe.
+The [title](/guides/frontmatter#title) of the recipe.
 
 #### `href`
 
@@ -147,14 +147,14 @@ The link to the recipe.
 
 **Type:** `Date`
 
-The [date](/guides/frontmatter#date-required/) of the recipe.
+The [date](/guides/frontmatter#date) of the recipe.
 
 #### `updatedAt`
 
 **Type:** `Date | undefined`
 
 The last update date of the recipe.
-It is only defined if the [`lastUpdated`](/guides/frontmatter#lastupdated/) frontmatter field is specified and different from the [`date`](/guides/frontmatter#date-required/) frontmatter field.
+It is only defined if the [`lastUpdated`](/guides/frontmatter#lastupdated) frontmatter field is specified and different from the [`date`](/guides/frontmatter#date) frontmatter field.
 
 #### `draft`
 
@@ -197,7 +197,7 @@ Learn more about the shape of this object in [Astro’s Collection Entry Type](h
 
 #### `authors`
 
-**Type:** <code><a href="#starlightrecipeauthordata">StarlightRecipesAuthorData</a>[]</code>
+**Type:** <code><a href="#starlightrecipesauthordata">StarlightRecipesAuthorData</a>[]</code>
 
 The list of authors of the recipe.
 
@@ -223,7 +223,7 @@ The link to the tag page.
 
 ### `authors`
 
-**Type:** <code><a href="#starlightrecipeauthordata">StarlightRecipesAuthorData</a>[]</code>
+**Type:** <code><a href="#starlightrecipesauthordata">StarlightRecipesAuthorData</a>[]</code>
 
 An unordered list of all the known authors in your recipes.
 
@@ -241,7 +241,7 @@ The [name](/configuration/#name) of the author.
 
 **Type:** `string | undefined`
 
-The optional [title](/configuration/#title-1) of the author.
+The optional [title](/configuration/#title) of the author.
 
 ### `url`
 

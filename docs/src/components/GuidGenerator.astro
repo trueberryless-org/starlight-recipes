@@ -7,7 +7,8 @@ const codeSnippet = `STARLIGHT_RECIPES_RATING_SECRET=${placeholder}`;
 
 <div class="magic-container not-content">
   <button
-    id="generate-btn"
+    type="button"
+    data-guid-generator-btn
     class="magic-button"
     aria-label="Generate new secret"
   >
@@ -20,40 +21,44 @@ const codeSnippet = `STARLIGHT_RECIPES_RATING_SECRET=${placeholder}`;
 </div>
 
 <script define:vars={{ placeholder }}>
-  const genBtn = document.getElementById("generate-btn");
   const uuidRegex =
     /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
 
-  genBtn?.addEventListener("click", () => {
-    const container = document.querySelector(".code-stable-container");
-    const spans = container.querySelectorAll("span");
+  document.querySelectorAll(".magic-container").forEach((root) => {
+    const genBtn = root.querySelector("[data-guid-generator-btn]");
+    const container = root.querySelector(".code-stable-container");
+    if (!genBtn || !container) return;
 
-    const targetSpan = Array.from(spans).find(
-      (span) =>
-        span.textContent.includes(placeholder) ||
-        uuidRegex.test(span.textContent)
-    );
+    genBtn.addEventListener("click", () => {
+      const spans = container.querySelectorAll("span");
 
-    if (targetSpan) {
-      const newGuid = crypto.randomUUID();
-      const oldText = targetSpan.textContent;
-
-      targetSpan.textContent = newGuid;
-
-      const copyBtn = container.querySelector(".copy button");
-      if (copyBtn && copyBtn.dataset.code) {
-        copyBtn.dataset.code = copyBtn.dataset.code.replace(oldText, newGuid);
-      }
-
-      targetSpan.style.color = "var(--sl-color-text-accent)";
-      targetSpan.animate(
-        [
-          { filter: "brightness(3) blur(2px)", transform: "scale(1.1)" },
-          { filter: "brightness(1) blur(0px)", transform: "scale(1)" },
-        ],
-        { duration: 400, easing: "ease-out" }
+      const targetSpan = Array.from(spans).find(
+        (span) =>
+          span.textContent.includes(placeholder) ||
+          uuidRegex.test(span.textContent)
       );
-    }
+
+      if (targetSpan) {
+        const newGuid = crypto.randomUUID();
+        const oldText = targetSpan.textContent;
+
+        targetSpan.textContent = newGuid;
+
+        const copyBtn = container.querySelector(".copy button");
+        if (copyBtn && copyBtn.dataset.code) {
+          copyBtn.dataset.code = copyBtn.dataset.code.replace(oldText, newGuid);
+        }
+
+        targetSpan.style.color = "var(--sl-color-text-accent)";
+        targetSpan.animate(
+          [
+            { filter: "brightness(3) blur(2px)", transform: "scale(1.1)" },
+            { filter: "brightness(1) blur(0px)", transform: "scale(1)" },
+          ],
+          { duration: 400, easing: "ease-out" }
+        );
+      }
+    });
   });
 </script>
 

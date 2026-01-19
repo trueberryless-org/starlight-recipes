@@ -2,7 +2,7 @@
   "name": "starlight-recipes",
   "version": "0.0.1",
   "description": "Starlight plugin to create a recipe website.",
-  "homepage": "https://github.com/trueberryless-org/starlight-recipes",
+  "homepage": "https://starlight-recipes.trueberryless.org",
   "bugs": {
     "url": "https://github.com/trueberryless-org/starlight-recipes/issues"
   },

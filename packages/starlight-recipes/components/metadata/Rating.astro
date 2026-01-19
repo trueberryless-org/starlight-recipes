@@ -5,11 +5,14 @@ interface Props {
 }
 
 const { recipeId, votingEnabled } = Astro.props;
+
+const noRatingsText = Astro.locals.t("starlightRecipes.recipe.rating.noRating");
 ---
 
 <recipe-rating
   data-recipe-id={recipeId}
   data-interactive={votingEnabled ? "true" : "false"}
+  data-no-ratings-text={noRatingsText}
   class="not-content"
   style="margin: 0"
 >
@@ -48,22 +51,30 @@ const { recipeId, votingEnabled } = Astro.props;
 </recipe-rating>
 
 <script>
+  import { stripLocaleFromSlug } from "../../libs/i18n";
+
   class RecipeRating extends HTMLElement {
+    private recipeId: string;
+    private noRatingsText: string;
+    private isInteractive: boolean;
+    private votedKey: string;
+
     constructor() {
       super();
-      const recipeId = this.dataset.recipeId;
-      const isInteractive = this.dataset.interactive === "true";
-      const votedKey = `sl-recipes-voted-${recipeId}`;
+      this.recipeId = this.dataset.recipeId!;
+      this.noRatingsText = this.dataset.noRatingsText || "No ratings";
+      this.isInteractive = this.dataset.interactive === "true";
+      this.votedKey = `sl-recipes-voted-${stripLocaleFromSlug(this.recipeId)}`;
 
       this.refreshStats();
-      this.checkVoted(votedKey);
+      this.checkVoted(this.votedKey);
 
-      if (!isInteractive) return;
+      if (!this.isInteractive) return;
 
       const buttons = this.querySelectorAll(".star-btn");
       buttons.forEach((btn) => {
         btn.addEventListener("click", async () => {
-          if (localStorage.getItem(votedKey)) {
+          if (localStorage.getItem(this.votedKey)) {
             this.showError();
             return;
           }
@@ -75,17 +86,20 @@ const { recipeId, votingEnabled } = Astro.props;
             const res = await fetch("/api/recipe/rate", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ recipeId, stars: parseInt(stars!) }),
+              body: JSON.stringify({
+                recipeId: this.recipeId,
+                stars: parseInt(stars!),
+              }),
             });
 
             if (res.ok) {
               const updatedData = await res.json();
-              localStorage.setItem(votedKey, "true");
-              this.checkVoted(votedKey);
+              localStorage.setItem(this.votedKey, "true");
+              this.checkVoted(this.votedKey);
               this.updateUI(updatedData.ratingValue, updatedData.ratingCount);
             } else if (res.status === 403) {
-              localStorage.setItem(votedKey, "true");
-              this.checkVoted(votedKey);
+              localStorage.setItem(this.votedKey, "true");
+              this.checkVoted(this.votedKey);
               this.showError();
             }
           } catch (e) {
@@ -118,8 +132,7 @@ const { recipeId, votingEnabled } = Astro.props;
     }
 
     checkVoted(key: string) {
-      const isInteractive = this.dataset.interactive === "true";
-      if (localStorage.getItem(key) || !isInteractive) {
+      if (localStorage.getItem(key) || !this.isInteractive) {
         this.querySelector(".rating-container")?.classList.add("is-voted");
       }
     }
@@ -140,27 +153,24 @@ const { recipeId, votingEnabled } = Astro.props;
     updateUI(avg: number, count: number) {
       const avgEl = this.querySelector(".avg-value");
       const countEl = this.querySelector(".count-value");
-      const recipeId = this.dataset.recipeId;
-      const votedKey = `sl-recipes-voted-${recipeId}`;
-      const isInteractive = this.dataset.interactive === "true";
 
       if (avgEl) {
-        avgEl.textContent = avg > 0 ? Number(avg).toFixed(1) : "No ratings";
+        avgEl.textContent =
+          avg > 0 ? Number(avg).toFixed(1) : this.noRatingsText;
       }
       if (countEl) countEl.textContent = `(${count})`;
 
-      if (localStorage.getItem(votedKey) || !isInteractive) {
+      if (localStorage.getItem(this.votedKey) || !this.isInteractive) {
         this.highlightStars(avg);
       }
     }
 
     async refreshStats() {
-      const recipeId = this.dataset.recipeId;
       const spinner = this.querySelector("#spinner");
       spinner?.classList.add("active");
 
       try {
-        const res = await fetch(`/api/recipe/get-rating?id=${recipeId}`);
+        const res = await fetch(`/api/recipe/get-rating?id=${this.recipeId}`);
         const data = await res.json();
         this.updateUI(data.ratingValue, data.ratingCount);
       } catch (e) {
@@ -280,7 +290,6 @@ const { recipeId, votingEnabled } = Astro.props;
     }
   }
 
-  /* Greyed out state */
   .rating-container.is-voted {
     background: var(--sl-color-gray-6, #1e293b);
     opacity: 0.7;
@@ -344,7 +353,9 @@ const { recipeId, votingEnabled } = Astro.props;
   .avg-value {
     font-weight: 700;
     color: var(--sl-color-white);
+    white-space: nowrap;
   }
+
   .count-value {
     color: var(--sl-color-gray-3);
   }

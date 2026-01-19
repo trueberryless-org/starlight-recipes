@@ -10,6 +10,10 @@ export function getSmartGridData(
   entries: StarlightRecipeEntry[],
   rowSize: number = 2
 ) {
+  if (!Number.isInteger(rowSize) || rowSize < 1) {
+    throw new Error("rowSize must be a positive integer");
+  }
+
   const featured = entries.filter((e) => e.data.featured);
   const regular = entries.filter((e) => !e.data.featured);
 

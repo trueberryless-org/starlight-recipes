@@ -1,6 +1,7 @@
 import netlify from "@astrojs/netlify";
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
+import starlightLinksValidator from "starlight-links-validator";
 import starlightRecipes from "starlight-recipes";
 
 export default defineConfig({
@@ -26,6 +27,16 @@ export default defineConfig({
           "https://github.com/trueberryless-org/starlight-recipes/edit/main/docs/",
       },
       customCss: ["./src/styles/custom.css"],
+      locales: {
+        root: {
+          label: "English",
+          lang: "en",
+        },
+        de: {
+          label: "Deutsch",
+          lang: "de",
+        },
+      },
       plugins: [
         starlightRecipes({
           cookingMode: {
@@ -56,8 +67,17 @@ export default defineConfig({
             },
           },
         }),
+        starlightLinksValidator({
+          exclude: [
+            "/recipes",
+            "/recipes/tags/*",
+            "/recipes/authors/*",
+            "/de/recipes",
+            "/de/recipes/tags/*",
+            "/de/recipes/authors/*",
+          ],
+        }),
       ],
-      // routeMiddleware: "./src/routeData.ts",
       sidebar: [
         {
           label: "Start Here",

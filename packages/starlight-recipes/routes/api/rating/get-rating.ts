@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 
+import { stripLocaleFromSlug } from "../../../libs/i18n";
 import { COUNTIFY_PREFIX, generateRatingHash } from "../../../libs/rating";
 
 export const prerender = false;
@@ -59,8 +60,17 @@ export async function getRecipeRating(
     return fallbackResponse;
   }
 
-  const sumKey = generateRatingHash(recipeId, namespace, "sum");
-  const countKey = generateRatingHash(recipeId, namespace, "count");
+  // TODO(trueberryless): recipeId locale bust be removed so rating is the same in each language
+  const sumKey = generateRatingHash(
+    stripLocaleFromSlug(recipeId),
+    namespace,
+    "sum"
+  );
+  const countKey = generateRatingHash(
+    stripLocaleFromSlug(recipeId),
+    namespace,
+    "count"
+  );
 
   try {
     const sumUrl = buildCountifyUrl(sumKey, namespace);

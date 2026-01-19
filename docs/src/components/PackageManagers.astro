@@ -19,7 +19,11 @@ const managers = [
     <div class="selector">
       {
         managers.map((m) => (
-          <button class="pill" data-value={m.id}>
+          <button
+            class="pill"
+            data-value={m.id}
+            style={m.id === "npm" ? undefined : "display: none"}
+          >
             {m.id}
           </button>
         ))
@@ -30,7 +34,11 @@ const managers = [
   <div class="code-stack">
     {
       managers.map((m) => (
-        <div class="command-variant" data-id={m.id} style="display: none">
+        <div
+          class="command-variant"
+          data-id={m.id}
+          style={m.id === "npm" ? undefined : "display: none"}
+        >
           <Code code={m.cmd} lang="sh" />
         </div>
       ))

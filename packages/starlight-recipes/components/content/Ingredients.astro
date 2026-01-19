@@ -52,7 +52,10 @@ const initialAmount = recipeYield?.amount || 1;
           return <li class="ingredient-row static">{ing}</li>;
         }
 
-        const perUnit = ing.quantity ? ing.quantity / initialAmount : null;
+        const perUnit =
+          ing.quantity !== undefined && ing.quantity !== null
+            ? ing.quantity / initialAmount
+            : null;
 
         return (
           <li class="ingredient-row">

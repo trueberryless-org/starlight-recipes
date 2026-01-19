@@ -24,7 +24,6 @@ const pageProps = getPageProps(label);
   <RecipeCount
     >{
       Astro.locals.t("starlightRecipes.categories.count", {
-        interpolation: { escapeValue: false },
         count: entries.length,
         category: label,
       })

@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 
+import { stripLocaleFromSlug } from "../../../libs/i18n";
 import { COUNTIFY_PREFIX, generateRatingHash } from "../../../libs/rating";
 
 export const prerender = false;
@@ -47,7 +48,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       });
     }
 
-    const voteKey = `${ip}:${recipeId}`;
+    const voteKey = `${ip}:${stripLocaleFromSlug(recipeId)}`;
     if (hasRecentVote(voteKey)) {
       return new Response(JSON.stringify({ error: "Forbidden" }), {
         status: 403,
@@ -55,8 +56,16 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       });
     }
 
-    const sumKey = generateRatingHash(recipeId, NAMESPACE, "sum");
-    const countKey = generateRatingHash(recipeId, NAMESPACE, "count");
+    const sumKey = generateRatingHash(
+      stripLocaleFromSlug(recipeId),
+      NAMESPACE,
+      "sum"
+    );
+    const countKey = generateRatingHash(
+      stripLocaleFromSlug(recipeId),
+      NAMESPACE,
+      "count"
+    );
 
     const sumUrl = `https://api.countify.xyz/increase/${COUNTIFY_PREFIX}_${NAMESPACE}_${sumKey}`;
     const countUrl = `https://api.countify.xyz/increment/${COUNTIFY_PREFIX}_${NAMESPACE}_${countKey}`;

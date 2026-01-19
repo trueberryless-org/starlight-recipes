@@ -153,7 +153,7 @@ export function getSidebarProps(
       href: getRelativeUrl(`/${localizedEntrySlug}`),
       isCurrent: isRecipePage(slug, localizedEntrySlug),
       label: entry.data.title,
-      type: "link",
+      type: "link" as const,
     };
   });
 }
