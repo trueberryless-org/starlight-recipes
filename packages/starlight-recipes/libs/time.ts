@@ -2,6 +2,8 @@ import { type Duration, parse, serialize } from "tinyduration";
 
 type DurationUnits = Omit<Duration, "negative">;
 
+// Approximate conversions: months = 30 days, years = 365 days.
+// Acceptable for recipe durations; not calendar-accurate.
 const UNIT_SECONDS: Record<keyof DurationUnits, number> = {
   years: 31536000,
   months: 2592000,
@@ -12,9 +14,19 @@ const UNIT_SECONDS: Record<keyof DurationUnits, number> = {
   seconds: 1,
 };
 
+function safeParse(iso?: string): Partial<Duration> {
+  if (!iso) return {};
+  try {
+    return parse(iso);
+  } catch {
+    console.warn(`Invalid ISO 8601 duration: "${iso}"`);
+    return {};
+  }
+}
+
 export function addDurations(isoA?: string, isoB?: string): string {
-  const durA = isoA ? parse(isoA) : {};
-  const durB = isoB ? parse(isoB) : {};
+  const durA = safeParse(isoA);
+  const durB = safeParse(isoB);
 
   let totalSeconds = 0;
 

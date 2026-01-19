@@ -141,18 +141,18 @@ export async function getRecipeHead(
       typeof cuisine === "string" ? cuisine : cuisine!.name;
   }
 
-  if (data.time.preparation && data.time.cooking) {
+  if (data.time?.preparation && data.time?.cooking) {
     recipeStructuredData.prepTime = minutesToIsoDuration(data.time.preparation);
     recipeStructuredData.cookTime = minutesToIsoDuration(data.time.cooking);
     recipeStructuredData.totalTime = addDurations(
       minutesToIsoDuration(data.time.cooking),
       minutesToIsoDuration(data.time.preparation)
     );
-  } else if (data.time.preparation)
+  } else if (data.time?.preparation)
     recipeStructuredData.totalTime = minutesToIsoDuration(
       data.time.preparation
     );
-  else if (data.time.cooking)
+  else if (data.time?.cooking)
     recipeStructuredData.totalTime = minutesToIsoDuration(data.time.cooking);
 
   const images = await getRecommendedImages(data.cover);

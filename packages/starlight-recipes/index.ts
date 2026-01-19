@@ -3,7 +3,9 @@ import type {
   StarlightUserConfig,
 } from "@astrojs/starlight/types";
 import type { AstroIntegrationLogger } from "astro";
-import { loadEnv } from "vite";
+import { parse } from "dotenv";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 
 import {
   type StarlightRecipesConfig,
@@ -34,26 +36,26 @@ export default function starlightRecipes(
         config: starlightConfig,
         updateConfig: updateStarlightConfig,
       }) {
-        if (astroConfig.site === undefined) {
+        const isSiteMissing = astroConfig.site === undefined;
+        const isAdapterMissing = astroConfig.adapter === undefined;
+
+        if (isSiteMissing) {
           logger.warn(
             "The 'site' property must be set in your Astro config for starlight-recipes to generate valid SEO images.\nSee https://docs.astro.build/en/reference/configuration-reference/#site for more information."
           );
         }
 
-        if (astroConfig.adapter === undefined) {
+        if (isAdapterMissing) {
           logger.warn(
             "No Astro Server Adapter found. All on-demand features will be disabled. Setup an adapter for interactivity.\nSee https://docs.astro.build/en/guides/on-demand-rendering/ for more information."
           );
         }
 
-        const env = loadEnv(
-          process.env.MODE ?? "production",
-          process.cwd(),
-          ""
-        );
+        const env = loadEnvironmentVariables();
         const ratingSecret = env.STARLIGHT_RECIPES_RATING_SECRET;
+        const isRatingDisabled = !isAdapterMissing && !ratingSecret;
 
-        if (astroConfig.adapter !== undefined && !ratingSecret) {
+        if (isRatingDisabled) {
           logger.warn(
             "Secret STARLIGHT_RECIPES_RATING_SECRET not set in `.env` file. Rating feature will be disabled. Create a random GUID as a secret to enable the rating system.\nSee https://starlight-recipes.trueberryless.org/interactive/rating-system/ for more information."
           );
@@ -72,7 +74,7 @@ export default function starlightRecipes(
           name: "starlight-recipes-integration",
           hooks: {
             "astro:config:setup": ({ injectRoute, updateConfig }) => {
-              if (astroConfig.adapter !== undefined) {
+              if (!isAdapterMissing) {
                 injectRoute({
                   entrypoint: "starlight-recipes/routes/api/rating/rate.ts",
                   pattern: "/api/recipe/rate",
@@ -87,35 +89,32 @@ export default function starlightRecipes(
                 });
               }
 
-              injectRoute({
-                entrypoint: "starlight-recipes/routes/Category.astro",
-                pattern: "/[...prefix]/category/[category]",
-                prerender: true,
-              });
+              const routes = [
+                {
+                  pattern: "/[...prefix]/category/[category]",
+                  entrypoint: "starlight-recipes/routes/Category.astro",
+                },
+                {
+                  pattern: "/[...prefix]/cuisine/[cuisine]",
+                  entrypoint: "starlight-recipes/routes/Cuisine.astro",
+                },
+                {
+                  pattern: "/[...prefix]/tags/[tag]",
+                  entrypoint: "starlight-recipes/routes/Tags.astro",
+                },
+                {
+                  pattern: "/[...prefix]/authors/[author]",
+                  entrypoint: "starlight-recipes/routes/Authors.astro",
+                },
+                {
+                  pattern: "/[...prefix]/[...page]",
+                  entrypoint: "starlight-recipes/routes/Recipes.astro",
+                },
+              ];
 
-              injectRoute({
-                entrypoint: "starlight-recipes/routes/Cuisine.astro",
-                pattern: "/[...prefix]/cuisine/[cuisine]",
-                prerender: true,
-              });
-
-              injectRoute({
-                entrypoint: "starlight-recipes/routes/Tags.astro",
-                pattern: "/[...prefix]/tags/[tag]",
-                prerender: true,
-              });
-
-              injectRoute({
-                entrypoint: "starlight-recipes/routes/Authors.astro",
-                pattern: "/[...prefix]/authors/[author]",
-                prerender: true,
-              });
-
-              injectRoute({
-                entrypoint: "starlight-recipes/routes/Recipes.astro",
-                pattern: "/[...prefix]/[...page]",
-                prerender: true,
-              });
+              for (const route of routes) {
+                injectRoute({ ...route, prerender: true });
+              }
 
               updateConfig({
                 vite: {
@@ -128,8 +127,7 @@ export default function starlightRecipes(
                       title: starlightConfig.title,
                       adapter: astroConfig.adapter,
                       trailingSlash: astroConfig.trailingSlash,
-                      ratingEnabled:
-                        astroConfig.adapter !== undefined && !!ratingSecret,
+                      ratingEnabled: !isAdapterMissing && !!ratingSecret,
                     }),
                   ],
                 },
@@ -140,6 +138,25 @@ export default function starlightRecipes(
       },
     },
   };
+}
+
+function loadEnvironmentVariables(): Record<string, string> {
+  const root = process.cwd();
+  const mode = process.env.MODE ?? "production";
+
+  const files = [".env", ".env.local", `.env.${mode}`, `.env.${mode}.local`];
+
+  let envConfig = { ...process.env };
+
+  for (const file of files) {
+    const path = join(root, file);
+    if (existsSync(path)) {
+      const parsed = parse(readFileSync(path));
+      envConfig = { ...envConfig, ...parsed };
+    }
+  }
+
+  return envConfig as Record<string, string>;
 }
 
 function overrideComponent(

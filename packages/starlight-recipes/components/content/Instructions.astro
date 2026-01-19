@@ -231,6 +231,7 @@ const doneText = Astro.locals.t("starlightRecipes.recipe.instructions.done");
     private btn: HTMLButtonElement | null;
     private recipeId: string;
     private confirmTimeout: number | null = null;
+    private boundHandleClick = () => this.handleClick();
 
     constructor() {
       super();
@@ -239,7 +240,12 @@ const doneText = Astro.locals.t("starlightRecipes.recipe.instructions.done");
     }
 
     connectedCallback() {
-      this.btn?.addEventListener("click", () => this.handleClick());
+      this.btn?.addEventListener("click", this.boundHandleClick);
+    }
+
+    disconnectedCallback() {
+      if (this.confirmTimeout) clearTimeout(this.confirmTimeout);
+      this.btn?.removeEventListener("click", this.boundHandleClick);
     }
 
     handleClick() {
@@ -277,6 +283,23 @@ const doneText = Astro.locals.t("starlightRecipes.recipe.instructions.done");
     private recipeId: string;
     private stepNum: number;
 
+    private boundOnChange = (e: Event) => {
+      const checked = (e.target as HTMLInputElement).checked;
+      this.setState(checked, true);
+    };
+    private boundOnReset = (e: CustomEvent) => {
+      if (e.detail.recipeId === this.recipeId) this.setState(false, false);
+    };
+    private boundOnStepUpdate = (e: CustomEvent) => {
+      if (e.detail.recipeId !== this.recipeId) return;
+      const triggerStep = e.detail.step;
+      const isTriggerComplete = e.detail.isComplete;
+      const shouldComplete = isTriggerComplete && triggerStep > this.stepNum;
+      const shouldUncomplete = !isTriggerComplete && triggerStep < this.stepNum;
+      if (shouldComplete) this.setState(true, false);
+      if (shouldUncomplete) this.setState(false, false);
+    };
+
     constructor() {
       super();
       this.recipeId = this.dataset.recipe || "";
@@ -287,30 +310,27 @@ const doneText = Astro.locals.t("starlightRecipes.recipe.instructions.done");
 
     connectedCallback() {
       this.loadState();
+      this.input?.addEventListener("change", this.boundOnChange);
+      window.addEventListener(
+        "recipe-reset",
+        this.boundOnReset as EventListener
+      );
+      window.addEventListener(
+        "recipe-step-update",
+        this.boundOnStepUpdate as EventListener
+      );
+    }
 
-      this.input?.addEventListener("change", (e) => {
-        const checked = (e.target as HTMLInputElement).checked;
-        this.setState(checked, true);
-      });
-
-      window.addEventListener("recipe-reset", (e: any) => {
-        if (e.detail.recipeId === this.recipeId) {
-          this.setState(false, false);
-        }
-      });
-
-      window.addEventListener("recipe-step-update", (e: any) => {
-        if (e.detail.recipeId !== this.recipeId) return;
-        const triggerStep = e.detail.step;
-        const isTriggerComplete = e.detail.isComplete;
-
-        const shouldComplete = isTriggerComplete && triggerStep > this.stepNum;
-        const shouldUncomplete =
-          !isTriggerComplete && triggerStep < this.stepNum;
-
-        if (shouldComplete) this.setState(true, false);
-        if (shouldUncomplete) this.setState(false, false);
-      });
+    disconnectedCallback() {
+      this.input?.removeEventListener("change", this.boundOnChange);
+      window.removeEventListener(
+        "recipe-reset",
+        this.boundOnReset as EventListener
+      );
+      window.removeEventListener(
+        "recipe-step-update",
+        this.boundOnStepUpdate as EventListener
+      );
     }
 
     loadState() {
@@ -360,7 +380,20 @@ const doneText = Astro.locals.t("starlightRecipes.recipe.instructions.done");
     private doneLabel: string;
     private initialLabel: string;
     private stepNum: number;
+
     private boundToggleTimer = this.toggleTimer.bind(this);
+    private boundOnReset = (e: CustomEvent) => {
+      if (e.detail.recipeId === this.recipeId) this.reset();
+    };
+    private boundOnStepUpdate = (e: CustomEvent) => {
+      if (e.detail.recipeId !== this.recipeId) return;
+      const triggerStep = e.detail.step;
+      const isTriggerComplete = e.detail.isComplete;
+      const shouldComplete = isTriggerComplete && triggerStep > this.stepNum;
+      const shouldReset = !isTriggerComplete && triggerStep < this.stepNum;
+      if (shouldComplete && this.remainingSeconds > 0) this.forceComplete();
+      if (shouldReset) this.reset();
+    };
 
     constructor() {
       super();
@@ -378,27 +411,27 @@ const doneText = Astro.locals.t("starlightRecipes.recipe.instructions.done");
     connectedCallback() {
       this.loadState();
       this.button?.addEventListener("click", this.boundToggleTimer);
-
-      window.addEventListener("recipe-reset", (e: any) => {
-        if (e.detail.recipeId === this.recipeId) this.reset();
-      });
-
-      window.addEventListener("recipe-step-update", (e: any) => {
-        if (e.detail.recipeId !== this.recipeId) return;
-        const triggerStep = e.detail.step;
-        const isTriggerComplete = e.detail.isComplete;
-
-        const shouldComplete = isTriggerComplete && triggerStep > this.stepNum;
-        const shouldReset = !isTriggerComplete && triggerStep < this.stepNum;
-
-        if (shouldComplete && this.remainingSeconds > 0) this.forceComplete();
-        if (shouldReset) this.reset();
-      });
+      window.addEventListener(
+        "recipe-reset",
+        this.boundOnReset as EventListener
+      );
+      window.addEventListener(
+        "recipe-step-update",
+        this.boundOnStepUpdate as EventListener
+      );
     }
 
     disconnectedCallback() {
       if (this.interval) clearInterval(this.interval);
       this.button?.removeEventListener("click", this.boundToggleTimer);
+      window.removeEventListener(
+        "recipe-reset",
+        this.boundOnReset as EventListener
+      );
+      window.removeEventListener(
+        "recipe-step-update",
+        this.boundOnStepUpdate as EventListener
+      );
     }
 
     loadState() {
@@ -447,8 +480,6 @@ const doneText = Astro.locals.t("starlightRecipes.recipe.instructions.done");
       this.classList.add("running");
       this.button?.classList.add("active");
       this.updateDisplay();
-
-      this.dispatchUpdate(true);
 
       if (this.interval) clearInterval(this.interval);
       this.interval = window.setInterval(() => {
