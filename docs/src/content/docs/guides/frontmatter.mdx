@@ -56,7 +56,7 @@ Add high-quality image of the completed dish at the top of the recipe:
 ---
 cover:
   alt: "A beautiful Virgin Colada"
-  images: "../../../assets/virgin-colada.png"
+  image: "../../../assets/virgin-colada.png"
 ---
 ```
 
@@ -95,7 +95,7 @@ date: 2024-03-11
 
 If a date is specified in a recipe for this [Starlight frontmatter field](https://starlight.astro.build/reference/frontmatter/#lastupdated), such date will also be displayed next to the recipe date.
 
-Displayed only if different from the [`date`](#date-required) frontmatter field and must be a valid [YAML timestamp](https://yaml.org/type/timestamp.html).
+Displayed only if different from the [`date`](#date) frontmatter field and must be a valid [YAML timestamp](https://yaml.org/type/timestamp.html).
 
 ```md
 ---
@@ -147,7 +147,7 @@ cuisine: "FR"
 
 <DocField
   description="A list of tags associated with the recipe."
-  linkedProperty="datePublished"
+  linkedProperty="keywords"
 />
 
 Other terms for your recipe such as the season ("summer"), the holiday ("Halloween"), or other descriptors ("quick", "easy", "authentic").
@@ -180,22 +180,9 @@ featured: true
 ---
 ```
 
-### `excerpt`
-
-**Type:** `string`
-
-The excerpt of the recipe used in the recipe list, authors, and tags pages which supports basic Markdown formatting.
-Only shown when the recipe is [`featured`](#featured).
-
-```md
----
-excerpt: A small excerpt of the recipe…
----
-```
-
 ### `authors`
 
-**Type:** [`StarlightBlogAuthorsConfig`](/configuration#author-configuration)
+**Type:** [`StarlightRecipesAuthorsConfig`](/configuration#author-configuration)
 
 The author(s) of the recipe. Check the ["Authors" guide](/guides/authors) for more informations.
 
@@ -219,3 +206,30 @@ Set to `true` to mark a recipe as a draft and make it only visible during develo
 draft: true
 ---
 ```
+
+## Starlight's frontmatter fields
+
+This section describes how frontmatter fields that are integrated in Starlight itself are used across the recipe website.
+
+### `title`
+
+**Required**<br />
+**Type:** `string`
+
+<DocField
+  description="The name of the dish."
+  linkedProperty="name"
+/>
+
+The title gets used in the recipe list, on author and tags pages, besides the top of each recipe, in browser tabs, and in recipe metadata.
+
+### `description`
+
+**Type:** `string`
+
+<DocField
+  description="A short summary describing the dish."
+  linkedProperty="description"
+/>
+
+The recipe description is displayed in recipe lists when the recipe is [featured](#featured) and used for recipe metadata and will be picked up by search engines and in social media previews.

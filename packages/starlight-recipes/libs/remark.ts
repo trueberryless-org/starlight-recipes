@@ -5,7 +5,7 @@ import { CONTINUE, EXIT, visit } from "unist-util-visit";
 const excerptKeyword = "excerpt";
 export const ExcerptDelimiter = `<p hidden><!-- ${excerptKeyword} --></p>`;
 
-export const remarkStarlightBlog: RemarkPlugin = function () {
+export const remarkStarlightRecipe: RemarkPlugin = function () {
   return function (tree) {
     visit(tree, (node, index, parent) => {
       if (!parent || index === undefined) return CONTINUE;

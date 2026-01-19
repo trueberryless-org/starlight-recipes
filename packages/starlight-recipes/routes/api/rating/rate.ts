@@ -19,6 +19,17 @@ function hasRecentVote(key: string) {
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
   const ip = clientAddress;
+
+  if (!ip) {
+    return new Response(
+      JSON.stringify({ error: "Client address unavailable" }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+
   const NAMESPACE = import.meta.env.STARLIGHT_RECIPES_RATING_SECRET;
 
   if (!NAMESPACE) {

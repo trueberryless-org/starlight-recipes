@@ -55,6 +55,8 @@ const formatNaturalTime = (totalMinutes: number) => {
 
 const showReset =
   globalCookingModeConfig.stepCheckbox || globalCookingModeConfig.stepTimer;
+
+const doneText = Astro.locals.t("starlightRecipes.recipe.instructions.done");
 ---
 
 <div class="instructions-header">
@@ -69,8 +71,14 @@ const showReset =
     showReset && (
       <reset-controller data-recipe={recipeId}>
         <button type="button" class="reset-btn" aria-label="Reset progress">
-          <span class="reset-text">Reset</span>
-          <span class="reset-confirm">Confirm?</span>
+          <span class="reset-text">
+            {Astro.locals.t("starlightRecipes.recipe.instructions.reset")}
+          </span>
+          <span class="reset-confirm">
+            {Astro.locals.t(
+              "starlightRecipes.recipe.instructions.confirmReset"
+            )}
+          </span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="14"
@@ -119,6 +127,8 @@ const showReset =
               data-time={step.time}
               data-step={stepNum}
               data-recipe={recipeId}
+              data-done-text={doneText}
+              data-initial-label={formatNaturalTime(step.time!)}
             >
               <button
                 class="timer-pill"
@@ -347,12 +357,16 @@ const showReset =
     private isRunning: boolean = false;
     private storageKey: string;
     private recipeId: string;
+    private doneLabel: string;
+    private initialLabel: string;
     private stepNum: number;
     private boundToggleTimer = this.toggleTimer.bind(this);
 
     constructor() {
       super();
       this.recipeId = this.dataset.recipe || "";
+      this.doneLabel = this.dataset.doneText || "Done!";
+      this.initialLabel = this.dataset.initialLabel || "";
       this.stepNum = parseInt(this.dataset.step || "0");
       this.storageKey = `recipe-${this.recipeId}-step-${this.stepNum}-timer`;
       this.button = this.querySelector(".timer-pill");
@@ -413,7 +427,9 @@ const showReset =
       this.pause();
       localStorage.removeItem(this.storageKey);
       this.remainingSeconds = this.durationMinutes * 60;
-      this.updateDisplay();
+      if (this.display) {
+        this.display.textContent = this.initialLabel;
+      }
       this.classList.remove("completed");
       this.button?.removeAttribute("disabled");
     }
@@ -476,7 +492,7 @@ const showReset =
     }
 
     setVisualsFinished() {
-      if (this.display) this.display.textContent = "Done!";
+      if (this.display) this.display.textContent = this.doneLabel;
       this.classList.add("completed");
       this.button?.setAttribute("disabled", "true");
     }
@@ -563,6 +579,10 @@ const showReset =
     min-height: 2.5rem;
   }
 
+  .sl-steps > li:not(.is-static)::before {
+    display: none;
+  }
+
   .sl-steps > li::after {
     content: "";
     position: absolute;
@@ -599,13 +619,10 @@ const showReset =
     background-color: var(--sl-color-gray-6);
     color: var(--sl-color-white);
     border-radius: 50%;
-    box-shadow: inset 0 0 0 1px var(--sl-color-gray-5);
+    border: 1px solid var(--sl-color-gray-5);
     z-index: 2;
     display: grid;
     place-items: center;
-  }
-
-  .step-marker {
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
@@ -626,6 +643,10 @@ const showReset =
     justify-content: center;
   }
 
+  :global([data-theme="light"]) .marker-check {
+    color: var(--sl-color-text-invert);
+  }
+
   .step-input {
     position: absolute;
     inset: 0;
@@ -634,13 +655,18 @@ const showReset =
     margin: 0;
   }
 
-  step-checkbox:hover .step-marker {
-    background-color: var(--sl-color-gray-5);
-    transform: scale(1.1);
+  step-checkbox .step-marker:hover {
+    background-color: var(--sl-color-accent);
+    border: 1px solid var(--sl-color-accent);
+  }
+
+  :global([data-theme="light"]) step-checkbox .step-marker:hover {
+    color: var(--sl-color-text-invert);
   }
 
   step-checkbox[data-completed] .step-marker {
     background-color: var(--sl-color-accent);
+    border: 1px solid var(--sl-color-accent);
     box-shadow: 0 0 0 2px var(--sl-color-accent-low);
   }
 
@@ -752,6 +778,7 @@ const showReset =
   step-timer.completed .timer-pill {
     background-color: var(--sl-color-accent);
     border-color: var(--sl-color-accent);
+    box-shadow: 0 0 0 2px var(--sl-color-accent-low);
     cursor: default;
     opacity: 1;
   }

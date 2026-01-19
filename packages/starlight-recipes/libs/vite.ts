@@ -4,9 +4,6 @@ import path from "node:path";
 
 import type { StarlightRecipesConfig } from "./config";
 
-// Assuming you have a config validator
-
-// Expose the starlight-blog plugin configuration and project context.
 export function vitePluginStarlightRecipesConfig(
   starlightRecipesConfig: StarlightRecipesConfig,
   context: StarlightRecipesContext
@@ -73,10 +70,6 @@ function resolveVirtualModuleId<TModuleId extends string>(
   return `\0${id}`;
 }
 
-/**
- * The shared context between the build process and the runtime.
- * We include title and site info to help build the JSON-LD schemas.
- */
 export interface StarlightRecipesContext {
   rootDir: string;
   srcDir: string;

@@ -10,8 +10,8 @@ Starlight Recipes supports the following features:
 - Paginated recipe browsing and discovery
 - Global and per-recipe author attribution
 - High-resolution cover image support
-- Custom sidebars with featured content
-- Cooking mode: Integrated timers and checklists
+- Custom sidebar with featured content
+- Cooking mode: Integrated timers and checkboxes
 - Dynamic ingredient scaling by serving size
 - Print-optimized layouts for every recipe
 - Automated SEO via [recipe structured data](/guides/structured-data)
@@ -59,7 +59,7 @@ import PackageManagers from '@/components/PackageManagers.astro'
 
 3. Starlight Recipes uses [Astro's content collections](https://docs.astro.build/en/guides/content-collections/), which are configured in the `src/content.config.ts` file.
 
-    Update the content config file to add support for customizing individual blog posts using their frontmatter:
+    Update the content config file to add support for customizing individual recipes using their frontmatter:
 
     ```diff lang="ts"
     // src/content.config.ts
@@ -80,7 +80,7 @@ import PackageManagers from '@/components/PackageManagers.astro'
 
     If you are already [extending Starlight’s schema](https://starlight.astro.build/reference/frontmatter/#extend) with additional fields, you can rely on [Zod's API](https://v3.zod.dev/?id=merge) to compose schemas together, e.g. `recipesSchema(context).merge(mySchema)`.
 
-4. Add [Astro's `site` configuration](https://docs.astro.build/en/reference/configuration-reference/#site) if you want to enable [Structured Data](/guides/structured-data).
+4. Add [Astro's `site` configuration](https://docs.astro.build/en/reference/configuration-reference/#site) to enable [Structured Data](/guides/structured-data).
     This is necessary to generate valid SEO images.
 
     ```diff lang="js"
@@ -100,7 +100,7 @@ import PackageManagers from '@/components/PackageManagers.astro'
     })
     ```
 
-5. Add any [Astro Server Adapter](https://docs.astro.build/en/guides/on-demand-rendering/#server-adapters) if you want to enable all the [interactive features](/interactive).
+5. Add any [Astro Server Adapter](https://docs.astro.build/en/guides/on-demand-rendering/#server-adapters) to unlock [interactive features](/interactive).
 
     <InstallAdapterCommands />
 

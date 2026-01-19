@@ -29,7 +29,7 @@ export default defineConfig({
       plugins: [
         starlightRecipes({
           cookingMode: {
-            stepTimer: false,
+            stepTimer: true,
             stepCheckbox: true,
           },
           authors: {

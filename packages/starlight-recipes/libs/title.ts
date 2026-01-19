@@ -18,7 +18,9 @@ export function getSiteTitle(locale: Locale): string {
   }
 
   if (title.length === 0) {
-    throw new Error("The blog title must have a key for the default language.");
+    throw new Error(
+      "The recipe title must have a key for the default language."
+    );
   }
 
   return title;

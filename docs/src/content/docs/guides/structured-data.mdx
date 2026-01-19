@@ -125,6 +125,16 @@ Starlight Recipes focuses on [Google-supported and -recommended properties](http
 
 Starlight Recipes will use the cover image to generate three images with the following aspect ratios for [best results](https://developers.google.com/search/docs/appearance/structured-data/recipe/#:~:text=aspect%20ratios): 16x9, 4x3, and 1x1.
 
+### `description`
+
+<DocField
+  description="A short summary describing the dish."
+  linkedProperty="description"
+  link="https://starlight.astro.build/reference/frontmatter/#description"
+  backlinking={true}
+/>
+
+
 ### `recipeCategory`
 
 <DocField
@@ -140,3 +150,14 @@ Starlight Recipes will use the cover image to generate three images with the fol
   linkedProperty="cuisine"
   backlinking={true}
 />
+
+### `keywords`
+
+<DocField
+  description='Other terms for your recipe.'
+  linkedProperty="tags"
+  backlinking={true}
+/>
+
+For example: the season ("summer"), the holiday ("Halloween"), or other descriptors ("quick", "easy", "authentic").<br />
+Don't use a tag that's actually a [recipeCategory](#recipecategory) or [recipeCuisine](#recipecuisine).

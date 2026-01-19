@@ -3,6 +3,30 @@ import type { APIRoute } from "astro";
 import { COUNTIFY_PREFIX, generateRatingHash } from "../../../libs/rating";
 
 export const prerender = false;
+const TIMEOUT_DURATION_MS = 4000;
+
+const buildCountifyUrl = (key: string, namespace: string): string => {
+  return `https://api.countify.xyz/get-total/${COUNTIFY_PREFIX}_${namespace}_${key}`;
+};
+
+const fetchJson = async <T>(url: string): Promise<T> => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_DURATION_MS);
+
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await (response.json() as Promise<T>);
+  } finally {
+    clearTimeout(timeoutId);
+  }
+};
 
 export const GET: APIRoute = async ({ url }) => {
   const recipeId = url.searchParams.get("id");
@@ -20,12 +44,6 @@ export const GET: APIRoute = async ({ url }) => {
     status: 200,
     headers: {
       "Content-Type": "application/json",
-      /**
-       * public: Cacheable by everyone (Browser & CDN).
-       * s-maxage=86400: CDN keeps it for 24 hours.
-       * stale-while-revalidate=604800: If the CDN cache expires after 24h,
-       * serve the old data for up to 7 days while updating in the background.
-       */
       "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",
     },
   });
@@ -34,41 +52,41 @@ export const GET: APIRoute = async ({ url }) => {
 export async function getRecipeRating(
   recipeId: string
 ): Promise<AggregateRating> {
-  const NAMESPACE = import.meta.env.STARLIGHT_RECIPES_RATING_SECRET;
+  const namespace = import.meta.env.STARLIGHT_RECIPES_RATING_SECRET;
+  const fallbackResponse: AggregateRating = { ratingValue: 0, ratingCount: 0 };
 
-  if (!NAMESPACE) {
-    return { ratingValue: 0, ratingCount: 0 };
+  if (!namespace) {
+    return fallbackResponse;
   }
 
-  const sumKey = generateRatingHash(recipeId, NAMESPACE, "sum");
-  const countKey = generateRatingHash(recipeId, NAMESPACE, "count");
+  const sumKey = generateRatingHash(recipeId, namespace, "sum");
+  const countKey = generateRatingHash(recipeId, namespace, "count");
 
   try {
-    const sumUrl = `https://api.countify.xyz/get-total/${COUNTIFY_PREFIX}_${NAMESPACE}_${sumKey}`;
-    const countUrl = `https://api.countify.xyz/get-total/${COUNTIFY_PREFIX}_${NAMESPACE}_${countKey}`;
+    const sumUrl = buildCountifyUrl(sumKey, namespace);
+    const countUrl = buildCountifyUrl(countKey, namespace);
 
-    const [sumRes, countRes] = await Promise.all([
-      fetch(sumUrl),
-      fetch(countUrl),
+    const [sumData, countData] = await Promise.all([
+      fetchJson<{ count?: number }>(sumUrl),
+      fetchJson<{ count?: number }>(countUrl),
     ]);
 
-    const sumData = await sumRes.json();
-    const countData = await countRes.json();
-
-    const totalSum = sumData.count || 0;
-    const totalCount = countData.count || 0;
+    const totalSum = sumData.count ?? 0;
+    const totalCount = countData.count ?? 0;
+    const hasRatings = totalCount > 0;
 
     return {
-      ratingValue:
-        totalCount > 0 ? parseFloat((totalSum / totalCount).toFixed(1)) : 0,
+      ratingValue: hasRatings
+        ? parseFloat((totalSum / totalCount).toFixed(1))
+        : 0,
       ratingCount: totalCount,
     };
-  } catch (e) {
+  } catch (error) {
     console.error(
       `[starlight-recipes] Failed to fetch rating for ${recipeId}:`,
-      e
+      error
     );
-    return { ratingValue: 0, ratingCount: 0 };
+    return fallbackResponse;
   }
 }
 
