@@ -1,7 +1,7 @@
 ---
 import AnchorHeading from "@astrojs/starlight/components/AnchorHeading.astro";
 import type { StarlightRecipeEntry } from "../../libs/content";
-import { slug } from "github-slugger";
+import { slug as githubSlugger } from "github-slugger";
 
 interface Props {
   entry: StarlightRecipeEntry;
@@ -18,7 +18,9 @@ const initialAmount = recipeYield?.amount || 1;
     <div class="heading-wrapper">
       <AnchorHeading
         level="2"
-        id={slug(Astro.locals.t("starlightRecipes.recipe.ingredients"))}
+        id={githubSlugger(
+          Astro.locals.t("starlightRecipes.recipe.ingredients")
+        )}
       >
         {Astro.locals.t("starlightRecipes.recipe.ingredients")}
       </AnchorHeading>

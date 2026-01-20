@@ -4,7 +4,7 @@ import { Image } from "astro:assets";
 import AnchorHeading from "@astrojs/starlight/components/AnchorHeading.astro";
 import config from "virtual:starlight-recipes-config";
 import type { StarlightRecipesInstructionStepSchema } from "../../schema";
-import { slug } from "github-slugger";
+import { slug as githubSlugger } from "github-slugger";
 import type { StarlightRecipeEntry } from "../../libs/content";
 import { getRelativeUrl } from "../../libs/page";
 
@@ -62,7 +62,7 @@ const doneText = Astro.locals.t("starlightRecipes.recipe.instructions.done");
 <div class="instructions-header">
   <AnchorHeading
     level="2"
-    id={slug(Astro.locals.t("starlightRecipes.recipe.instructions"))}
+    id={githubSlugger(Astro.locals.t("starlightRecipes.recipe.instructions"))}
   >
     {Astro.locals.t("starlightRecipes.recipe.instructions")}
   </AnchorHeading>

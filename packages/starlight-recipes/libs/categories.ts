@@ -1,5 +1,5 @@
 import type { GetStaticPathsResult } from "astro";
-import { slug } from "github-slugger";
+import { slug as githubSlugger } from "github-slugger";
 import config from "virtual:starlight-recipes-config";
 import starlightConfig from "virtual:starlight/user-config";
 
@@ -79,7 +79,7 @@ export function getEntryCategory(
   if (entry.data.category === undefined) return undefined;
   return {
     label: entry.data.category,
-    slug: slug(entry.data.category),
+    slug: githubSlugger(entry.data.category),
   };
 }
 

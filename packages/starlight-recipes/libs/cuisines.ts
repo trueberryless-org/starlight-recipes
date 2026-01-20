@@ -1,5 +1,5 @@
 import type { GetStaticPathsResult } from "astro";
-import { slug } from "github-slugger";
+import { slug as githubSlugger } from "github-slugger";
 import config from "virtual:starlight-recipes-config";
 import starlightConfig from "virtual:starlight/user-config";
 
@@ -35,17 +35,19 @@ export const resolveCuisine = (
     ) {
       const flag = getFlagEmoji(input);
       return {
-        slug: slug(localizedName || input),
+        slug: githubSlugger(localizedName || input),
         name: localizedName || input,
         flag: flag,
         label: flag ? `${localizedName} ${flag}` : localizedName || input,
         isCountry: true,
       };
     }
-  } catch (e) {}
+  } catch (e) {
+    // Intl.DisplayNames may throw for unsupported locales/regions; fall back to raw input
+  }
 
   return {
-    slug: slug(input),
+    slug: githubSlugger(input),
     name: input,
     flag: null,
     label: input,

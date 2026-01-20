@@ -137,8 +137,10 @@ export async function getRecipeHead(
   if (data.category) recipeStructuredData.recipeCategory = data.category;
   if (data.cuisine) {
     const cuisine = resolveCuisine(data.cuisine, locale);
-    recipeStructuredData.recipeCuisine =
-      typeof cuisine === "string" ? cuisine : cuisine!.name;
+    if (cuisine) {
+      recipeStructuredData.recipeCuisine =
+        typeof cuisine === "string" ? cuisine : cuisine.name;
+    }
   }
 
   if (data.time?.preparation && data.time?.cooking) {

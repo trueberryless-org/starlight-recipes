@@ -1,6 +1,6 @@
 ---
 import Default from "@astrojs/starlight/components/MarkdownContent.astro";
-import { slug } from "github-slugger";
+import { slug as githubSlugger } from "github-slugger";
 import { YouTube } from "astro-embed";
 
 import { getRecipeEntry } from "../../libs/content";
@@ -26,7 +26,9 @@ if (toc && toc.items) {
   if (docsEntry.data.ingredients && docsEntry.data.ingredients.length > 0) {
     newItems.push({
       depth: 2,
-      slug: slug(Astro.locals.t("starlightRecipes.recipe.ingredients")),
+      slug: githubSlugger(
+        Astro.locals.t("starlightRecipes.recipe.ingredients")
+      ),
       text: Astro.locals.t("starlightRecipes.recipe.ingredients"),
       children: [],
     });
@@ -35,7 +37,9 @@ if (toc && toc.items) {
   if (docsEntry.data.instructions && docsEntry.data.instructions.length > 0) {
     newItems.push({
       depth: 2,
-      slug: slug(Astro.locals.t("starlightRecipes.recipe.instructions")),
+      slug: githubSlugger(
+        Astro.locals.t("starlightRecipes.recipe.instructions")
+      ),
       text: Astro.locals.t("starlightRecipes.recipe.instructions"),
       children: [],
     });

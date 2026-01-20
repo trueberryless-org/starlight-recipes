@@ -70,14 +70,20 @@ export function getPathWithLocale(path: string, locale: Locale): string {
     : locale;
 }
 
+function escapeRegExp(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 export function isAnyRecipesPage(slug: string) {
   return new RegExp(
-    `^${getPathWithLocale(config.prefix, getLocaleFromPath(slug))}(/?$|/.+/?$)`
+    `^${escapeRegExp(getPathWithLocale(config.prefix, getLocaleFromPath(slug)))}(/?$|/.+/?$)`
   ).test(slug);
 }
 
 export function isAnyRecipePage(slug: string) {
-  const prefix = getPathWithLocale(config.prefix, getLocaleFromPath(slug));
+  const prefix = escapeRegExp(
+    getPathWithLocale(config.prefix, getLocaleFromPath(slug))
+  );
   const excludedPatterns = [
     ...RECIPE_SYSTEM_PATHS.map((path) => `${path}/.+`),
     "\\d+/?",
@@ -86,7 +92,9 @@ export function isAnyRecipePage(slug: string) {
 }
 
 export function isAnyRecipeRootPage(slug: string) {
-  const prefix = getPathWithLocale(config.prefix, getLocaleFromPath(slug));
+  const prefix = escapeRegExp(
+    getPathWithLocale(config.prefix, getLocaleFromPath(slug))
+  );
   const systemPaths = RECIPE_SYSTEM_PATHS.join("|");
   return new RegExp(`^${prefix}(/?|/\\d+/?|/(${systemPaths})/.+/?)$`).test(
     slug
@@ -94,7 +102,10 @@ export function isAnyRecipeRootPage(slug: string) {
 }
 
 export function isRecipeRoot(slug: string) {
-  return slug === getPathWithLocale(config.prefix, getLocaleFromPath(slug));
+  return (
+    slug ===
+    escapeRegExp(getPathWithLocale(config.prefix, getLocaleFromPath(slug)))
+  );
 }
 
 export function isRecipePage(slug: string, recipeSlug: string) {
@@ -104,28 +115,28 @@ export function isRecipePage(slug: string, recipeSlug: string) {
 export function isRecipeTagPage(slug: string, tag: string) {
   return (
     slug ===
-    `${getPathWithLocale(config.prefix, getLocaleFromPath(slug))}/tags/${tag}`
+    `${escapeRegExp(getPathWithLocale(config.prefix, getLocaleFromPath(slug)))}/tags/${tag}`
   );
 }
 
 export function isRecipeAuthorPage(slug: string, author: string) {
   return (
     slug ===
-    `${getPathWithLocale(config.prefix, getLocaleFromPath(slug))}/authors/${author}`
+    `${escapeRegExp(getPathWithLocale(config.prefix, getLocaleFromPath(slug)))}/authors/${author}`
   );
 }
 
 export function isRecipeCuisinePage(slug: string, cuisine: string) {
   return (
     slug ===
-    `${getPathWithLocale(config.prefix, getLocaleFromPath(slug))}/cuisines/${cuisine}`
+    `${escapeRegExp(getPathWithLocale(config.prefix, getLocaleFromPath(slug)))}/cuisine/${cuisine}`
   );
 }
 
 export function isRecipeCategoryPage(slug: string, category: string) {
   return (
     slug ===
-    `${getPathWithLocale(config.prefix, getLocaleFromPath(slug))}/category/${category}`
+    `${escapeRegExp(getPathWithLocale(config.prefix, getLocaleFromPath(slug)))}/category/${category}`
   );
 }
 

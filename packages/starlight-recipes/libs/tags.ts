@@ -1,5 +1,5 @@
 import type { GetStaticPathsResult } from "astro";
-import { slug as githubSlug } from "github-slugger";
+import { slug as githubSlugger } from "github-slugger";
 import config from "virtual:starlight-recipes-config";
 import starlightConfig from "virtual:starlight/user-config";
 
@@ -59,7 +59,7 @@ export function getEntryTags(
   return (entry.data.tags ?? []).map((tag) => {
     return {
       label: tag,
-      slug: githubSlug(tag),
+      slug: githubSlugger(tag),
     };
   });
 }

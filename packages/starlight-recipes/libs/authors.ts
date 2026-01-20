@@ -1,5 +1,5 @@
 import type { GetStaticPathsResult } from "astro";
-import { slug } from "github-slugger";
+import { slug as githubSlugger } from "github-slugger";
 import config from "virtual:starlight-recipes-config";
 import starlightConfig from "virtual:starlight/user-config";
 
@@ -16,7 +16,7 @@ export async function getAllAuthors(
 
   for (const entry of entries) {
     for (const author of getEntryAuthors(entry)) {
-      const authorSlug = slug(author.name);
+      const authorSlug = githubSlugger(author.name);
       const infos = entryAuthors.get(authorSlug) ?? {
         entries: [],
         author: { ...author, slug: authorSlug },

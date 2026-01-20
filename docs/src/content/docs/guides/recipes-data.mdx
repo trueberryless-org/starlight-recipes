@@ -39,7 +39,7 @@ import RecipesDataExample from '@/components/RecipesDataExample.astro'
 ```astro title="PopularRecipes.astro" "Astro.locals.starlightRecipes.recipes"
 <ul>
   {
-    Astro.locals.starlightRecipes.recipes
+    [...Astro.locals.starlightRecipes.recipes]
       .sort((a, b) => {
         const ratingA = a.averageRating?.ratingValue ?? 0;
         const ratingB = b.averageRating?.ratingValue ?? 0;

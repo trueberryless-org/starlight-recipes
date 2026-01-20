@@ -1,5 +1,5 @@
 ---
-import { slug } from "github-slugger";
+import { slug as githubSlugger } from "github-slugger";
 
 interface Props {
   description: string;
@@ -14,8 +14,8 @@ const { description, linkedProperty, link, backlinking } = Astro.props;
 const finalLink =
   link ||
   (backlinking
-    ? `/guides/frontmatter#${slug(linkedProperty)}`
-    : `/guides/structured-data#${slug(linkedProperty)}`);
+    ? `/guides/frontmatter#${githubSlugger(linkedProperty)}`
+    : `/guides/structured-data#${githubSlugger(linkedProperty)}`);
 ---
 
 <p class="doc-item">

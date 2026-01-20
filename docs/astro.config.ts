@@ -5,7 +5,7 @@ import starlightLinksValidator from "starlight-links-validator";
 import starlightRecipes from "starlight-recipes";
 
 export default defineConfig({
-  site: "https://starlight-recipe.trueberryless.org",
+  site: "https://starlight-recipes.trueberryless.org",
   adapter: netlify(),
   integrations: [
     starlight({

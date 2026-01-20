@@ -4,6 +4,7 @@ import { stripLocaleFromSlug } from "../../../libs/i18n";
 import { COUNTIFY_PREFIX, generateRatingHash } from "../../../libs/rating";
 
 export const prerender = false;
+const TIMEOUT_DURATION_MS = 4000;
 
 const votedUsers = new Map<string, number>();
 const VOTE_TTL_MS = 24 * 60 * 60 * 1000;
@@ -41,8 +42,14 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
   try {
     const { recipeId, stars } = await request.json();
+    const starsNumber = Number(stars);
 
-    if (!recipeId || !stars || stars < 1 || stars > 5) {
+    if (
+      !recipeId ||
+      !Number.isFinite(starsNumber) ||
+      starsNumber < 1 ||
+      starsNumber > 5
+    ) {
       return new Response(JSON.stringify({ error: "Invalid rating" }), {
         status: 400,
       });
@@ -70,14 +77,24 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     const sumUrl = `https://api.countify.xyz/increase/${COUNTIFY_PREFIX}_${NAMESPACE}_${sumKey}`;
     const countUrl = `https://api.countify.xyz/increment/${COUNTIFY_PREFIX}_${NAMESPACE}_${countKey}`;
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_DURATION_MS);
+
     const [sumRes, countRes] = await Promise.all([
       fetch(sumUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ value: stars }),
       }),
-      fetch(countUrl, { method: "POST" }),
+      fetch(countUrl, { method: "POST", signal: controller.signal }),
     ]);
+    clearTimeout(timeoutId);
+
+    if (!sumRes.ok || !countRes.ok) {
+      throw new Error(
+        `Countify error (sum: ${sumRes.status}, count: ${countRes.status})`
+      );
+    }
 
     const sumData = await sumRes.json();
     const countData = await countRes.json();
