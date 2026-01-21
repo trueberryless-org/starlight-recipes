@@ -8,6 +8,7 @@ import type { HTMLAttributes } from "astro/types";
 import type { StarlightRecipesData } from "./data";
 import { getAllAuthors, getEntryAuthors } from "./libs/authors";
 import { getRecipeEntries, getSidebarRecipeEntries } from "./libs/content";
+import { resolveCuisine } from "./libs/cuisines";
 import type { Locale } from "./libs/i18n";
 import {
   getPathWithLocale,
@@ -81,6 +82,13 @@ async function getRecipeEntriesData(
       const tags = getEntryTags(entry);
 
       const averageRating = await getRecipeRating(entry.id);
+      const time = {
+        preparation: entry.data.time?.preparation,
+        cooking: entry.data.time?.cooking,
+        total:
+          entry.data.time?.preparation ?? 0 + (entry.data.time?.cooking ?? 0),
+      };
+      const cuisine = resolveCuisine(entry.data.cuisine, locale);
 
       const recipesData: StarlightRecipesData["recipes"][number] = {
         authors: authors.map(({ name, title, url }) => ({
@@ -99,6 +107,13 @@ async function getRecipeEntriesData(
           href: getRelativeRecipeUrl(`/tags/${slug}`, locale),
         })),
         averageRating,
+        time,
+        calories: entry.data.calories,
+        category: entry.data.category,
+        cuisine,
+        ingredients: entry.data.ingredients,
+        instructions: entry.data.instructions,
+        yield: entry.data.yield,
         title: entry.data.title,
       };
 

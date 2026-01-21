@@ -27,7 +27,12 @@ const initialAmount = recipeYield?.amount || 1;
     </div>
 
     <div class="yield-pill">
-      <span class="yield-label">{recipeYield?.unit || "Servings"}</span>
+      <span class="yield-label"
+        >{
+          recipeYield?.unit ||
+            Astro.locals.t("starlightRecipes.recipe.servings")
+        }</span
+      >
       <div class="yield-controls-v2">
         <button type="button" data-action="minus" aria-label="Decrease yield"
           >−</button

@@ -94,7 +94,11 @@ const allCommands = managers.flatMap((m) =>
     save(key: string, value: string) {
       localStorage.setItem(key, value);
       window.dispatchEvent(
-        new StorageEvent("storage", { key, newValue: value })
+        new StorageEvent("storage", {
+          key,
+          newValue: value,
+          storageArea: localStorage,
+        })
       );
     }
 
@@ -122,9 +126,7 @@ const allCommands = managers.flatMap((m) =>
     }
   }
 
-  if (!customElements.get("adapter-installer")) {
-    customElements.define("adapter-installer", AdapterInstaller);
-  }
+  customElements.define("adapter-installer", AdapterInstaller);
 </script>
 
 <style>

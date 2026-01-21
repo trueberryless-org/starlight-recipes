@@ -146,7 +146,7 @@ function loadEnvironmentVariables(): Record<string, string> {
 
   const files = [".env", ".env.local", `.env.${mode}`, `.env.${mode}.local`];
 
-  let envConfig = { ...process.env };
+  let envConfig: Record<string, string> = {};
 
   for (const file of files) {
     const path = join(root, file);
@@ -156,7 +156,7 @@ function loadEnvironmentVariables(): Record<string, string> {
     }
   }
 
-  return envConfig as Record<string, string>;
+  return { ...envConfig, ...process.env } as Record<string, string>;
 }
 
 function overrideComponent(

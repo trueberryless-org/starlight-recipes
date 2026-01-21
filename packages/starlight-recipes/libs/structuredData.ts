@@ -26,7 +26,8 @@ import {
   stripTrailingSlash,
 } from "./path";
 import { getAllTags } from "./tags";
-import { addDurations, minutesToIsoDuration } from "./time";
+import { getCookTime, getPrepTime, getTotalTime } from "./time";
+import { fetchYouTubeVideoMetadata } from "./video";
 
 export async function getHead(context: APIContext): Promise<HeadConfig> {
   const { starlightRoute } = context.locals;
@@ -143,19 +144,15 @@ export async function getRecipeHead(
     }
   }
 
-  if (data.time?.preparation && data.time?.cooking) {
-    recipeStructuredData.prepTime = minutesToIsoDuration(data.time.preparation);
-    recipeStructuredData.cookTime = minutesToIsoDuration(data.time.cooking);
-    recipeStructuredData.totalTime = addDurations(
-      minutesToIsoDuration(data.time.cooking),
-      minutesToIsoDuration(data.time.preparation)
-    );
-  } else if (data.time?.preparation)
-    recipeStructuredData.totalTime = minutesToIsoDuration(
-      data.time.preparation
-    );
-  else if (data.time?.cooking)
-    recipeStructuredData.totalTime = minutesToIsoDuration(data.time.cooking);
+  const prepTime = getPrepTime(recipe.entry);
+  const cookTime = getCookTime(recipe.entry);
+  const totalTime = getTotalTime(recipe.entry);
+  if (prepTime && cookTime && totalTime) {
+    recipeStructuredData.prepTime = prepTime;
+    recipeStructuredData.cookTime = cookTime;
+    recipeStructuredData.totalTime = totalTime;
+  } else if (prepTime) recipeStructuredData.totalTime = prepTime;
+  else if (cookTime) recipeStructuredData.totalTime = cookTime;
 
   const images = await getRecommendedImages(data.cover);
   if (images) {
@@ -164,6 +161,24 @@ export async function getRecipeHead(
 
   const authorData = mapAuthors(recipe.entry);
   if (authorData) recipeStructuredData.author = authorData;
+
+  if (data.video) {
+    const video = await fetchYouTubeVideoMetadata(data.video);
+    recipeStructuredData.video = {
+      "@type": "VideoObject",
+      name: video.name,
+      description: video.description,
+      thumbnailUrl: video.thumbnailUrl,
+      embedUrl: video.embedUrl,
+      uploadDate: video.uploadDate,
+      duration: video.duration,
+      interactionStatistic: {
+        "@type": "InteractionCounter",
+        interactionType: { "@type": "WatchAction" },
+        userInteractionCount: video.userInteractionCount,
+      },
+    };
+  }
 
   const recipeWithContext: WithContext<Recipe> = {
     "@context": "https://schema.org",
@@ -229,7 +244,7 @@ function mapAuthors(
 function getRecipeHeadConfig(
   recipeStructuredData: WithContext<Recipe | ItemList>
 ): HeadConfig {
-  const jsonLdString = JSON.stringify(recipeStructuredData, null, 2);
+  const jsonLdString = JSON.stringify(recipeStructuredData);
 
   return {
     tag: "script",

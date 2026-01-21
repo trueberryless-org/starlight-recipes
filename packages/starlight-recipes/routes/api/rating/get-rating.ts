@@ -39,7 +39,7 @@ export const GET: APIRoute = async ({ url }) => {
     });
   }
 
-  const result = await getRecipeRating(recipeId);
+  const result = await getRecipeRating(decodeURIComponent(recipeId));
 
   return new Response(JSON.stringify(result), {
     status: 200,
@@ -60,7 +60,6 @@ export async function getRecipeRating(
     return fallbackResponse;
   }
 
-  // TODO(trueberryless): recipeId locale bust be removed so rating is the same in each language
   const sumKey = generateRatingHash(
     stripLocaleFromSlug(recipeId),
     namespace,

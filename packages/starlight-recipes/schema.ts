@@ -27,27 +27,6 @@ export const recipesAuthorSchema = z.object({
   url: z.string().url().optional(),
 });
 
-export const recipeCategorySchema = z
-  .enum([
-    "Breakfast",
-    "Lunch",
-    "Dinner",
-    "Main Course",
-    "Side Dish",
-    "Appetizer",
-    "Snack",
-    "Dessert",
-    "Beverage",
-    "Salad",
-    "Soup",
-    "Marinade",
-    "Sauce",
-    "Stew",
-    "Bread",
-    "Drink",
-  ])
-  .optional();
-
 export const ingredientSchema = z.union([
   z.string(),
   z.object({
@@ -121,7 +100,7 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
     /**
      * The type of meal or course your recipe is about.
      */
-    category: recipeCategorySchema,
+    category: z.string().optional(),
     /**
      * The region associated with your recipe.
      *
@@ -145,12 +124,20 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
       cooking: z.number().optional(),
     }),
     /**
-     * The quantity produced by the recipe.
+     * Details regarding the final output or portion size of the recipe.
      */
-    yield: z.object({
-      amount: z.number(),
-      unit: z.string(),
-    }),
+    yield: z
+      .object({
+        /**
+         * The numeric quantity produced (e.g., 4, 12, 1.5).
+         */
+        amount: z.number(),
+        /**
+         * The specific scale of measurement for the amount (e.g., "servings", "cookies", "loaves").
+         */
+        unit: z.string(),
+      })
+      .optional(),
     /**
      * The number of calories in each serving produced with this recipe.
      */
@@ -187,6 +174,7 @@ If you believe this is a bug, please file an issue at https://github.com/trueber
 }
 
 export type StarlightRecipesAuthor = z.infer<typeof recipesAuthorSchema>;
+export type StarlightRecipesIngredientSchema = z.infer<typeof ingredientSchema>;
 export type StarlightRecipesInstructionStepSchema = z.infer<
   ReturnType<typeof instructionStepSchema>
 >;

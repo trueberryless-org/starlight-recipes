@@ -5,66 +5,119 @@ const placeholder = "CLICK_GENERATE_TO_CREATE_SECRET";
 const codeSnippet = `STARLIGHT_RECIPES_RATING_SECRET=${placeholder}`;
 ---
 
-<div class="magic-container not-content">
+<secret-generator
+  data-placeholder={placeholder}
+  class="magic-container not-content"
+>
   <button
     type="button"
-    data-guid-generator-btn
+    data-gen-btn
     class="magic-button"
     aria-label="Generate new secret"
   >
     <span class="magic-text">Generate Magic Secret</span>
   </button>
 
-  <div class="code-stable-container">
+  <div data-code-container class="code-stable-container">
     <Code code={codeSnippet} lang="bash" title=".env" />
   </div>
-</div>
+</secret-generator>
 
-<script define:vars={{ placeholder }}>
-  const uuidRegex =
-    /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+<script>
+  class SecretGenerator extends HTMLElement {
+    private placeholder: string;
+    private uuidRegex: RegExp;
+    private btn: HTMLButtonElement | null = null;
+    private container: HTMLElement | null = null;
+    private handleClick: () => void;
 
-  document.querySelectorAll(".magic-container").forEach((root) => {
-    const genBtn = root.querySelector("[data-guid-generator-btn]");
-    const container = root.querySelector(".code-stable-container");
-    if (!genBtn || !container) return;
+    constructor() {
+      super();
+      this.placeholder = this.dataset.placeholder || "";
+      this.uuidRegex =
+        /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+      this.handleClick = this.onGenerateRequest.bind(this);
+    }
 
-    genBtn.addEventListener("click", () => {
-      const spans = container.querySelectorAll("span");
+    connectedCallback() {
+      this.btn = this.querySelector("[data-gen-btn]");
+      this.container = this.querySelector("[data-code-container]");
 
-      const targetSpan = Array.from(spans).find(
-        (span) =>
-          span.textContent.includes(placeholder) ||
-          uuidRegex.test(span.textContent)
-      );
+      if (this.btn) {
+        this.btn.addEventListener("click", this.handleClick);
+      }
+    }
+
+    disconnectedCallback() {
+      if (this.btn) {
+        this.btn.removeEventListener("click", this.handleClick);
+      }
+    }
+
+    private onGenerateRequest() {
+      if (!this.container) return;
+
+      const spans = this.container.querySelectorAll("span");
+      const targetSpan = this.findTargetSpan(spans);
 
       if (targetSpan) {
-        const newGuid = crypto.randomUUID();
-        const oldText = targetSpan.textContent;
-
-        targetSpan.textContent = newGuid;
-
-        const copyBtn = container.querySelector(".copy button");
-        if (copyBtn && copyBtn.dataset.code) {
-          copyBtn.dataset.code = copyBtn.dataset.code.replace(oldText, newGuid);
-        }
-
-        targetSpan.style.color = "var(--sl-color-text-accent)";
-        targetSpan.animate(
-          [
-            { filter: "brightness(3) blur(2px)", transform: "scale(1.1)" },
-            { filter: "brightness(1) blur(0px)", transform: "scale(1)" },
-          ],
-          { duration: 400, easing: "ease-out" }
-        );
+        this.executeSecretUpdate(targetSpan);
       }
-    });
-  });
+    }
+
+    private findTargetSpan(
+      spans: NodeListOf<HTMLSpanElement> | HTMLSpanElement[]
+    ) {
+      return Array.from(spans).find((span) => {
+        const text = span.textContent || "";
+        return text.includes(this.placeholder) || this.uuidRegex.test(text);
+      });
+    }
+
+    private executeSecretUpdate(span: HTMLSpanElement) {
+      const newSecret = crypto.randomUUID();
+      const previousText = span.textContent || "";
+
+      span.textContent = newSecret;
+
+      this.updateCopyButtonState(previousText, newSecret);
+      this.triggerSuccessEffect(span);
+    }
+
+    private updateCopyButtonState(oldText: string, newText: string) {
+      const copyBtn = this.container?.querySelector(
+        ".copy button"
+      ) as HTMLElement;
+      const currentCode = copyBtn?.dataset.code;
+
+      if (copyBtn && currentCode) {
+        copyBtn.dataset.code = currentCode.replace(oldText, newText);
+      }
+    }
+
+    private triggerSuccessEffect(element: HTMLElement) {
+      const accentColor = "var(--sl-color-text-accent)";
+      const keyframes = [
+        { filter: "brightness(3) blur(2px)", transform: "scale(1.1)" },
+        { filter: "brightness(1) blur(0px)", transform: "scale(1)" },
+      ];
+      const options: KeyframeAnimationOptions = {
+        duration: 400,
+        easing: "ease-out",
+      };
+
+      element.style.color = accentColor;
+      element.animate(keyframes, options);
+    }
+  }
+
+  customElements.define("secret-generator", SecretGenerator);
 </script>
 
 <style>
   .magic-container {
     margin: 1.5rem 0;
+    display: block;
   }
 
   .magic-button {

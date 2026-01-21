@@ -1,6 +1,11 @@
 import type { ImageMetadata } from "astro";
 
 import type { StarlightRecipeEntry } from "./libs/content";
+import type { StarlightRecipeEntryCuisine } from "./libs/cuisines";
+import type {
+  StarlightRecipesIngredientSchema,
+  StarlightRecipesInstructionStepSchema,
+} from "./schema";
 
 export interface StarlightRecipesData {
   /**
@@ -94,9 +99,63 @@ export interface StarlightRecipesData {
         }
       | undefined;
     /**
+     * Duration related data about the recipe.
+     */
+    time: {
+      /**
+       * The length of time it takes to prepare ingredients and workspace
+       * for the dish, measured in minutes.
+       */
+      preparation?: number | undefined;
+      /**
+       * The time it takes to actually cook the dish, measured in minutes.
+       */
+      cooking?: number | undefined;
+      /**
+       * The total time required for the recipe (preparation + cooking),
+       * measured in minutes.
+       */
+      total?: number | undefined;
+    };
+    /**
+     * The number of calories in each serving produced with this recipe.
+     */
+    calories: number | undefined;
+    /**
+     * The type of meal or course your recipe is about.
+     */
+    category: string | undefined;
+    /**
+     * The region associated with your recipe.
+     */
+    cuisine: StarlightRecipeEntryCuisine | undefined;
+    /**
+     * List of ingredients used in the recipe.
+     */
+    ingredients: StarlightRecipesIngredientSchema[];
+    /**
+     * The steps to make the dish.
+     */
+    instructions: StarlightRecipesInstructionStepSchema[];
+    /**
+     * Details regarding the final output or portion size of the recipe.
+     */
+    yield:
+      | {
+          /**
+           * The numeric quantity produced (e.g., 4, 12, 1.5).
+           */
+          amount: number;
+          /**
+           * The specific scale of measurement for the amount (e.g., "servings", "cookies", "loaves").
+           */
+          unit: string;
+        }
+      | undefined;
+    /**
      * The title of the recipe.
      *
-     * @see https://starlight-recipes.trueberryless.org/guides/frontmatter/#title-required
+     * @see https://starlight-recipes.trueberryless.org/guides/frontmatter/#title
      */
     title: string;
     /**

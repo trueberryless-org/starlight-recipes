@@ -23,15 +23,10 @@ export function getLangFromLocale(locale: Locale): string {
 export function getLocaleFromSlug(slug: string): string | undefined {
   const locales = Object.keys(starlightConfig.locales ?? {});
   const base = astroConfig?.base || "";
-  const baseSegments = base.split("/").filter(Boolean);
+  const localeIndex = getLocaleIndex(slug, base);
   const slugSegments = stripLeadingSlash(slug).split("/");
 
-  const possibleLocaleIndex = stripLeadingSlash(
-    stripTrailingSlash(slug)
-  ).startsWith(stripLeadingSlash(stripTrailingSlash(base)))
-    ? baseSegments.length
-    : 0;
-  const possibleLocale = slugSegments[possibleLocaleIndex];
+  const possibleLocale = slugSegments[localeIndex];
 
   return possibleLocale && locales.includes(possibleLocale)
     ? possibleLocale
@@ -47,19 +42,22 @@ export function stripLocaleFromSlug(slug: string): string {
 
   const normalizedSlug = stripLeadingSlash(slug);
   const base = astroConfig?.base || "";
-  const baseSegments = base.split("/").filter(Boolean);
+  const localeIndex = getLocaleIndex(slug, base);
 
   const segments = normalizedSlug.split("/");
-  const localeIndex = normalizedSlug.startsWith(
-    stripLeadingSlash(stripTrailingSlash(base))
-  )
-    ? baseSegments.length
-    : 0;
 
   segments.splice(localeIndex, 1);
 
   const result = segments.join("/");
   return slug.startsWith("/") ? `/${result}` : result;
+}
+
+function getLocaleIndex(slug: string, base: string): number {
+  const normalizedSlug = stripLeadingSlash(slug);
+  const baseSegments = base.split("/").filter(Boolean);
+  return normalizedSlug.startsWith(stripLeadingSlash(stripTrailingSlash(base)))
+    ? baseSegments.length
+    : 0;
 }
 
 export type Locale = string | undefined;

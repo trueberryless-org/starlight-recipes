@@ -1,5 +1,34 @@
 import { type Duration, parse, serialize } from "tinyduration";
 
+import type { StarlightRecipeEntry } from "./content";
+
+export const getPrepTime = (
+  entry: StarlightRecipeEntry
+): string | undefined => {
+  const preparation = entry.data.time?.preparation;
+  return preparation ? secondsToIsoDuration(preparation * 60) : undefined;
+};
+
+export const getCookTime = (
+  entry: StarlightRecipeEntry
+): string | undefined => {
+  const cooking = entry.data.time?.cooking;
+  return cooking ? secondsToIsoDuration(cooking * 60) : undefined;
+};
+
+export const getTotalTime = (
+  entry: StarlightRecipeEntry
+): string | undefined => {
+  const prepTime = getPrepTime(entry);
+  const cookTime = getCookTime(entry);
+
+  if (prepTime && cookTime) {
+    return addDurations(prepTime, cookTime);
+  }
+
+  return prepTime ?? cookTime;
+};
+
 type DurationUnits = Omit<Duration, "negative">;
 
 // Approximate conversions: months = 30 days, years = 365 days.
@@ -17,7 +46,12 @@ const UNIT_SECONDS: Record<keyof DurationUnits, number> = {
 function safeParse(iso?: string): Partial<Duration> {
   if (!iso) return {};
   try {
-    return parse(iso);
+    const parsed = parse(iso);
+    if (parsed.negative) {
+      console.warn(`Negative ISO 8601 duration not supported: "${iso}"`);
+      return {};
+    }
+    return parsed;
   } catch {
     console.warn(`Invalid ISO 8601 duration: "${iso}"`);
     return {};
@@ -52,15 +86,18 @@ export function addDurations(isoA?: string, isoB?: string): string {
   return totalSeconds > 0 ? serialize(resultObj) : "PT0S";
 }
 
-export function minutesToIsoDuration(minutes: number): string {
-  if (minutes <= 0) return "PT0S";
+export function secondsToIsoDuration(seconds: number): string {
+  if (seconds <= 0) return "PT0S";
 
-  const hours = Math.floor(minutes / 60);
-  const remainingMinutes = minutes % 60;
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = seconds % 60;
 
   const duration: Duration = {};
+
   if (hours > 0) duration.hours = hours;
-  if (remainingMinutes > 0) duration.minutes = remainingMinutes;
+  if (minutes > 0) duration.minutes = minutes;
+  if (remainingSeconds > 0) duration.seconds = remainingSeconds;
 
   return serialize(duration);
 }

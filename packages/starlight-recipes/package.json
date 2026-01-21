@@ -39,7 +39,8 @@
     "mdast-util-mdx-expression": "^2.0.1",
     "schema-dts": "^1.1.5",
     "tinyduration": "^3.4.1",
-    "unist-util-visit": "^5.0.0"
+    "unist-util-visit": "^5.0.0",
+    "youtube-sr": "^4.3.12"
   },
   "devDependencies": {
     "@astrojs/starlight": "^0.37.2",

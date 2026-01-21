@@ -52,6 +52,7 @@ const noRatingsText = Astro.locals.t("starlightRecipes.recipe.rating.noRating");
 
 <script>
   import { stripLocaleFromSlug } from "../../libs/i18n";
+  import { getRelativeUrl } from "../../libs/page";
 
   class RecipeRating extends HTMLElement {
     private recipeId: string;
@@ -65,7 +66,9 @@ const noRatingsText = Astro.locals.t("starlightRecipes.recipe.rating.noRating");
       this.noRatingsText = this.dataset.noRatingsText || "No ratings";
       this.isInteractive = this.dataset.interactive === "true";
       this.votedKey = `sl-recipes-voted-${stripLocaleFromSlug(this.recipeId)}`;
+    }
 
+    connectedCallback() {
       this.refreshStats();
       this.checkVoted(this.votedKey);
 
@@ -83,7 +86,7 @@ const noRatingsText = Astro.locals.t("starlightRecipes.recipe.rating.noRating");
 
           const stars = btn.getAttribute("data-value");
           try {
-            const res = await fetch("/api/recipe/rate", {
+            const res = await fetch(getRelativeUrl("/api/recipe/rate"), {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -170,7 +173,11 @@ const noRatingsText = Astro.locals.t("starlightRecipes.recipe.rating.noRating");
       spinner?.classList.add("active");
 
       try {
-        const res = await fetch(`/api/recipe/get-rating?id=${this.recipeId}`);
+        const res = await fetch(
+          getRelativeUrl(
+            `/api/recipe/get-rating?id=${encodeURIComponent(this.recipeId)}`
+          )
+        );
         const data = await res.json();
         this.updateUI(data.ratingValue, data.ratingCount);
       } catch (e) {

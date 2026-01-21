@@ -10,7 +10,7 @@ const { time, date, calories } = entry.data;
 
 const totalMinutes = (time?.preparation || 0) + (time?.cooking || 0);
 const formattedTime =
-  totalMinutes > 60
+  totalMinutes >= 60
     ? `${Math.floor(totalMinutes / 60)}h${totalMinutes % 60 > 0 ? ` ${totalMinutes % 60}m` : ""}`
     : `${totalMinutes}m`;
 
