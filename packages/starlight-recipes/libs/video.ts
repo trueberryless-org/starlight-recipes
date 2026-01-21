@@ -28,10 +28,10 @@ const mapVideoToSchema = (video: Video): YouTubeVideoMetadata => {
 
 export interface YouTubeVideoMetadata {
   name: string;
+  description: string;
   thumbnailUrl: string[];
   uploadDate: string;
   duration: string;
   embedUrl: string;
-  description: string;
   userInteractionCount: number;
 }

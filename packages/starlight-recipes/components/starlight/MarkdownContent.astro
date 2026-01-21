@@ -10,6 +10,8 @@ import Metadata from "../metadata/Metadata.astro";
 import Footer from "../metadata/Footer.astro";
 import Instructions from "../content/Instructions.astro";
 import Ingredients from "../content/Ingredients.astro";
+import ShowcaseMediaCard from "../content/ShowcaseMediaCard.astro";
+import { fetchYouTubeVideoMetadata } from "../../libs/video";
 
 const { id, locale, entry: docsEntry } = Astro.locals.starlightRoute;
 let { toc } = Astro.locals.starlightRoute;
@@ -53,6 +55,10 @@ if (toc && toc.items) {
 }
 
 const { entry, nextLink, prevLink } = await getRecipeEntry(id, locale);
+
+const videoMetadata = entry.data.video
+  ? await fetchYouTubeVideoMetadata(entry.data.video)
+  : undefined;
 ---
 
 <Default>
@@ -64,6 +70,12 @@ const { entry, nextLink, prevLink } = await getRecipeEntry(id, locale);
 
   <slot />
 
-  {entry.data.video && <YouTube id={entry.data.video} />}
+  {
+    entry.data.video && videoMetadata && (
+      <ShowcaseMediaCard title={videoMetadata.name}>
+        <YouTube id={entry.data.video} />
+      </ShowcaseMediaCard>
+    )
+  }
   <Footer {entry} {locale} {nextLink} {prevLink} />
 </Default>
