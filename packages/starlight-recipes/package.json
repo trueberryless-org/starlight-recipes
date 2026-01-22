@@ -43,8 +43,8 @@
     "youtube-sr": "^4.3.12"
   },
   "devDependencies": {
-    "@astrojs/starlight": "^0.37.2",
-    "astro": "^5.16.7"
+    "@astrojs/starlight": "^0.34",
+    "astro": "^5.5.0"
   },
   "peerDependencies": {
     "@astrojs/starlight": ">=0.37"

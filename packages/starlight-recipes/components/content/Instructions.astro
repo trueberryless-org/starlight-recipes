@@ -422,13 +422,21 @@ const instructionsTitle = Astro.locals.t(
     loadState() {
       const saved = localStorage.getItem(this.storageKey);
       if (saved) {
-        const state = JSON.parse(saved);
-        this.remainingSeconds = state.remaining;
-        if (this.remainingSeconds <= 0) {
-          this.setVisualsFinished();
-        } else {
-          this.updateDisplay();
-          if (state.running) this.start();
+        try {
+          const state = JSON.parse(saved);
+          const remaining = Number(state?.remaining);
+          const running = Boolean(state?.running);
+          if (!Number.isFinite(remaining))
+            throw new Error("Invalid timer state");
+          this.remainingSeconds = remaining;
+          if (this.remainingSeconds <= 0) {
+            this.setVisualsFinished();
+          } else {
+            this.updateDisplay();
+            if (running) this.start();
+          }
+        } catch {
+          localStorage.removeItem(this.storageKey);
         }
       }
     }

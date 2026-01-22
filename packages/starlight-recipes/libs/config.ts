@@ -55,6 +55,12 @@ const configSchema = z
         stepTimer: true,
         stepCheckbox: true,
       }),
+    /**
+     * Whether metadata for YouTube videos should be fetched or not.
+     *
+     * Enabling this feature improves SEO through Structured Data, though it results in about a fivefold increase in build duration.
+     */
+    processVideo: z.boolean().default(false),
   })
   .default({});
 

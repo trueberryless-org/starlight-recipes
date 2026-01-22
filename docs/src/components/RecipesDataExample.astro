@@ -10,7 +10,9 @@
       .map((recipe) => (
         <li>
           <a href={recipe.href}>{recipe.title}</a>
-          <em>({recipe.averageRating?.ratingValue}/5 stars)</em>
+          {recipe.averageRating && (
+            <em>({recipe.averageRating.ratingValue}/5 stars)</em>
+          )}
         </li>
       ))
   }

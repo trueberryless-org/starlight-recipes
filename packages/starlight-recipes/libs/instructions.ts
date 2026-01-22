@@ -74,7 +74,9 @@ export const getStepDisplayConfig = (
   return { useTimer, useCheckbox, isStatic };
 };
 
-export const prepareInstructionsProps = (entry: StarlightRecipeEntry) => {
+export const prepareInstructionsProps = (
+  entry: StarlightRecipeEntry
+): { steps: NormalizedStep[]; recipeId: string } => {
   const { instructions } = entry.data;
   const normalizedSteps = instructions.map((s, i) => normalizeStep(s, i));
 

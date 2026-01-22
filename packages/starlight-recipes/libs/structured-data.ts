@@ -7,6 +7,7 @@ import type {
   Recipe,
   WithContext,
 } from "schema-dts";
+import config from "virtual:starlight-recipes-config";
 import context from "virtual:starlight-recipes-context";
 
 import { getRecipeRating } from "../routes/api/rating/get-rating";
@@ -228,22 +229,23 @@ export async function getRecipeHead(
     recipeStructuredData.recipeYield = `${data.yield.amount} ${data.yield.unit}`;
   }
 
-  if (data.video) {
+  if (config.processVideo && data.video) {
     const video = await fetchYouTubeVideoMetadata(data.video);
-    recipeStructuredData.video = {
-      "@type": "VideoObject",
-      name: video.name,
-      description: video.description,
-      thumbnailUrl: video.thumbnailUrl,
-      embedUrl: video.embedUrl,
-      uploadDate: video.uploadDate,
-      duration: video.duration,
-      interactionStatistic: {
-        "@type": "InteractionCounter",
-        interactionType: { "@type": "WatchAction" },
-        userInteractionCount: video.userInteractionCount,
-      },
-    };
+    if (video)
+      recipeStructuredData.video = {
+        "@type": "VideoObject",
+        name: video.name,
+        description: video.description,
+        thumbnailUrl: video.thumbnailUrl,
+        embedUrl: video.embedUrl,
+        uploadDate: video.uploadDate,
+        duration: video.duration,
+        interactionStatistic: {
+          "@type": "InteractionCounter",
+          interactionType: { "@type": "WatchAction" },
+          userInteractionCount: video.userInteractionCount,
+        },
+      };
   }
 
   const recipeWithContext: WithContext<Recipe> = {

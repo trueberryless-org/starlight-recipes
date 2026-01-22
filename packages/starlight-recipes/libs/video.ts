@@ -4,9 +4,25 @@ import { secondsToIsoDuration } from "./time";
 
 export const fetchYouTubeVideoMetadata = async (
   url: string
-): Promise<YouTubeVideoMetadata> => {
-  const video = await YouTube.getVideo(url);
-  return mapVideoToSchema(video);
+): Promise<YouTubeVideoMetadata | undefined> => {
+  try {
+    const video = await YouTube.getVideo(url);
+
+    if (!video) {
+      throw new Error(`No video found at the provided URL: ${url}`);
+    }
+
+    return mapVideoToSchema(video);
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+
+    console.error(
+      `Failed to fetch YouTube metadata for ${url}. Details: ${errorMessage}`
+    );
+
+    return undefined;
+  }
 };
 
 const mapVideoToSchema = (video: Video): YouTubeVideoMetadata => {

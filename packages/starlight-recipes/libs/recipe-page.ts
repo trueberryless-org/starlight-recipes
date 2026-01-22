@@ -1,5 +1,6 @@
 import type { StarlightRouteData } from "@astrojs/starlight/route-data";
 import { slug as githubSlugger } from "github-slugger";
+import config from "virtual:starlight-recipes-config";
 
 import {
   type StarlightRecipeEntry,
@@ -59,9 +60,10 @@ export const prepareRecipePageData = async (
     }
   }
 
-  const videoMetadata = entry.data.video
-    ? await fetchYouTubeVideoMetadata(entry.data.video)
-    : undefined;
+  const videoMetadata =
+    config.processVideo && entry.data.video
+      ? await fetchYouTubeVideoMetadata(entry.data.video)
+      : undefined;
 
   return {
     entry,

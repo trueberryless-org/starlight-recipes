@@ -181,7 +181,7 @@ const noRatingsText = Astro.locals.t("starlightRecipes.recipe.rating.noRating");
         const data = await res.json();
         this.updateUI(data.ratingValue, data.ratingCount);
       } catch (e) {
-        console.error("Could not fetch ratings");
+        console.error("Could not fetch ratings", e);
       } finally {
         spinner?.classList.remove("active");
       }
