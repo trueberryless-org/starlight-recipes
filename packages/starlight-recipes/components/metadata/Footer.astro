@@ -4,8 +4,12 @@ import type {
   StarlightRecipeEntryPaginated,
 } from "../../libs/content";
 import type { Locale } from "../../libs/i18n";
-import PrevNextLinks from "../PrevNextLinks.astro";
-import CuisineCategoryTagsBlobs from "./CuisineCategoryTagsBlobs.astro";
+import PrevNextLinks from "../starlight/PrevNextLinks.astro";
+import Categories from "../taxonomy/Categories.astro";
+import Cuisines from "../taxonomy/Cuisines.astro";
+
+import Tags from "../taxonomy/Tags.astro";
+import Flexbox from "../ui/Flexbox.astro";
 
 interface Props {
   entry: StarlightRecipeEntry;
@@ -18,7 +22,11 @@ const { entry, locale, nextLink, prevLink } = Astro.props;
 ---
 
 <div class="recipe-footer">
-  <CuisineCategoryTagsBlobs {entry} {locale} />
+  <Flexbox>
+    <Cuisines {entry} {locale} />
+    <Categories {entry} {locale} />
+  </Flexbox>
+  <Tags {entry} {locale} />
   <PrevNextLinks next={nextLink} prev={prevLink} />
 </div>
 
@@ -26,7 +34,7 @@ const { entry, locale, nextLink, prevLink } = Astro.props;
   .recipe-footer {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 0.5rem;
     margin-block-start: 2rem;
   }
 </style>

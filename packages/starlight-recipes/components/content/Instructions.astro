@@ -1,70 +1,28 @@
 ---
-import type { ImageMetadata } from "astro";
 import { Image } from "astro:assets";
 import AnchorHeading from "@astrojs/starlight/components/AnchorHeading.astro";
 import config from "virtual:starlight-recipes-config";
-import type { StarlightRecipesInstructionStepSchema } from "../../schema";
 import { slug as githubSlugger } from "github-slugger";
-import type { StarlightRecipeEntry } from "../../libs/content";
-import { getRelativeUrl } from "../../libs/page";
-
-type Props = {
-  entry: StarlightRecipeEntry;
-};
+import {
+  prepareInstructionsProps,
+  getStepDisplayConfig,
+  formatNaturalTime,
+} from "../../libs/instructions";
 
 const { entry } = Astro.props;
-const { instructions: steps } = entry.data;
-const recipeId = entry.id;
-const globalCookingModeConfig = config.cookingMode;
+const { steps, recipeId } = prepareInstructionsProps(entry);
 
-const normalizeStep = (step: StarlightRecipesInstructionStepSchema) => {
-  if (typeof step === "string")
-    return {
-      text: step,
-      name: undefined,
-      image: undefined,
-      alt: undefined,
-      url: undefined,
-      time: undefined,
-    };
-
-  const picture = step.image;
-  const pictureSrc = (
-    picture === undefined
-      ? undefined
-      : typeof picture === "string"
-        ? picture.startsWith("http")
-          ? picture
-          : getRelativeUrl(picture, true)
-        : picture
-  ) as ImageMetadata | undefined;
-
-  return {
-    ...step,
-    image: pictureSrc,
-  };
-};
-
-const formatNaturalTime = (totalMinutes: number) => {
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  if (hours > 0 && minutes === 0) return `${hours} h`;
-  if (hours > 0) return `${hours} h ${minutes} min`;
-  return `${minutes} min`;
-};
-
-const showReset =
-  globalCookingModeConfig.stepCheckbox || globalCookingModeConfig.stepTimer;
-
+const globalConfig = config.cookingMode;
+const showReset = globalConfig.stepCheckbox || globalConfig.stepTimer;
 const doneText = Astro.locals.t("starlightRecipes.recipe.instructions.done");
+const instructionsTitle = Astro.locals.t(
+  "starlightRecipes.recipe.instructions"
+);
 ---
 
 <div class="instructions-header">
-  <AnchorHeading
-    level="2"
-    id={githubSlugger(Astro.locals.t("starlightRecipes.recipe.instructions"))}
-  >
-    {Astro.locals.t("starlightRecipes.recipe.instructions")}
+  <AnchorHeading level="2" id={githubSlugger(instructionsTitle)}>
+    {instructionsTitle}
   </AnchorHeading>
 
   {
@@ -87,8 +45,6 @@ const doneText = Astro.locals.t("starlightRecipes.recipe.instructions.done");
             fill="none"
             stroke="currentColor"
             stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
             class="icon-reset"
           >
             <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
@@ -102,30 +58,23 @@ const doneText = Astro.locals.t("starlightRecipes.recipe.instructions.done");
 
 <ol class="sl-steps not-content">
   {
-    steps.map((rawStep, index) => {
-      const step = normalizeStep(rawStep);
-      const stepNum = index + 1;
-      const hasTimer = typeof step.time === "number";
-
-      const useTimer = globalCookingModeConfig.stepTimer && hasTimer;
-      const useCheckbox =
-        globalCookingModeConfig.stepCheckbox && (!hasTimer || !useTimer);
-      const isStatic = !useTimer && !useCheckbox;
+    steps.map((step) => {
+      const config = getStepDisplayConfig(step, globalConfig);
 
       return (
         <li
           class:list={[
             {
-              "is-timed": useTimer,
-              "is-checkbox": useCheckbox,
-              "is-static": isStatic,
+              "is-timed": config.useTimer,
+              "is-checkbox": config.useCheckbox,
+              "is-static": config.isStatic,
             },
           ]}
         >
-          {useTimer ? (
+          {config.useTimer && (
             <step-timer
               data-time={step.time}
-              data-step={stepNum}
+              data-step={step.stepNum}
               data-recipe={recipeId}
               data-done-text={doneText}
               data-initial-label={formatNaturalTime(step.time!)}
@@ -135,7 +84,7 @@ const doneText = Astro.locals.t("starlightRecipes.recipe.instructions.done");
                 aria-label={`Start ${step.time} minute timer`}
               >
                 <span class="pill-left">
-                  <span class="step-index">{stepNum}</span>
+                  <span class="step-index">{step.stepNum}</span>
                   <span class="icon-play">
                     <svg
                       viewBox="0 0 24 24"
@@ -162,8 +111,6 @@ const doneText = Astro.locals.t("starlightRecipes.recipe.instructions.done");
                       fill="none"
                       stroke="currentColor"
                       stroke-width="3"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
                       height="1rem"
                       width="1rem"
                     >
@@ -180,21 +127,33 @@ const doneText = Astro.locals.t("starlightRecipes.recipe.instructions.done");
               <div class="step-content">
                 {step.name && <strong>{step.name}</strong>}
                 <div set:html={step.text} />
-                {step.image && <Image src={step.image} alt={step.alt || ""} />}
+                {step.image &&
+                  (step.isRemoteImage ? (
+                    <img
+                      src={step.image as string}
+                      alt={step.alt || ""}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <Image
+                      src={step.image as ImageMetadata}
+                      alt={step.alt || ""}
+                    />
+                  ))}
               </div>
             </step-timer>
-          ) : useCheckbox ? (
-            <step-checkbox data-recipe={recipeId} data-step={stepNum}>
+          )}
+
+          {config.useCheckbox && (
+            <step-checkbox data-recipe={recipeId} data-step={step.stepNum}>
               <div class="step-marker">
-                <span class="marker-number">{stepNum}</span>
+                <span class="marker-number">{step.stepNum}</span>
                 <span class="marker-check">
                   <svg
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
                     stroke-width="3"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
                     width="14"
                     height="14"
                   >
@@ -204,20 +163,46 @@ const doneText = Astro.locals.t("starlightRecipes.recipe.instructions.done");
                 <input
                   type="checkbox"
                   class="step-input"
-                  aria-label={`Mark step ${stepNum} as done`}
+                  aria-label={`Mark step ${step.stepNum} as done`}
                 />
               </div>
               <div class="step-content">
                 {step.name && <strong>{step.name}</strong>}
                 <div set:html={step.text} />
-                {step.image && <Image src={step.image} alt={step.alt || ""} />}
+                {step.image &&
+                  (step.isRemoteImage ? (
+                    <img
+                      src={step.image as string}
+                      alt={step.alt || ""}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <Image
+                      src={step.image as ImageMetadata}
+                      alt={step.alt || ""}
+                    />
+                  ))}
               </div>
             </step-checkbox>
-          ) : (
+          )}
+
+          {config.isStatic && (
             <div class="step-content">
               {step.name && <strong class="step-title">{step.name}</strong>}
               <div class="text-content" set:html={step.text} />
-              {step.image && <Image src={step.image} alt={step.alt || ""} />}
+              {step.image &&
+                (step.isRemoteImage ? (
+                  <img
+                    src={step.image as string}
+                    alt={step.alt || ""}
+                    loading="lazy"
+                  />
+                ) : (
+                  <Image
+                    src={step.image as ImageMetadata}
+                    alt={step.alt || ""}
+                  />
+                ))}
             </div>
           )}
         </li>
@@ -480,6 +465,8 @@ const doneText = Astro.locals.t("starlightRecipes.recipe.instructions.done");
       this.classList.add("running");
       this.button?.classList.add("active");
       this.updateDisplay();
+
+      this.dispatchUpdate(true);
 
       if (this.interval) clearInterval(this.interval);
       this.interval = window.setInterval(() => {

@@ -1,37 +1,76 @@
 {
   "@context": "https://schema.org",
   "@type": "Recipe",
-  "name": "Classic French Crème Brûlée",
-  "description": "A rich vanilla custard base topped with a contrasting layer of hard caramel.",
-  "datePublished": "2026-01-11",
-  "keywords": "Sweet",
-  "recipeCategory": "Dessert",
-  "recipeCuisine": "France",
-  "prepTime": "PT15M",
-  "cookTime": "PT4H40M",
-  "totalTime": "PT4H55M",
+  "name": "French Onion Soup",
   "image": [
-    "https://starlight-recipes.trueberryless.org/.netlify/images?url=%40fs%2FUsers%2Ftrueberryless%2Frepos%2Ftrueberryless-org%2Fstarlight-recipes%2Fdocs%2Fsrc%2Fassets%2Frecipes%2Fcreme-brulee.jpg%3ForigWidth%3D1200%26origHeight%3D1200%26origFormat%3Djpg&fm=webp&w=1000&h=1000",
-    "https://starlight-recipes.trueberryless.org/.netlify/images?url=%40fs%2FUsers%2Ftrueberryless%2Frepos%2Ftrueberryless-org%2Fstarlight-recipes%2Fdocs%2Fsrc%2Fassets%2Frecipes%2Fcreme-brulee.jpg%3ForigWidth%3D1200%26origHeight%3D1200%26origFormat%3Djpg&fm=webp&w=1152&h=864",
-    "https://starlight-recipes.trueberryless.org/.netlify/images?url=%40fs%2FUsers%2Ftrueberryless%2Frepos%2Ftrueberryless-org%2Fstarlight-recipes%2Fdocs%2Fsrc%2Fassets%2Frecipes%2Fcreme-brulee.jpg%3ForigWidth%3D1200%26origHeight%3D1200%26origFormat%3Djpg&fm=webp&w=1328&h=747"
+    "https://starlight-recipes.trueberryless.org/.netlify/images?url=%40fs%2FUsers%2Ftrueberryless%2Frepos%2Ftrueberryless-org%2Fstarlight-recipes%2Fdocs%2Fsrc%2Fassets%2Frecipes%2Ffrench-onion-soup.jpg%3ForigWidth%3D1200%26origHeight%3D1521%26origFormat%3Djpg&fm=webp&w=1000&h=1000",
+    "https://starlight-recipes.trueberryless.org/.netlify/images?url=%40fs%2FUsers%2Ftrueberryless%2Frepos%2Ftrueberryless-org%2Fstarlight-recipes%2Fdocs%2Fsrc%2Fassets%2Frecipes%2Ffrench-onion-soup.jpg%3ForigWidth%3D1200%26origHeight%3D1521%26origFormat%3Djpg&fm=webp&w=1152&h=864",
+    "https://starlight-recipes.trueberryless.org/.netlify/images?url=%40fs%2FUsers%2Ftrueberryless%2Frepos%2Ftrueberryless-org%2Fstarlight-recipes%2Fdocs%2Fsrc%2Fassets%2Frecipes%2Ffrench-onion-soup.jpg%3ForigWidth%3D1200%26origHeight%3D1521%26origFormat%3Djpg&fm=webp&w=1328&h=747"
   ],
-  "author": {
-    "@type": "Person",
-    "name": "Chef Hiro",
-    "image": "https://starlight-recipes.trueberryless.org/./src/assets/cool-chef.jpg"
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": 0,
+    "ratingCount": 0
   },
+  "author": [
+    { "@type": "Person", "name": "Ghost" },
+    {
+      "@type": "Person",
+      "name": "Felix Schneider",
+      "url": "https://trueberryless.org"
+    }
+  ],
+  "prepTime": "PT20M",
+  "cookTime": "PT1H",
+  "totalTime": "PT1H20M",
+  "datePublished": "2026-01-05",
+  "description": "Deeply caramelized onions in a rich beef broth topped with Gruyère cheese.",
+  "nutrition": { "@type": "NutritionInformation", "calories": "450 calories" },
+  "recipeCategory": "Soup",
+  "recipeCuisine": "France",
+  "recipeIngredient": [
+    "1kg Yellow onions",
+    "50g Butter",
+    "1L Beef stock",
+    "Thick slices of baguette",
+    "200g grated Gruyère cheese"
+  ],
+  "recipeInstructions": [
+    {
+      "@type": "HowToStep",
+      "text": "Cook onions in butter on low heat for 45 minutes until dark brown.",
+      "name": "Caramelize"
+    },
+    {
+      "@type": "HowToStep",
+      "text": "Add beef stock and simmer for 15 minutes."
+    },
+    {
+      "@type": "HowToStep",
+      "text": "Ladle into bowls, top with bread and cheese."
+    },
+    {
+      "@type": "HowToStep",
+      "text": "Broil until cheese is bubbly and brown.",
+      "name": "Broil",
+      "image": "/@fs/Users/trueberryless/repos/trueberryless-org/starlight-recipes/docs/src/assets/recipes/steps/french-soup-broil.webp?origWidth=1920&origHeight=1080&origFormat=webp"
+    }
+  ],
+  "recipeYield": "6 servings",
   "video": {
     "@type": "VideoObject",
-    "name": "Perfect Crème Brûlée: A Step-by-Step Guide to the Classic French Dessert",
-    "description": "To make the perfect French Crème Brûlée, you’ll need these simple ingredients:\n • 2 cups of heavy cream\n • 3/4 cup of sugar\n • 5 large egg yolks\n • 1 teaspoon of vanilla extract\n\nWith these ingredients, you can create a rich, creamy dessert topped with a perfectly caramelized sugar crust.\n\n\nFor best results, cook gently and avoid overcooking to achieve the perfect creamy texture!\n\n\n#cremebrulee#frenchdessert#homemadedessert#easydessertrecipe#bakinglove\n\n\n\nhttps://youtu.be/6M4x0hyoG4w?si=l0W-5T3K2mDDeae8\n\n\nhttps://youtu.be/13hwbfHeXyM?si=hpDY9Il-yOmsItRQ",
-    "thumbnailUrl": ["https://i.ytimg.com/vi/drsI_a3_PmI/maxresdefault.jpg"],
-    "embedUrl": "https://www.youtube.com/embed/drsI_a3_PmI",
-    "uploadDate": "Jan 17, 2025",
-    "duration": "PT4M24S",
+    "name": "French Onion Soup | Basics with Babish",
+    "description": "Head to http://bit.ly/squarespacebabish to save 10% off your first purchase of a website or domain using code BABISH.\n\nFrench onion soup can be a little fussy, time-consuming, and tear-inducing, but if you've got a few hours on a rainy Saturday, there are few better ways to spend it than in the pursuit of this classic, comforting gratineé.\n\nRecipe: https://basicswithbabish.co/basicsepisodes/frenchonionsoup\n\nMusic by Chillhop: http://chillhop.com/listen\nBlue Wednesday - \"Murmuration\": https://soundcloud.com/bluewednesday\nListen on Spotify: http://bit.ly/ChillhopSpotify\n\nShopping List:\n3lb bag Spanish onions\n48 ounces high-quality beef broth\nFresh parsley\nFresh thyme\nFresh garlic\nBlack peppercorns\nCloves (optional)\nParmesan cheese rind (optional)\nOlive oil\nDry sherry\nDay-old baguette\nKosher Salt\nGruyere cheese\nChives",
+    "thumbnailUrl": [
+      "https://i.ytimg.com/vi_webp/1qRir364aNk/maxresdefault.webp"
+    ],
+    "embedUrl": "https://www.youtube.com/embed/1qRir364aNk",
+    "uploadDate": "Jan 9, 2020",
+    "duration": "PT5M13S",
     "interactionStatistic": {
       "@type": "InteractionCounter",
       "interactionType": { "@type": "WatchAction" },
-      "userInteractionCount": 5571
+      "userInteractionCount": 8011531
     }
   }
 }

@@ -1,9 +1,9 @@
 ---
 import type { InferGetStaticPropsType } from "astro";
 
-import Page from "../components/Page.astro";
-import RecipeCount from "../components/RecipeCount.astro";
-import RecipesGrid from "../components/RecipesGrid.astro";
+import Page from "../components/starlight/Page.astro";
+import Count from "../components/list/Count.astro";
+import Grid from "../components/list/Grid.astro";
 import { getPageProps } from "../libs/page";
 import { getTagsStaticPaths } from "../libs/tags";
 
@@ -21,14 +21,14 @@ const pageProps = getPageProps(label);
 ---
 
 <Page {...pageProps}>
-  <RecipeCount
+  <Count
     >{
       Astro.locals.t("starlightRecipes.tags.count", {
         interpolation: { escapeValue: false },
         count: entries.length,
         tag: label,
       })
-    }</RecipeCount
+    }</Count
   >
-  <RecipesGrid {entries} {locale} />
+  <Grid {entries} {locale} />
 </Page>

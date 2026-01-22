@@ -2,7 +2,7 @@
 import { getEntryCategory } from "../../libs/categories";
 import type { StarlightRecipeEntry } from "../../libs/content";
 import type { Locale } from "../../libs/i18n";
-import Blob from "./Blob.astro";
+import Pill from "../ui/Pill.astro";
 
 interface Props {
   entry: StarlightRecipeEntry;
@@ -16,6 +16,6 @@ const category = getEntryCategory(entry);
 
 {
   category && (
-    <Blob slug={`/category/${category.slug}`} label={category.label} {locale} />
+    <Pill slug={`/category/${category.slug}`} label={category.label} {locale} />
   )
 }

@@ -1,8 +1,15 @@
 import type { APIContext } from "astro";
 import { getImage } from "astro:assets";
-import type { ItemList, Person, Recipe, WithContext } from "schema-dts";
+import type {
+  HowToStep,
+  ItemList,
+  Person,
+  Recipe,
+  WithContext,
+} from "schema-dts";
 import context from "virtual:starlight-recipes-context";
 
+import { getRecipeRating } from "../routes/api/rating/get-rating";
 import type { StarlightRecipesFrontmatter } from "../schema";
 import { getAllAuthors, getEntryAuthors } from "./authors";
 import {
@@ -124,25 +131,24 @@ export async function getRecipeHead(
 
   const recipeStructuredData: Recipe = {
     "@type": "Recipe",
-    name: data.title || recipe.entry.id,
+    name: data.title,
   };
 
-  if (data.excerpt || data.description)
-    recipeStructuredData.description = data.excerpt ?? data.description!;
-  if (data.date)
-    recipeStructuredData.datePublished = data.date.toISOString().split("T")[0]!;
-
-  const tags = data.tags?.join(", ");
-  if (tags) recipeStructuredData.keywords = tags;
-
-  if (data.category) recipeStructuredData.recipeCategory = data.category;
-  if (data.cuisine) {
-    const cuisine = resolveCuisine(data.cuisine, locale);
-    if (cuisine) {
-      recipeStructuredData.recipeCuisine =
-        typeof cuisine === "string" ? cuisine : cuisine.name;
-    }
+  const images = await getRecommendedImages(data.cover);
+  if (images) {
+    recipeStructuredData.image = images;
   }
+
+  const averageRating = await getRecipeRating(recipe.entry.id);
+  if (averageRating)
+    recipeStructuredData.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: averageRating.ratingValue,
+      ratingCount: averageRating.ratingCount,
+    };
+
+  const authorData = mapAuthors(recipe.entry);
+  if (authorData) recipeStructuredData.author = authorData;
 
   const prepTime = getPrepTime(recipe.entry);
   const cookTime = getCookTime(recipe.entry);
@@ -154,13 +160,73 @@ export async function getRecipeHead(
   } else if (prepTime) recipeStructuredData.totalTime = prepTime;
   else if (cookTime) recipeStructuredData.totalTime = cookTime;
 
-  const images = await getRecommendedImages(data.cover);
-  if (images) {
-    recipeStructuredData.image = images;
+  if (data.date)
+    recipeStructuredData.datePublished = data.date.toISOString().split("T")[0]!;
+  if (data.description) recipeStructuredData.description = data.description;
+  const tags = data.tags?.join(", ");
+  if (tags) recipeStructuredData.keywords = tags;
+  if (data.calories)
+    recipeStructuredData.nutrition = {
+      "@type": "NutritionInformation",
+      calories: `${data.calories} calories`,
+    };
+
+  if (data.category) recipeStructuredData.recipeCategory = data.category;
+  if (data.cuisine) {
+    const cuisine = resolveCuisine(data.cuisine, locale);
+    if (cuisine) {
+      recipeStructuredData.recipeCuisine =
+        typeof cuisine === "string" ? cuisine : cuisine.name;
+    }
   }
 
-  const authorData = mapAuthors(recipe.entry);
-  if (authorData) recipeStructuredData.author = authorData;
+  if (data.ingredients && data.ingredients.length > 0) {
+    recipeStructuredData.recipeIngredient = data.ingredients.map(
+      (ingredient) => {
+        if (typeof ingredient === "string") {
+          return ingredient;
+        }
+
+        const { quantity, unit, name } = ingredient;
+        const quantityPart = quantity ?? "";
+        const unitPart = unit ?? "";
+
+        return `${quantityPart}${unitPart} ${name}`.trim();
+      }
+    );
+  }
+
+  if (data.instructions && data.instructions.length > 0) {
+    recipeStructuredData.recipeInstructions = data.instructions.map(
+      (step): HowToStep => {
+        const isString = typeof step === "string";
+
+        const baseStep = {
+          "@type": "HowToStep" as const,
+          text: isString ? step : step.text,
+        };
+
+        if (isString) {
+          return baseStep;
+        }
+
+        const { name, url, image } = step;
+
+        return {
+          ...baseStep,
+          ...(name && { name }),
+          ...(url && { url }),
+          ...(image && {
+            image: typeof image === "string" ? image : image.src,
+          }),
+        };
+      }
+    );
+  }
+
+  if (data.yield) {
+    recipeStructuredData.recipeYield = `${data.yield.amount} ${data.yield.unit}`;
+  }
 
   if (data.video) {
     const video = await fetchYouTubeVideoMetadata(data.video);
@@ -233,7 +299,6 @@ function mapAuthors(
   const mapped = authors.map((a): Person => {
     const person: Person = { "@type": "Person", name: a.name };
     if (a.url) person.url = a.url;
-    if (a.picture) person.image = resolveImageUrl(a.picture);
 
     return person;
   });

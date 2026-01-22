@@ -3,10 +3,9 @@ import context from "virtual:starlight-recipes-context";
 
 import type { StarlightRecipeEntry } from "../../libs/content";
 import type { Locale } from "../../libs/i18n";
-import Rating from "./Rating.astro";
 
 import Authors from "./Authors.astro";
-import RecipeStats from "./RecipeStats.astro";
+import Rating from "./Rating.astro";
 
 interface Props {
   entry: StarlightRecipeEntry;
@@ -27,8 +26,6 @@ const { entry } = Astro.props;
       <Authors entry={entry} />
     )
   }
-
-  <RecipeStats {entry} />
 </div>
 
 <style>

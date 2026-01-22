@@ -21,7 +21,7 @@ import {
   isRecipeRoot,
   isRecipeTagPage,
 } from "./libs/page";
-import { getHead } from "./libs/structuredData";
+import { getHead } from "./libs/structured-data";
 import { getAllTags, getEntryTags } from "./libs/tags";
 import { getRecipeRating } from "./routes/api/rating/get-rating";
 

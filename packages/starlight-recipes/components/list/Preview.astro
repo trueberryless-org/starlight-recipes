@@ -7,9 +7,10 @@ import { getPathWithLocale, getRelativeUrl } from "../../libs/page";
 
 import Authors from "./../metadata/Authors.astro";
 import Cover from "../metadata/Cover.astro";
-import Excerpt from "./Excerpt.astro";
 import Rating from "../metadata/Rating.astro";
-import CuisineCategoryBlobs from "../metadata/CuisineCategoryBlobs.astro";
+import Categories from "../taxonomy/Categories.astro";
+import Cuisines from "../taxonomy/Cuisines.astro";
+import Flexbox from "../ui/Flexbox.astro";
 
 interface Props {
   entry: StarlightRecipeEntry;
@@ -46,9 +47,9 @@ const url = getRelativeUrl(`/${getPathWithLocale(entry.id, locale)}`);
             </div>
             <Authors entry={entry} />
 
-            {entry.data.excerpt && (
-              <div class="sl-markdown-content excerpt">
-                <Excerpt {entry} />
+            {entry.data.description && (
+              <div class="sl-markdown-content description">
+                {entry.data.description}
               </div>
             )}
           </div>
@@ -56,7 +57,10 @@ const url = getRelativeUrl(`/${getPathWithLocale(entry.id, locale)}`);
       }
 
       <div class="blobs-wrapper">
-        <CuisineCategoryBlobs {entry} {locale} />
+        <Flexbox>
+          <Cuisines {entry} {locale} />
+          <Categories {entry} {locale} />
+        </Flexbox>
       </div>
     </div>
   </article>
@@ -126,7 +130,7 @@ const url = getRelativeUrl(`/${getPathWithLocale(entry.id, locale)}`);
     gap: 1rem;
   }
 
-  .excerpt {
+  .description {
     font-size: 0.95rem;
     color: var(--sl-color-gray-2);
     display: -webkit-box;

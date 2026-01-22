@@ -81,12 +81,6 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
       ])
       .optional(),
     /**
-     * The excerpt of the recipe used on overview pages, author, tag and cuisine pages.
-     * If not provided, only the metadata will be shown.
-     * Only shown when the recipe is featured.
-     */
-    excerpt: z.string().optional(),
-    /**
      * A list of tags associated with the recipe.
      *
      * These tags will used as keywords for structured data: https://schema.org/keywords

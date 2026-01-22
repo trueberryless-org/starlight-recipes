@@ -1,70 +1,33 @@
 ---
 import Default from "@astrojs/starlight/components/MarkdownContent.astro";
-import { slug as githubSlugger } from "github-slugger";
 import { YouTube } from "astro-embed";
 
-import { getRecipeEntry } from "../../libs/content";
-import { isAnyRecipePage } from "../../libs/page";
 import Cover from "../metadata/Cover.astro";
 import Metadata from "../metadata/Metadata.astro";
 import Footer from "../metadata/Footer.astro";
 import Instructions from "../content/Instructions.astro";
 import Ingredients from "../content/Ingredients.astro";
-import ShowcaseMediaCard from "../content/ShowcaseMediaCard.astro";
-import { fetchYouTubeVideoMetadata } from "../../libs/video";
+import ShowcaseMediaCard from "../ui/ShowcaseMediaCard.astro";
+import { prepareRecipePageData } from "../../libs/recipe-page";
+import RecipeStats from "../content/RecipeStats.astro";
 
-const { id, locale, entry: docsEntry } = Astro.locals.starlightRoute;
-let { toc } = Astro.locals.starlightRoute;
+const recipeData = await prepareRecipePageData(
+  Astro.locals.starlightRoute,
+  Astro.locals.t
+);
 
-if (!isAnyRecipePage(id)) {
+if (!recipeData) {
   return null;
 }
 
-if (toc && toc.items) {
-  const overviewIndex = toc.items.findIndex((item) => item.slug === "_top");
-
-  const newItems = [];
-
-  if (docsEntry.data.ingredients && docsEntry.data.ingredients.length > 0) {
-    newItems.push({
-      depth: 2,
-      slug: githubSlugger(
-        Astro.locals.t("starlightRecipes.recipe.ingredients")
-      ),
-      text: Astro.locals.t("starlightRecipes.recipe.ingredients"),
-      children: [],
-    });
-  }
-
-  if (docsEntry.data.instructions && docsEntry.data.instructions.length > 0) {
-    newItems.push({
-      depth: 2,
-      slug: githubSlugger(
-        Astro.locals.t("starlightRecipes.recipe.instructions")
-      ),
-      text: Astro.locals.t("starlightRecipes.recipe.instructions"),
-      children: [],
-    });
-  }
-
-  if (overviewIndex !== -1 && newItems.length > 0) {
-    toc.items.splice(overviewIndex + 1, 0, ...newItems);
-  } else if (newItems.length > 0) {
-    toc.items.unshift(...newItems);
-  }
-}
-
-const { entry, nextLink, prevLink } = await getRecipeEntry(id, locale);
-
-const videoMetadata = entry.data.video
-  ? await fetchYouTubeVideoMetadata(entry.data.video)
-  : undefined;
+const { entry, nextLink, prevLink, videoMetadata } = recipeData;
+const { locale } = Astro.locals.starlightRoute;
 ---
 
 <Default>
   {entry.data.cover && <Cover cover={entry.data.cover} />}
-  <Metadata entry={entry} {locale} />
-
+  <Metadata {entry} {locale} />
+  <RecipeStats {entry} />
   <Ingredients {entry} />
   <Instructions {entry} />
 

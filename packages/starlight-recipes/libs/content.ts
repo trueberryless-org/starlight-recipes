@@ -1,10 +1,5 @@
 import type { GetStaticPathsResult } from "astro";
-import {
-  type CollectionEntry,
-  getCollection,
-  getEntry,
-  render,
-} from "astro:content";
+import { type CollectionEntry, getCollection, getEntry } from "astro:content";
 import config from "virtual:starlight-recipes-config";
 import context from "virtual:starlight-recipes-context";
 import starlightConfig from "virtual:starlight/user-config";
@@ -186,16 +181,6 @@ export async function getRecipeEntries(
   recipeEntriesPerLocale.set(locale, recipeEntries);
 
   return recipeEntries;
-}
-
-export async function getRecipeEntryExcerpt(entry: StarlightRecipeEntry) {
-  if (entry.data.excerpt) {
-    return entry.data.excerpt;
-  }
-
-  const { Content } = await render(entry);
-
-  return Content;
 }
 
 function getRecipesStaticPath(

@@ -1,12 +1,14 @@
 import type { GetStaticPathsResult } from "astro";
+import type { ImageMetadata } from "astro";
 import { slug as githubSlugger } from "github-slugger";
 import config from "virtual:starlight-recipes-config";
+import { authors } from "virtual:starlight-recipes-images";
 import starlightConfig from "virtual:starlight/user-config";
 
 import type { StarlightRecipesAuthor } from "../schema";
 import { type StarlightRecipeEntry, getRecipeEntries } from "./content";
 import { DefaultLocale, type Locale } from "./i18n";
-import { getPathWithLocale } from "./page";
+import { getPathWithLocale, getRelativeUrl } from "./page";
 
 export async function getAllAuthors(
   locale: Locale
@@ -104,6 +106,43 @@ function getAuthorsStaticPath(
       entries,
       locale,
     },
+  };
+}
+
+const resolvePictureSource = (author: StarlightRecipesAuthor) => {
+  const source = authors[author.name] ?? author.picture;
+
+  if (!source) {
+    return { src: undefined, isRemote: false };
+  }
+
+  if (typeof source === "string") {
+    const isRemote = source.startsWith("http");
+    const src = isRemote ? source : getRelativeUrl(source, true);
+    return { src, isRemote };
+  }
+
+  return { src: source as ImageMetadata, isRemote: false };
+};
+
+export const resolveAuthorData = (
+  author: StarlightRecipesAuthor
+): AuthorResolution => {
+  const isLink = author.url !== undefined;
+
+  return {
+    tagName: isLink ? "a" : "div",
+    isLink,
+    picture: resolvePictureSource(author),
+  };
+};
+
+export interface AuthorResolution {
+  tagName: "a" | "div";
+  isLink: boolean;
+  picture: {
+    src: ImageMetadata | string | undefined;
+    isRemote: boolean;
   };
 }
 
