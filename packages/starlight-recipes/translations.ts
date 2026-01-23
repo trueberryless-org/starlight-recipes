@@ -37,6 +37,14 @@ export const Translations = {
       "{{count}} recipe with the tag “{{tag}}”",
     "starlightRecipes.tags.count_other":
       "{{count}} recipes with the tag “{{tag}}”",
+    "starlightRecipes.time.total_full":
+      "$t(starlightRecipes.time.hours, {'count': {{hours}} }) $t(starlightRecipes.time.minutes, {'count': {{minutes}} })",
+    "starlightRecipes.time.total_minutes":
+      "$t(starlightRecipes.time.minutes, {'count': {{minutes}} })",
+    "starlightRecipes.time.hours": "{{count}} hr",
+    "starlightRecipes.time.hours_plural": "{{count}} hrs",
+    "starlightRecipes.time.minutes": "{{count}} min",
+    "starlightRecipes.time.minutes_plural": "{{count}} mins",
   },
   de: {
     "starlightRecipes.authors.count_one": "{{count}} Rezept von {{author}}",
@@ -76,5 +84,13 @@ export const Translations = {
       "{{count}} Rezept mit dem Stichwort „{{tag}}“",
     "starlightRecipes.tags.count_other":
       "{{count}} Rezepte mit dem Stichwort „{{tag}}“",
+    "starlightRecipes.time.total_full":
+      "$t(starlightRecipes.time.hours, {'count': {{hours}} }) $t(starlightRecipes.time.minutes, {'count': {{minutes}} })",
+    "starlightRecipes.time.total_minutes":
+      "$t(starlightRecipes.time.minutes, {'count': {{minutes}} })",
+    "starlightRecipes.time.hours": "{{count}} Std.",
+    "starlightRecipes.time.hours_plural": "{{count}} Std.",
+    "starlightRecipes.time.minutes": "{{count}} Min.",
+    "starlightRecipes.time.minutes_plural": "{{count}} Min.",
   },
 };

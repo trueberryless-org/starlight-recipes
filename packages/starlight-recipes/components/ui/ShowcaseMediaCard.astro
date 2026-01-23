@@ -1,9 +1,9 @@
 ---
 // https://github.com/HiDeoo/starlight-showcases/blob/9d796cfb4e79aff094e95cefcbfddd0b66750081/packages/starlight-showcases/components/ShowcaseMediaCard.astro
 interface Props {
-  description?: string;
-  href?: string;
-  title: string;
+  description?: string | undefined;
+  href?: string | undefined;
+  title?: string | undefined;
 }
 
 const { description, href, title } = Astro.props;
@@ -16,14 +16,16 @@ const Element = href ? "a" : "div";
     <div class="starlight-showcases-media-asset">
       <slot />
     </div>
-    <div class="starlight-showcases-media-infos sl-flex">
-      <p class="starlight-showcases-media-title">{title}</p>
-      {
-        description && (
-          <p class="starlight-showcases-media-description">{description}</p>
-        )
-      }
-    </div>
+    {
+      (title || description) && (
+        <div class="starlight-showcases-media-infos sl-flex">
+          {title && <p class="starlight-showcases-media-title">{title}</p>}
+          {description && (
+            <p class="starlight-showcases-media-description">{description}</p>
+          )}
+        </div>
+      )
+    }
   </Element>
 </div>
 

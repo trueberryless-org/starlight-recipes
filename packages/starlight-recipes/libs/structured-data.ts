@@ -176,8 +176,7 @@ export async function getRecipeHead(
   if (data.cuisine) {
     const cuisine = resolveCuisine(data.cuisine, locale);
     if (cuisine) {
-      recipeStructuredData.recipeCuisine =
-        typeof cuisine === "string" ? cuisine : cuisine.name;
+      recipeStructuredData.recipeCuisine = cuisine.name;
     }
   }
 
@@ -270,9 +269,9 @@ async function getRecommendedImages(
   if (!cover || !cover.image) return undefined;
 
   const ratios = [
-    { name: "1x1", width: 1000, height: 1000 },
-    { name: "4x3", width: 1152, height: 864 },
-    { name: "16x9", width: 1328, height: 747 },
+    { width: 1000, height: 1000 },
+    { width: 1152, height: 864 },
+    { width: 1328, height: 747 },
   ];
 
   const processedImages = await Promise.all(

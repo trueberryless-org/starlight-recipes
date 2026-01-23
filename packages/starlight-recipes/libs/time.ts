@@ -6,14 +6,16 @@ export const getPrepTime = (
   entry: StarlightRecipeEntry
 ): string | undefined => {
   const preparation = entry.data.time?.preparation;
-  return preparation ? secondsToIsoDuration(preparation * 60) : undefined;
+  return preparation != undefined
+    ? secondsToIsoDuration(preparation * 60)
+    : undefined;
 };
 
 export const getCookTime = (
   entry: StarlightRecipeEntry
 ): string | undefined => {
   const cooking = entry.data.time?.cooking;
-  return cooking ? secondsToIsoDuration(cooking * 60) : undefined;
+  return cooking != undefined ? secondsToIsoDuration(cooking * 60) : undefined;
 };
 
 export const getTotalTime = (
@@ -22,7 +24,7 @@ export const getTotalTime = (
   const prepTime = getPrepTime(entry);
   const cookTime = getCookTime(entry);
 
-  if (prepTime && cookTime) {
+  if (prepTime != undefined && cookTime != undefined) {
     return addDurations(prepTime, cookTime);
   }
 
@@ -89,15 +91,17 @@ export function addDurations(isoA?: string, isoB?: string): string {
 export function secondsToIsoDuration(seconds: number): string {
   if (seconds <= 0) return "PT0S";
 
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const remainingSeconds = seconds % 60;
-
+  const units = Object.keys(UNIT_SECONDS) as Array<keyof DurationUnits>;
   const duration: Duration = {};
+  let remainingSeconds = seconds;
 
-  if (hours > 0) duration.hours = hours;
-  if (minutes > 0) duration.minutes = minutes;
-  if (remainingSeconds > 0) duration.seconds = remainingSeconds;
-
+  for (const unit of units) {
+    const secondsInUnit = UNIT_SECONDS[unit];
+    const value = Math.floor(remainingSeconds / secondsInUnit);
+    if (value > 0) {
+      duration[unit] = value;
+      remainingSeconds %= secondsInUnit;
+    }
+  }
   return serialize(duration);
 }

@@ -84,7 +84,8 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       fetch(sumUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ value: stars }),
+        body: JSON.stringify({ value: starsNumber }),
+        signal: controller.signal,
       }),
       fetch(countUrl, { method: "POST", signal: controller.signal }),
     ]);

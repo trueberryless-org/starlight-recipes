@@ -9,10 +9,16 @@ const { entry } = Astro.props;
 const { time, date, calories } = entry.data;
 
 const totalMinutes = (time?.preparation || 0) + (time?.cooking || 0);
-const formattedTime =
-  totalMinutes >= 60
-    ? `${Math.floor(totalMinutes / 60)}h${totalMinutes % 60 > 0 ? ` ${totalMinutes % 60}m` : ""}`
-    : `${totalMinutes}m`;
+const hours = Math.floor(totalMinutes / 60);
+const minutes = totalMinutes % 60;
+
+const timeContext = totalMinutes < 60 ? "minutes" : "full";
+
+const formattedTime = Astro.locals.t("starlightRecipes.time.total", {
+  context: timeContext,
+  hours,
+  minutes: timeContext === "full" ? minutes : totalMinutes,
+});
 
 const hasStats =
   totalMinutes > 0 || date || (calories !== undefined && calories !== null);
@@ -20,7 +26,7 @@ const hasStats =
 
 {
   hasStats && (
-    <div class="recipe-stats-container">
+    <div class="recipe-stats-container not-content">
       {totalMinutes > 0 && (
         <div class="stat-item">
           <span class="stat-label">

@@ -9,7 +9,7 @@ import type {
 
 export interface StarlightRecipesData {
   /**
-   * An list of all the recipes in your project ordered by descending publication date.
+   * A list of all the recipes in your project ordered by descending publication date.
    */
   recipes: {
     /**

@@ -34,14 +34,11 @@ const { locale } = Astro.locals.starlightRoute;
   <slot />
 
   {
-    entry.data.video &&
-      (videoMetadata ? (
-        <ShowcaseMediaCard title={videoMetadata.name}>
-          <YouTube id={entry.data.video} />
-        </ShowcaseMediaCard>
-      ) : (
+    entry.data.video && (
+      <ShowcaseMediaCard title={videoMetadata?.name}>
         <YouTube id={entry.data.video} />
-      ))
+      </ShowcaseMediaCard>
+    )
   }
   <Footer {entry} {locale} {nextLink} {prevLink} />
 </Default>

@@ -86,7 +86,7 @@ async function getRecipeEntriesData(
         preparation: entry.data.time?.preparation,
         cooking: entry.data.time?.cooking,
         total:
-          entry.data.time?.preparation ?? 0 + (entry.data.time?.cooking ?? 0),
+          (entry.data.time?.preparation ?? 0) + (entry.data.time?.cooking ?? 0),
       };
       const cuisine = resolveCuisine(entry.data.cuisine, locale);
 

@@ -111,11 +111,11 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
       /**
        * The length of time it takes to prepare ingredients and workspace for the dish in minutes.
        */
-      preparation: z.number().optional(),
+      preparation: z.number().nonnegative().optional(),
       /**
        * The time it takes to actually cook the dish in minutes.
        */
-      cooking: z.number().optional(),
+      cooking: z.number().nonnegative().optional(),
     }),
     /**
      * Details regarding the final output or portion size of the recipe.

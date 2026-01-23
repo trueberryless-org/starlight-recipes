@@ -39,7 +39,7 @@ export const GET: APIRoute = async ({ url }) => {
     });
   }
 
-  const result = await getRecipeRating(decodeURIComponent(recipeId));
+  const result = await getRecipeRating(recipeId);
 
   return new Response(JSON.stringify(result), {
     status: 200,
@@ -60,16 +60,10 @@ export async function getRecipeRating(
     return fallbackResponse;
   }
 
-  const sumKey = generateRatingHash(
-    stripLocaleFromSlug(recipeId),
-    namespace,
-    "sum"
-  );
-  const countKey = generateRatingHash(
-    stripLocaleFromSlug(recipeId),
-    namespace,
-    "count"
-  );
+  const normalizedRecipeId = stripLocaleFromSlug(recipeId);
+
+  const sumKey = generateRatingHash(normalizedRecipeId, namespace, "sum");
+  const countKey = generateRatingHash(normalizedRecipeId, namespace, "count");
 
   try {
     const sumUrl = buildCountifyUrl(sumKey, namespace);

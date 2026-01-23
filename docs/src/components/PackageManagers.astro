@@ -12,6 +12,8 @@ const managers = [
   { id: "pnpm", cmd: `pnpm add ${pkg}` },
   { id: "yarn", cmd: `yarn add ${pkg}` },
 ];
+
+const DEFAULT_MANAGER = "npm";
 ---
 
 <package-managers class="installer-wrapper not-prose not-content">
@@ -21,8 +23,9 @@ const managers = [
         managers.map((m) => (
           <button
             class="pill"
+            type="button"
             data-value={m.id}
-            style={m.id === "npm" ? undefined : "display: none"}
+            data-default={m.id === DEFAULT_MANAGER}
           >
             {m.id}
           </button>
@@ -37,7 +40,7 @@ const managers = [
         <div
           class="command-variant"
           data-id={m.id}
-          style={m.id === "npm" ? undefined : "display: none"}
+          data-default={m.id === DEFAULT_MANAGER}
         >
           <Code code={m.cmd} lang="sh" />
         </div>
@@ -50,43 +53,44 @@ const managers = [
   class PackageManagers extends HTMLElement {
     static STORAGE_KEY = "starlight-synced-tabs__pkg";
     _bound = false;
-    _onStorage = (e: any) => {
+
+    _onStorage = (e: StorageEvent) => {
       if (e.key === PackageManagers.STORAGE_KEY) {
         this.updateUI();
       }
     };
 
     connectedCallback() {
+      this.setAttribute("hydrated", "");
       this.updateUI();
 
       if (!this._bound) {
+        this._bindEvents();
         this._bound = true;
-        this.querySelectorAll(".pill").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            const val = btn.getAttribute("data-value");
-            if (val) {
-              localStorage.setItem(PackageManagers.STORAGE_KEY, val);
-              window.dispatchEvent(
-                new StorageEvent("storage", {
-                  key: PackageManagers.STORAGE_KEY,
-                  newValue: val,
-                  storageArea: localStorage,
-                })
-              );
-            }
-          });
-        });
-
-        window.addEventListener("storage", (e) => {
-          if (e.key === PackageManagers.STORAGE_KEY) {
-            this.updateUI();
-          }
-        });
       }
+      window.addEventListener("storage", this._onStorage);
     }
 
     disconnectedCallback() {
       window.removeEventListener("storage", this._onStorage);
+    }
+
+    _bindEvents() {
+      this.querySelectorAll(".pill").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const val = btn.getAttribute("data-value");
+          if (val) {
+            localStorage.setItem(PackageManagers.STORAGE_KEY, val);
+            window.dispatchEvent(
+              new StorageEvent("storage", {
+                key: PackageManagers.STORAGE_KEY,
+                newValue: val,
+                storageArea: localStorage,
+              })
+            );
+          }
+        });
+      });
     }
 
     updateUI() {
@@ -96,11 +100,12 @@ const managers = [
         v.style.display = v.dataset.id === active ? "block" : "none";
       });
 
-      this.querySelectorAll(".pill").forEach((btn) => {
+      this.querySelectorAll<HTMLElement>(".pill").forEach((btn) => {
         btn.classList.toggle(
           "active",
           btn.getAttribute("data-value") === active
         );
+        btn.style.display = "block";
       });
     }
   }
@@ -111,6 +116,12 @@ const managers = [
 </script>
 
 <style>
+  /* Hide non-default elements until the custom element is hydrated */
+  package-managers:not([hydrated]) .pill:not([data-default="true"]),
+  package-managers:not([hydrated]) .command-variant:not([data-default="true"]) {
+    display: none;
+  }
+
   .installer-wrapper {
     margin: 1.5rem 0;
     border: 1px solid var(--sl-color-gray-6);
