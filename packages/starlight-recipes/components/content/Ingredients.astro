@@ -19,10 +19,10 @@ const initialAmount = recipeYield?.amount || 1;
       <AnchorHeading
         level="2"
         id={githubSlugger(
-          Astro.locals.t("starlightRecipes.recipe.ingredients")
+          Astro.locals.t("starlightRecipes.recipe.ingredients.heading")
         )}
       >
-        {Astro.locals.t("starlightRecipes.recipe.ingredients")}
+        {Astro.locals.t("starlightRecipes.recipe.ingredients.heading")}
       </AnchorHeading>
     </div>
 
@@ -30,12 +30,16 @@ const initialAmount = recipeYield?.amount || 1;
       <span class="yield-label"
         >{
           recipeYield?.unit ||
-            Astro.locals.t("starlightRecipes.recipe.servings")
+            Astro.locals.t("starlightRecipes.recipe.ingredients.servings")
         }</span
       >
       <div class="yield-controls-v2">
-        <button type="button" data-action="minus" aria-label="Decrease yield"
-          >−</button
+        <button
+          type="button"
+          data-action="minus"
+          aria-label={Astro.locals.t(
+            "starlightRecipes.recipe.ingredients.decreaseYield"
+          )}>−</button
         >
         <input
           type="number"
@@ -45,8 +49,12 @@ const initialAmount = recipeYield?.amount || 1;
           aria-label="Current yield amount"
           inputmode="numeric"
         />
-        <button type="button" data-action="plus" aria-label="Increase yield"
-          >+</button
+        <button
+          type="button"
+          data-action="plus"
+          aria-label={Astro.locals.t(
+            "starlightRecipes.recipe.ingredients.increaseYield"
+          )}>+</button
         >
       </div>
     </div>

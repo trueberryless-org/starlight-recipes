@@ -1,5 +1,6 @@
 ---
 import type { StarlightRecipeEntry } from "../../libs/content";
+import { formatNaturalTime } from "../../libs/time";
 
 interface Props {
   entry: StarlightRecipeEntry;
@@ -9,16 +10,7 @@ const { entry } = Astro.props;
 const { time, date, calories } = entry.data;
 
 const totalMinutes = (time?.preparation || 0) + (time?.cooking || 0);
-const hours = Math.floor(totalMinutes / 60);
-const minutes = totalMinutes % 60;
-
-const timeContext = totalMinutes < 60 ? "minutes" : "full";
-
-const formattedTime = Astro.locals.t("starlightRecipes.time.total", {
-  context: timeContext,
-  hours,
-  minutes: timeContext === "full" ? minutes : totalMinutes,
-});
+const formattedTime = formatNaturalTime(totalMinutes, Astro.locals.t);
 
 const hasStats =
   totalMinutes > 0 || date || (calories !== undefined && calories !== null);

@@ -6,8 +6,8 @@ import { slug as githubSlugger } from "github-slugger";
 import {
   prepareInstructionsProps,
   getStepDisplayConfig,
-  formatNaturalTime,
 } from "../../libs/instructions";
+import { formatNaturalTime } from "../../libs/time";
 
 const { entry } = Astro.props;
 const { steps, recipeId } = prepareInstructionsProps(entry);
@@ -16,7 +16,7 @@ const globalConfig = config.cookingMode;
 const showReset = globalConfig.stepCheckbox || globalConfig.stepTimer;
 const doneText = Astro.locals.t("starlightRecipes.recipe.instructions.done");
 const instructionsTitle = Astro.locals.t(
-  "starlightRecipes.recipe.instructions"
+  "starlightRecipes.recipe.instructions.heading"
 );
 ---
 
@@ -77,7 +77,7 @@ const instructionsTitle = Astro.locals.t(
               data-step={step.stepNum}
               data-recipe={recipeId}
               data-done-text={doneText}
-              data-initial-label={formatNaturalTime(step.time!)}
+              data-initial-label={formatNaturalTime(step.time!, Astro.locals.t)}
             >
               <button
                 class="timer-pill"
@@ -120,7 +120,7 @@ const instructionsTitle = Astro.locals.t(
                 </span>
                 <span class="pill-right">
                   <span class="time-display">
-                    {formatNaturalTime(step.time!)}
+                    {formatNaturalTime(step.time!, Astro.locals.t)}
                   </span>
                 </span>
               </button>

@@ -4,6 +4,7 @@ import {
 } from "@astrojs/starlight/route-data";
 import type { APIContext, AstroBuiltinAttributes } from "astro";
 import type { HTMLAttributes } from "astro/types";
+import { slug as githubSlugger } from "github-slugger";
 
 import type { StarlightRecipesData } from "./data";
 import { getAllAuthors, getEntryAuthors } from "./libs/authors";
@@ -15,6 +16,7 @@ import {
   getRelativeRecipeUrl,
   getRelativeUrl,
   getSidebarProps,
+  isAnyRecipePage,
   isAnyRecipeRootPage,
   isAnyRecipesPage,
   isRecipeAuthorPage,
@@ -33,11 +35,14 @@ export const onRequest = defineRouteMiddleware(async (context) => {
 
   context.locals.starlightRecipes = await getRecipesData(starlightRoute);
 
-  const isRecipe = isAnyRecipesPage(id);
-  if (!isRecipe) return;
+  const isRecipes = isAnyRecipesPage(id);
+  if (!isRecipes) return;
 
   const isRecipeOverviewPage = isAnyRecipeRootPage(id);
   if (isRecipeOverviewPage) starlightRoute.toc = undefined;
+
+  const isRecipe = isAnyRecipePage(id);
+  if (isRecipe) injectRecipeHeadings(context);
 
   if (context.site) starlightRoute.head.push(await getHead(context));
   starlightRoute.sidebar = await getRecipeSidebar(context);
@@ -246,4 +251,47 @@ function makeSidebarGroup(
     label,
     type: "group",
   } satisfies StarlightRouteData["sidebar"][number];
+}
+
+function injectRecipeHeadings(context: APIContext) {
+  let { entry, toc } = context.locals.starlightRoute;
+  const t = context.locals.t;
+
+  if (toc?.items) {
+    const newItems = [];
+
+    if (entry.data.ingredients && entry.data.ingredients.length > 0) {
+      newItems.push({
+        depth: 2,
+        slug: githubSlugger(t("starlightRecipes.recipe.ingredients.heading")),
+        text: t("starlightRecipes.recipe.ingredients.heading"),
+        children: [],
+      });
+    }
+
+    if (entry.data.instructions && entry.data.instructions.length > 0) {
+      newItems.push({
+        depth: 2,
+        slug: githubSlugger(t("starlightRecipes.recipe.instructions.heading")),
+        text: t("starlightRecipes.recipe.instructions.heading"),
+        children: [],
+      });
+    }
+
+    if (entry.data.video) {
+      newItems.push({
+        depth: 2,
+        slug: githubSlugger(t("starlightRecipes.recipe.video.heading")),
+        text: t("starlightRecipes.recipe.video.heading"),
+        children: [],
+      });
+    }
+
+    const overviewIndex = toc.items.findIndex((item) => item.slug === "_top");
+    if (overviewIndex !== -1 && newItems.length > 0) {
+      toc.items.splice(overviewIndex + 1, 0, ...newItems);
+    } else if (newItems.length > 0) {
+      toc.items.unshift(...newItems);
+    }
+  }
 }

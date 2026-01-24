@@ -45,7 +45,7 @@ export const instructionStepSchema = (image: ImageFunction) =>
       image: z.union([image(), z.string()]).optional(),
       alt: z.string().optional(),
       url: z.string().url().optional(),
-      time: z.number().optional(),
+      time: z.number().nonnegative().optional(),
     }),
   ]);
 

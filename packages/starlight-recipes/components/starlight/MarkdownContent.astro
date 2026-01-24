@@ -8,25 +8,29 @@ import Footer from "../metadata/Footer.astro";
 import Instructions from "../content/Instructions.astro";
 import Ingredients from "../content/Ingredients.astro";
 import ShowcaseMediaCard from "../ui/ShowcaseMediaCard.astro";
-import { prepareRecipePageData } from "../../libs/recipe-page";
 import RecipeStats from "../content/RecipeStats.astro";
+import { getRecipeEntry } from "../../libs/content";
+import { fetchYouTubeVideoMetadata } from "../../libs/video";
+import config from "virtual:starlight-recipes-config";
+import { isAnyRecipePage } from "../../libs/page";
 
-const recipeData = await prepareRecipePageData(
-  Astro.locals.starlightRoute,
-  Astro.locals.t
-);
+const { id, locale } = Astro.locals.starlightRoute;
 
-if (!recipeData) {
+if (!isAnyRecipePage(id)) {
   return null;
 }
 
-const { entry, nextLink, prevLink, videoMetadata } = recipeData;
-const { locale } = Astro.locals.starlightRoute;
+const { entry, nextLink, prevLink } = await getRecipeEntry(id, locale);
+
+const videoMetadata =
+  config.processVideo && entry.data.video
+    ? await fetchYouTubeVideoMetadata(entry.data.video)
+    : undefined;
 ---
 
 <Default>
   {entry.data.cover && <Cover cover={entry.data.cover} />}
-  <Metadata {entry} {locale} />
+  <Metadata {entry} />
   <RecipeStats {entry} />
   <Ingredients {entry} />
   <Instructions {entry} />

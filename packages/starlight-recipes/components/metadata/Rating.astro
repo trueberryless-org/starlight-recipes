@@ -6,13 +6,21 @@ interface Props {
 
 const { recipeId, votingEnabled } = Astro.props;
 
-const noRatingsText = Astro.locals.t("starlightRecipes.recipe.rating.noRating");
+const noRatingsText = Astro.locals.t("starlightRecipes.recipe.rating.empty");
+const alreadyVotedText = Astro.locals.t(
+  "starlightRecipes.recipe.rating.alreadyVoted"
+);
+const serverErrorText = Astro.locals.t(
+  "starlightRecipes.recipe.rating.serverError"
+);
 ---
 
 <recipe-rating
   data-recipe-id={recipeId}
   data-interactive={votingEnabled ? "true" : "false"}
   data-no-ratings-text={noRatingsText}
+  data-already-voted-text={alreadyVotedText}
+  data-server-error-text={serverErrorText}
   class="not-content"
   style="margin: 0"
 >
@@ -46,7 +54,7 @@ const noRatingsText = Astro.locals.t("starlightRecipes.recipe.rating.noRating");
         <span class="count-value"></span>
       </div>
     </div>
-    <div class="error-msg" id="error-display">Already voted!</div>
+    <div class="error-msg" id="error-display"></div>
   </div>
 </recipe-rating>
 
@@ -57,6 +65,8 @@ const noRatingsText = Astro.locals.t("starlightRecipes.recipe.rating.noRating");
   class RecipeRating extends HTMLElement {
     private recipeId: string;
     private noRatingsText: string;
+    private alreadyVotedText: string;
+    private serverErrorText: string;
     private isInteractive: boolean;
     private votedKey: string;
 
@@ -64,6 +74,8 @@ const noRatingsText = Astro.locals.t("starlightRecipes.recipe.rating.noRating");
       super();
       this.recipeId = this.dataset.recipeId!;
       this.noRatingsText = this.dataset.noRatingsText || "No ratings";
+      this.alreadyVotedText = this.dataset.alreadyVotedText || "Already Voted!";
+      this.serverErrorText = this.dataset.serverErrorText || "Server Error!";
       this.isInteractive = this.dataset.interactive === "true";
       this.votedKey = `sl-recipes-voted-${stripLocaleFromSlug(this.recipeId)}`;
     }
@@ -76,49 +88,74 @@ const noRatingsText = Astro.locals.t("starlightRecipes.recipe.rating.noRating");
 
       const buttons = this.querySelectorAll(".star-btn");
       buttons.forEach((btn) => {
-        btn.addEventListener("click", async () => {
-          if (localStorage.getItem(this.votedKey)) {
-            this.showError();
-            return;
-          }
-
-          this.setLoading(true);
-
-          const stars = btn.getAttribute("data-value");
-          try {
-            const res = await fetch(getRelativeUrl("/api/recipe/rate"), {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                recipeId: this.recipeId,
-                stars: parseInt(stars!),
-              }),
-            });
-
-            if (res.ok) {
-              const updatedData = await res.json();
-              localStorage.setItem(this.votedKey, "true");
-              this.checkVoted(this.votedKey);
-              this.updateUI(updatedData.ratingValue, updatedData.ratingCount);
-            } else if (res.status === 403) {
-              localStorage.setItem(this.votedKey, "true");
-              this.checkVoted(this.votedKey);
-              this.showError();
-            }
-          } catch (e) {
-            console.error("Voting failed", e);
-          } finally {
-            this.setLoading(false);
-          }
-        });
+        btn.addEventListener("click", () =>
+          this.handleVote(btn.getAttribute("data-value"))
+        );
       });
     }
 
-    showError() {
+    async handleVote(stars: string | null) {
+      if (localStorage.getItem(this.votedKey)) {
+        this.showError("Already voted!");
+        return;
+      }
+
+      this.setLoading(true);
+
+      try {
+        const res = await fetch(getRelativeUrl("/api/recipe/rate"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            recipeId: this.recipeId,
+            stars: parseInt(stars!),
+          }),
+        });
+
+        const isSuccess = res.ok;
+        const isRateLimited = res.status === 403;
+
+        if (isSuccess) {
+          const updatedData = await res.json();
+          this.handleSuccess(updatedData);
+        } else if (isRateLimited) {
+          this.handleRateLimit();
+        } else {
+          this.handleServerError();
+        }
+      } catch (e) {
+        console.error("Voting failed", e);
+        this.handleServerError();
+      } finally {
+        this.setLoading(false);
+      }
+    }
+
+    handleSuccess(data: { ratingValue: number; ratingCount: number }) {
+      localStorage.setItem(this.votedKey, "true");
+      this.checkVoted(this.votedKey);
+      this.updateUI(data.ratingValue, data.ratingCount);
+    }
+
+    handleRateLimit() {
+      localStorage.setItem(this.votedKey, "true");
+      this.checkVoted(this.votedKey);
+      this.showError(this.alreadyVotedText);
+    }
+
+    handleServerError() {
+      this.showError(this.serverErrorText);
+    }
+
+    showError(message: string) {
       const container = this.querySelector(".rating-container");
       const errorMsg = this.querySelector("#error-display");
+
+      if (errorMsg) errorMsg.textContent = message;
+
       container?.classList.add("shake-error");
       errorMsg?.classList.add("visible");
+
       setTimeout(() => {
         container?.classList.remove("shake-error");
         errorMsg?.classList.remove("visible");

@@ -105,3 +105,27 @@ export function secondsToIsoDuration(seconds: number): string {
   }
   return serialize(duration);
 }
+
+export const formatNaturalTime = (totalMinutes: number, t: any): string => {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  const isWholeHour = totalMinutes > 0 && totalMinutes % 60 === 0;
+  const isLessThanHour = totalMinutes < 60;
+
+  const timeContext = getContext(isWholeHour, isLessThanHour);
+
+  const translationPayload = {
+    context: timeContext,
+    hours,
+    minutes: timeContext === "minutes" ? totalMinutes : minutes,
+  };
+
+  return t("starlightRecipes.time.total", translationPayload);
+};
+
+const getContext = (isWholeHour: boolean, isLessThanHour: boolean): string => {
+  if (isWholeHour) return "hours";
+  if (isLessThanHour) return "minutes";
+  return "full";
+};

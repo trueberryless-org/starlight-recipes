@@ -2,14 +2,12 @@
 import context from "virtual:starlight-recipes-context";
 
 import type { StarlightRecipeEntry } from "../../libs/content";
-import type { Locale } from "../../libs/i18n";
 
 import Authors from "./Authors.astro";
 import Rating from "./Rating.astro";
 
 interface Props {
   entry: StarlightRecipeEntry;
-  locale: Locale;
 }
 
 const { entry } = Astro.props;
@@ -42,10 +40,6 @@ const { entry } = Astro.props;
     justify-content: space-between;
     align-items: start;
     gap: 1rem;
-  }
-
-  .dates {
-    font-size: var(--sl-text-sm);
   }
 
   @media (max-width: 500px) {

@@ -141,7 +141,7 @@ export async function getRecipeHead(
   }
 
   const averageRating = await getRecipeRating(recipe.entry.id);
-  if (averageRating)
+  if (averageRating && averageRating.ratingCount > 0)
     recipeStructuredData.aggregateRating = {
       "@type": "AggregateRating",
       ratingValue: averageRating.ratingValue,
@@ -188,10 +188,10 @@ export async function getRecipeHead(
         }
 
         const { quantity, unit, name } = ingredient;
-        const quantityPart = quantity ?? "";
-        const unitPart = unit ?? "";
-
-        return `${quantityPart}${unitPart} ${name}`.trim();
+        const quantityPart =
+          quantity !== undefined && quantity !== null ? `${quantity} ` : "";
+        const unitPart = unit ? `${unit} ` : "";
+        return `${quantityPart}${unitPart}${name}`.trim();
       }
     );
   }

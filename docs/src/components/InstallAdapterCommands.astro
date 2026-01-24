@@ -131,9 +131,25 @@ const DEFAULT_ID = `${DEFAULT_PKG}-${DEFAULT_ADAPTER}`;
     }
 
     updateUI() {
-      const pkg = localStorage.getItem(AdapterInstaller.PKG_KEY) || "npm";
+      const defaultPkg =
+        this.querySelector<HTMLElement>(
+          '.pkg-btn[data-default="true"]'
+        )?.getAttribute("data-value") ?? "npm";
+      const defaultAdapter =
+        this.querySelector<HTMLElement>(
+          '.adapter-btn[data-default="true"]'
+        )?.getAttribute("data-value") ?? "netlify";
+      const storedPkg = localStorage.getItem(AdapterInstaller.PKG_KEY);
+      const storedAdapter = localStorage.getItem(AdapterInstaller.ADAPTER_KEY);
+      const pkg =
+        storedPkg && this.querySelector(`.pkg-btn[data-value="${storedPkg}"]`)
+          ? storedPkg
+          : defaultPkg;
       const adapter =
-        localStorage.getItem(AdapterInstaller.ADAPTER_KEY) || "netlify";
+        storedAdapter &&
+        this.querySelector(`.adapter-btn[data-value="${storedAdapter}"]`)
+          ? storedAdapter
+          : defaultAdapter;
       const targetId = `${pkg}-${adapter}`;
 
       this.querySelectorAll(".command-variant").forEach((v) => {
