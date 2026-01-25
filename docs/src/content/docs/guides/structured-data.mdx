@@ -111,17 +111,16 @@ Starlight Recipes focuses on [Google-supported and -recommended properties](http
 
 <DocField
   description="The name of the dish."
-  linkedProperty="title"
-  link="https://starlight.astro.build/reference/frontmatter/#title-required"
-  backlinking={true}
+  links={[{ label: "title", href: "https://starlight.astro.build/reference/frontmatter/#title-required" }]}
+  direction="upstream"
 />
 
 ### `image`
 
 <DocField
   description="Image of the completed dish."
-  linkedProperty="cover"
-  backlinking={true}
+  links={[{ label: "cover", href: "/guides/frontmatter#cover" }]}
+  direction="upstream"
 />
 
 Starlight Recipes will use the cover image to generate three images with the following aspect ratios for [best results](https://developers.google.com/search/docs/appearance/structured-data/recipe/#:~:text=aspect%20ratios): 16x9, 4x3, and 1x1.
@@ -130,34 +129,42 @@ Starlight Recipes will use the cover image to generate three images with the fol
 
 <DocField
   description="A short summary describing the dish."
-  linkedProperty="description"
-  link="https://starlight.astro.build/reference/frontmatter/#description"
-  backlinking={true}
+  links={[{ label: "description", href: "https://starlight.astro.build/reference/frontmatter/#description" }]}
+  direction="upstream"
 />
 
+### `author`
+
+<DocField
+  description="The name of the person or organization that wrote the recipe."
+  links={[{ label: "authors", href: "/guides/frontmatter#authors" }]}
+  direction="upstream"
+/>
+
+Supports single or multiple authors (though too many may spoil the broth).
 
 ### `recipeCategory`
 
 <DocField
   description="The type of meal or course your recipe is about."
-  linkedProperty="category"
-  backlinking={true}
+  links={[{ label: "category", href: "/guides/frontmatter#category" }]}
+  direction="upstream"
 />
 
 ### `recipeCuisine`
 
 <DocField
   description="The region associated with your recipe."
-  linkedProperty="cuisine"
-  backlinking={true}
+  links={[{ label: "cuisine", href: "/guides/frontmatter#cuisine" }]}
+  direction="upstream"
 />
 
 ### `keywords`
 
 <DocField
   description='Other terms for your recipe.'
-  linkedProperty="tags"
-  backlinking={true}
+  links={[{ label: "tags", href: "/guides/frontmatter#tags" }]}
+  direction="upstream"
 />
 
 For example: the season ("summer"), the holiday ("Halloween"), or other descriptors ("quick", "easy", "authentic").<br />

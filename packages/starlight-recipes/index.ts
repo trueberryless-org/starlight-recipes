@@ -120,7 +120,6 @@ export default function starlightRecipes(
                 vite: {
                   plugins: [
                     vitePluginStarlightRecipesConfig(config, {
-                      base: astroConfig.base,
                       rootDir: astroConfig.root.pathname,
                       site: astroConfig.site,
                       srcDir: astroConfig.srcDir.pathname,

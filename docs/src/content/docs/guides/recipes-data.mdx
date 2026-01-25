@@ -11,7 +11,7 @@ This guide explains how to use Starlight Recipes' data.
 ## What is recipes data?
 
 Starlight Recipes data is an object containing the information about all the recipes and authors in your project.
-It includes information like a list of all the recipe authors, a list of all the recipes, the title of each recipe, the date it was published, and the author.
+It includes information like a list of all the recipe authors, a list of all the recipes, the title of each recipe, the date it was published, and the authors.
 
 ## Using recipe data
 
@@ -67,7 +67,7 @@ import RecipesDataExample from '@/components/RecipesDataExample.astro'
 </Preview>
 
 :::note
-You need to [set up the rating system](/interactive/rating-system#setup-rating-system) in order for this to work.
+You need to [set up the rating system](/interactive/rating-system#setup-rating-system) in order for this example to work.
 :::
 
 ### Example: Authors
@@ -115,16 +115,33 @@ Here is a summary of the whole type of the object:
         updatedAt: Date | undefined;
         draft: boolean;
         featured: boolean;
-        cover: { alt: string; image: ImageMetadata | string } | { alt: string; dark: ImageMetadata | string; light: ImageMetadata | string } | undefined;
+        cover: { alt: string; image: ImageMetadata | string } | undefined;
         entry: CollectionEntry;
         authors: { name: string; title: string | undefined; url: string | undefined; }[];
         tags: { label: string; href: string; }[];
+        averageRating: { ratingValue: number; ratingCount: number; } | undefined;
+        time: { preparation: number | undefined; cooking: number | undefined; total: number | undefined; };
+        calories: number | undefined;
+        category: string | undefined;
+        cuisine: string | undefined;
+        ingredients: string[] | { name: string; quantity: number | undefined; unit: string | undefined; }[];
+        instructions: string[] | {
+            text: string;
+            name: string | undefined;
+            url: string | undefined;
+            image: ImageMetadata | string | undefined;
+            alt: string | undefined;
+            time: number | undefined;
+        }[];
+        yield: { amount: number; unit: string; } | undefined;
     }[];
     authors: { name: string; title: string | undefined; url: string | undefined; }[];
 }
 ```
 
 Below you can find details about each property:
+
+import DocField from '@/components/DocField.astro';
 
 ### `recipes`
 
@@ -136,7 +153,25 @@ Each recipe has the following properties:
 
 **Type:** `string`
 
-The [title](/guides/frontmatter#title) of the recipe.
+<DocField
+    description="The title of the recipe."
+    links={[{ label: "title", href: "/guides/frontmatter#title" }]}
+    direction="upstream"
+/>
+
+#### `cover`
+
+**Type:** `{ alt: string; image: ImageMetadata | string } | undefined`
+
+<DocField
+    description="The cover image of the recipe."
+    links={[{ label: "cover", href: "/guides/frontmatter#cover" }]}
+    direction="upstream"
+/>
+
+Local images are imported and transformed into metadata while remote images are defined as a string URL that you can pass as a `src` to `<Image/>` or `getImage()`.
+
+Check the Starlight Recipes [`<Cover>` component](https://github.com/trueberryless/starlight-recipes/blob/main/packages/starlight-recipes/components/metadata/Cover.astro) to see an example of how to use the cover image or learn more about [images in content collections](https://docs.astro.build/en/guides/images/#images-in-content-collections) in the Astro docs.
 
 #### `href`
 
@@ -146,40 +181,47 @@ The link to the recipe.
 
 #### `createdAt`
 
-**Type:** `Date`
+**Type:** `Date | undefined`
 
-The [date](/guides/frontmatter#date) of the recipe.
+<DocField
+    description="The creation date of the recipe."
+    links={[{ label: "date", href: "/guides/frontmatter#date" }]}
+    direction="upstream"
+/>
 
 #### `updatedAt`
 
 **Type:** `Date | undefined`
 
-The last update date of the recipe.
+<DocField
+    description="The date the recipe was last updated."
+    links={[{ label: "lastUpdated", href: "/guides/frontmatter#lastUpdated" }]}
+    direction="upstream"
+/>
+
 It is only defined if the [`lastUpdated`](/guides/frontmatter#lastupdated) frontmatter field is specified and different from the [`date`](/guides/frontmatter#date) frontmatter field.
 
 #### `draft`
 
 **Type:** `boolean`
 
-Whether the recipe is a [draft](/guides/frontmatter/#draft).
+<DocField
+    description="Whether the recipe is a draft."
+    links={[{ label: "draft", href: "/guides/frontmatter#draft" }]}
+    direction="upstream"
+/>
+
 Draft recipes are only visible in development mode.
 
 #### `featured`
 
 **Type:** `boolean`
 
-Whether the recipe is [featured](/guides/frontmatter/#featured).
-
-#### `cover`
-
-**Type:** `{ alt: string; image: ImageMetadata | string } | { alt: string; dark: ImageMetadata | string; light: ImageMetadata | string } | undefined`
-
-The optional cover image of the recipe.
-
-Based on how the cover image is [defined](/guides/frontmatter#cover) in the frontmatter of the recipe, it can either be a single image or a pair of images for dark and light themes.
-Local images are imported and transformed into metadata while remote images are defined as a string URL that you can pass as a `src` to `<Image/>` or `getImage()`.
-
-Check the Starlight Recipes [`<Cover>` component](https://github.com/trueberryless/starlight-recipes/blob/main/packages/starlight-recipes/components/metadata/Cover.astro) to see an example of how to use the cover image or learn more about [images in content collections](https://docs.astro.build/en/guides/images/#images-in-content-collections) in the Astro docs.
+<DocField
+    description="Whether the recipe is a featured."
+    links={[{ label: "featured", href: "/guides/frontmatter#featured" }]}
+    direction="upstream"
+/>
 
 #### `entry`
 
@@ -200,13 +242,21 @@ Learn more about the shape of this object in [Astro's Collection Entry Type](htt
 
 **Type:** <code><a href="#starlightrecipesauthordata">StarlightRecipesAuthorData</a>[]</code>
 
-The list of authors of the recipe.
+<DocField
+    description="The list of authors of the recipe."
+    links={[{ label: "authors", href: "/guides/frontmatter#authors" }]}
+    direction="upstream"
+/>
 
 #### `tags`
 
 **Type:** `{ label: string; href: string; }[]`
 
-The list of tags of the recipe.
+<DocField
+    description="The list of tags of the recipe."
+    links={[{ label: "tags", href: "/guides/frontmatter#tags" }]}
+    direction="upstream"
+/>
 
 Each tag has the following properties:
 
@@ -226,7 +276,12 @@ The link to the tag page.
 
 **Type:** <code><a href="#starlightrecipesauthordata">StarlightRecipesAuthorData</a>[]</code>
 
-An unordered list of all the known authors in your recipes.
+<DocField
+    description="An unordered list of all the known authors in your recipes."
+    links={[{ label: "authors", href: "/configuration/#authors" }, { label: "Recipe Authors", href: "/guides/authors#recipe-authors" }]}
+    direction="upstream"
+/>
+
 
 ## `StarlightRecipesAuthorData`
 

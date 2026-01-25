@@ -82,7 +82,7 @@ export default defineConfig({
       sidebar: [
         {
           label: "Start Here",
-          items: ["getting-started", "configuration"],
+          items: ["getting-started", "configuration", "acknowledgements"],
         },
         {
           label: "Guides",

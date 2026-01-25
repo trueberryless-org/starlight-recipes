@@ -164,7 +164,7 @@ export interface StarlightRecipesData {
      *
      * @see https://starlight-recipes.trueberryless.org/guides/frontmatter/#lastupdated
      */
-    updatedAt?: Date;
+    updatedAt?: Date | undefined;
   }[];
   /**
    * An unordered list of all the known authors of all recipes.

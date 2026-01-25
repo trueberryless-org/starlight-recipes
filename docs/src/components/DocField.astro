@@ -1,31 +1,37 @@
 ---
-import { slug as githubSlugger } from "github-slugger";
+interface LinkItem {
+  label: string;
+  href: string;
+}
 
 interface Props {
   description: string;
-  linkedProperty: string;
-  link?: string;
-  backlinking?: boolean;
+  links: LinkItem[];
+  direction?: "upstream" | "downstream";
 }
 
-const { description, linkedProperty, link, backlinking } = Astro.props;
+const { description, links, direction = "downstream" } = Astro.props;
 
-// Use the provided link, or fallback to the documentation schema fragment
-const finalLink =
-  link ||
-  (backlinking
-    ? `/guides/frontmatter#${githubSlugger(linkedProperty)}`
-    : `/guides/structured-data#${githubSlugger(linkedProperty)}`);
+const formatter = new Intl.ListFormat(Astro.currentLocale, {
+  style: "long",
+  type: "conjunction",
+});
+
+const prefix =
+  direction === "upstream" ? "Generated from " : "Used to generate ";
+
+const formattedLinks = links.map(
+  (link) => `<code><a href="${link.href}">${link.label}</a></code>`
+);
+
+const linksSentence = formatter.format(formattedLinks);
+const generatedContent = `${prefix}${linksSentence}.`;
 ---
 
 <p class="doc-item">
   <span>{description}</span>
   <span class="divider">—</span>
-  <small>
-    {backlinking ? "Generated from " : "Used to generate "}<code
-      ><a href={finalLink}>{linkedProperty}</a></code
-    >{backlinking ? "." : " for Structured Data."}
-  </small>
+  <small set:html={generatedContent} />
 </p>
 
 <style>

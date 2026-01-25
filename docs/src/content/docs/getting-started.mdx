@@ -27,7 +27,7 @@ Check out the [demo](/recipes) for a preview of an example cookbook.
 You will need to have a Starlight website set up.
 If you don't have one yet, you can follow the ["Getting Started"](https://starlight.astro.build/getting-started) guide in the Starlight docs to create one.
 
-## Installation
+## Installation and setup
 
 import { Steps, TabItem } from '@astrojs/starlight/components'
 import InstallAdapterCommands from '@/components/InstallAdapterCommands.astro'
@@ -104,6 +104,18 @@ import PackageManagers from '@/components/PackageManagers.astro'
 
     <InstallAdapterCommands />
 
-6. [Start the development server](https://starlight.astro.build/getting-started/#start-the-development-server) to preview the plugin in action.
+6. Create your first recipe by creating a `.md` or `.mdx` file in the `src/content/docs/recipes/` directory:
+
+    ```md
+    ---
+    // src/content/docs/recipes/virgin-colada.md
+    title: Non-Alcoholic Piña Colada
+    cover:
+    alt: A beautiful Virgin Colada
+    image: ../../../assets/virgin-colada.png
+    ---
+    ```
+
+7. [Start the development server](https://starlight.astro.build/getting-started/#start-the-development-server) to preview the plugin in action.
 
 </Steps>

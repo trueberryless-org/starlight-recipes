@@ -29,6 +29,11 @@
     "./middleware": "./middleware.ts",
     "./schema": "./schema.ts"
   },
+  "scripts": {
+    "test": "pnpm test:unit && pnpm test:e2e",
+    "test:unit": "vitest",
+    "test:e2e": "playwright install --with-deps chromium && playwright test"
+  },
   "dependencies": {
     "@astrojs/markdown-remark": "^6.3.10",
     "@astrojs/mdx": "^4.3.13",
@@ -44,10 +49,11 @@
   },
   "devDependencies": {
     "@astrojs/starlight": "^0.34",
-    "astro": "^5.5.0"
+    "astro": "^5.5.0",
+    "vitest": "^4.0.18"
   },
   "peerDependencies": {
-    "@astrojs/starlight": ">=0.37"
+    "@astrojs/starlight": ">=0.34"
   },
   "engines": {
     "node": "^18.17.1 || ^20.3.0 || >=21.0.0"

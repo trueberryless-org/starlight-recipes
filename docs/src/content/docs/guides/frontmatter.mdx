@@ -47,7 +47,7 @@ import DocField from '@/components/DocField.astro';
 
 <DocField
   description="Image of the completed dish."
-  linkedProperty="image"
+  links={[{ label: "image", href: "/guides/structured-data#image" }, { label: "cover", href: "/guides/recipes-data#cover" }]}
 />
 
 Add high-quality image of the completed dish at the top of the recipe:
@@ -78,7 +78,7 @@ type CoverConfig = {
 
 <DocField
   description="The date the recipe was published."
-  linkedProperty="datePublished"
+  links={[{ label: "datePublished", href: "/guides/structured-data#datePublished" }, { label: "createdAt", href: "/guides/recipes-data#createdAt" }]}
 />
 
 Must be a valid [YAML timestamp](https://yaml.org/type/timestamp.html).
@@ -93,6 +93,11 @@ date: 2024-03-11
 
 **Type:** `Date | boolean`
 
+<DocField
+  description="The date the recipe was last updated."
+  links={[{ label: "updatedAt", href: "/guides/recipes-data#updatedAt" }]}
+/>
+
 If a date is specified in a recipe for this [Starlight frontmatter field](https://starlight.astro.build/reference/frontmatter/#lastupdated), such date will also be displayed next to the recipe date.
 
 Displayed only if different from the [`date`](#date) frontmatter field and must be a valid [YAML timestamp](https://yaml.org/type/timestamp.html).
@@ -105,11 +110,11 @@ lastUpdated: 2024-07-01
 
 ### `category`
 
-**Type:** `"Breakfast" | "Lunch" | "Dinner" | "Main Course" | "Side Dish" | "Appetizer" | "Snack" | "Dessert" | "Beverage" | "Salad" | "Soup" | "Marinade" | "Sauce"`
+**Type:** `string`
 
 <DocField
   description="The type of meal or course your recipe is about."
-  linkedProperty="recipeCategory"
+  links={[{ label: "recipeCategory", href: "/guides/structured-data#recipeCategory" }]}
 />
 
 ```md
@@ -118,13 +123,29 @@ category: "Main Course"
 ---
 ```
 
+Here are some recommended values for categories:
+
+- `'Breakfast'`
+- `'Lunch'`
+- `'Dinner'`
+- `'Main Course'`
+- `'Side Dish'`
+- `'Appetizer'`
+- `'Snack'`
+- `'Dessert'`
+- `'Beverage'`
+- `'Salad'`
+- `'Soup'`
+- `'Marinade'`
+- `'Sauce'`
+
 ### `cuisine`
 
 **Type:** `string`
 
 <DocField
   description="The region associated with your recipe."
-  linkedProperty="recipeCuisine"
+  links={[{ label: "recipeCuisine", href: "/guides/structured-data#recipeCuisine" }]}
 />
 
 ```md
@@ -147,7 +168,7 @@ cuisine: "FR"
 
 <DocField
   description="A list of tags associated with the recipe."
-  linkedProperty="keywords"
+  links={[{ label: "keywords", href: "/guides/structured-data#keywords" }, { label: "tags", href: "/guides/recipes-data#tags" }]}
 />
 
 Other terms for your recipe such as the season ("summer"), the holiday ("Halloween"), or other descriptors ("quick", "easy", "authentic").
@@ -168,7 +189,11 @@ tags:
 **Type:** `boolean`<br />
 **Default:** `false`
 
-Set whether this recipe should be considered featured.
+<DocField
+  description="Whether the recipe is featured."
+  links={[{ label: "featured", href: "/guides/recipes-data#featured" }]}
+/>
+
 Featured recipes are listed at the top of the sidebar in a dedicated group.
 
 The featured group is displayed only if at least one recipe is marked as featured.
@@ -184,7 +209,10 @@ featured: true
 
 **Type:** [`StarlightRecipesAuthorsConfig`](/configuration#author-configuration)
 
-The author(s) of the recipe. Check the ["Authors" guide](/guides/authors) for more informations.
+<DocField
+  description="The author(s) of the recipe."
+  links={[{ label: "author", href: "/guides/structured-data#author" }, { label: "authors", href: "/guides/recipes-data#authors" }]}
+/>
 
 ```md
 ---
@@ -193,12 +221,19 @@ authors:
 ---
 ```
 
+Check the ["Authors" guide](/guides/authors) for more informations.
+
 ### `draft`
 
 **Type:** `boolean`<br />
 **Default:** `false`
 
-Set whether this recipe should be considered a draft and not be included in [production builds](https://docs.astro.build/en/reference/cli-reference/#astro-build).
+<DocField
+  description="Whether the recipe is a draft."
+  links={[{ label: "draft", href: "/guides/recipes-data#draft" }]}
+/>
+
+Draft recipes are not included in [production builds](https://docs.astro.build/en/reference/cli-reference/#astro-build).
 Set to `true` to mark a recipe as a draft and make it only visible during development.
 
 ```md
@@ -218,10 +253,10 @@ This section describes how frontmatter fields that are integrated in Starlight i
 
 <DocField
   description="The name of the dish."
-  linkedProperty="name"
+  links={[{ label: "name", href: "/guides/structured-data#name" }, { label: "title", href: "/guides/recipes-data#title" }]}
 />
 
-The title gets used in the recipe list, on author and tags pages, besides the top of each recipe, in browser tabs, and in recipe metadata.
+The title gets used in the recipe list, on author and tags pages, besides the top of each recipe, in browser tabs, and in [recipe metadata](/guides/structured-data).
 
 ### `description`
 
@@ -229,7 +264,7 @@ The title gets used in the recipe list, on author and tags pages, besides the to
 
 <DocField
   description="A short summary describing the dish."
-  linkedProperty="description"
+  links={[{ label: "description", href: "/guides/structured-data#description" }]}
 />
 
-The recipe description is displayed in recipe lists when the recipe is [featured](#featured) and used for recipe metadata and will be picked up by search engines and in social media previews.
+The recipe description is displayed in recipe lists when the recipe is [featured](#featured) and used for [recipe metadata](/guides/structured-data) and will be picked up by search engines and in social media previews.

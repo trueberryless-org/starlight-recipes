@@ -71,7 +71,6 @@ function resolveVirtualModuleId<TModuleId extends string>(
 }
 
 export interface StarlightRecipesContext {
-  base: string;
   rootDir: string;
   srcDir: string;
   site: AstroConfig["site"];
