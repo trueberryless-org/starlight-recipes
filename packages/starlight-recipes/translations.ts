@@ -91,7 +91,7 @@ export const Translations = {
     "starlightRecipes.recipe.rating.starLabel_one":
       "Bewerte mit {{count}} Stern",
     "starlightRecipes.recipe.rating.starLabel_other":
-      "Bewerten mit {{count}} Sternen",
+      "Bewerte mit {{count}} Sternen",
     "starlightRecipes.recipe.tags": "Stichwörter:",
     "starlightRecipes.recipe.totalTime": "Gesamtzeit",
     "starlightRecipes.recipe.video.heading": "Video",

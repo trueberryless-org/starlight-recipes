@@ -34,7 +34,8 @@ const serverErrorText = Astro.locals.t(
               class="star-btn"
               data-value={num}
               aria-label={Astro.locals.t(
-                "starlightRecipes.recipe.rating.starLabel"
+                "starlightRecipes.recipe.rating.starLabel",
+                { count: num }
               )}
             >
               <svg
