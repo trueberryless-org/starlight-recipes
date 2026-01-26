@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest'
 
 import { getRelativeRecipeUrl } from '../../../libs/page'
 
-describe('getRelativeBlogUrl', () => {
+describe('getRelativeRecipeUrl', () => {
   test('returns the recipes root path', () => {
     expect(getRelativeRecipeUrl('/', undefined)).toBe('/cookbook/')
     expect(getRelativeRecipeUrl('/', 'de')).toBe('/de/cookbook/')

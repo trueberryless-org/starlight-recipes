@@ -8,11 +8,11 @@ import { recipeEntrySchema } from "../../schema";
 export async function mockRecipes(recipes: Parameters<typeof mockRecipe>[]) {
   const mod =
     await vi.importActual<typeof import("astro:content")>("astro:content");
-  const mockRecipes = recipes.map((recipe) => mockRecipe(...recipe));
+  const mocks = recipes.map((recipe) => mockRecipe(...recipe));
 
   return {
     ...mod,
-    getCollection: () => mockRecipes,
+    getCollection: () => mocks,
   };
 }
 

@@ -53,9 +53,9 @@ export default function starlightRecipes(
 
         const env = loadEnvironmentVariables();
         const ratingSecret = env.STARLIGHT_RECIPES_RATING_SECRET;
-        const isRatingDisabled = !isAdapterMissing && !ratingSecret;
+        const shouldWarnAboutMissingSecret = !isAdapterMissing && !ratingSecret;
 
-        if (isRatingDisabled) {
+        if (shouldWarnAboutMissingSecret) {
           logger.warn(
             "Secret STARLIGHT_RECIPES_RATING_SECRET not set in `.env` file. Rating feature will be disabled. Create a random GUID as a secret to enable the rating system.\nSee https://starlight-recipes.trueberryless.org/interactive/rating-system/ for more information."
           );
