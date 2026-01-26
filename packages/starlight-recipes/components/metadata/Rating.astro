@@ -96,7 +96,7 @@ const serverErrorText = Astro.locals.t(
 
     async handleVote(stars: string | null) {
       if (localStorage.getItem(this.votedKey)) {
-        this.showError("Already voted!");
+        this.showError(this.alreadyVotedText);
         return;
       }
 

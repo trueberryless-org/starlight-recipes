@@ -142,12 +142,15 @@ const DEFAULT_ID = `${DEFAULT_PKG}-${DEFAULT_ADAPTER}`;
       const storedPkg = localStorage.getItem(AdapterInstaller.PKG_KEY);
       const storedAdapter = localStorage.getItem(AdapterInstaller.ADAPTER_KEY);
       const pkg =
-        storedPkg && this.querySelector(`.pkg-btn[data-value="${storedPkg}"]`)
+        storedPkg &&
+        this.querySelector(`.pkg-btn[data-value="${CSS.escape(storedPkg)}"]`)
           ? storedPkg
           : defaultPkg;
       const adapter =
         storedAdapter &&
-        this.querySelector(`.adapter-btn[data-value="${storedAdapter}"]`)
+        this.querySelector(
+          `.adapter-btn[data-value="${CSS.escape(storedAdapter)}"]`
+        )
           ? storedAdapter
           : defaultAdapter;
       const targetId = `${pkg}-${adapter}`;

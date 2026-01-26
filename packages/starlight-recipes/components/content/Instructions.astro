@@ -28,7 +28,13 @@ const instructionsTitle = Astro.locals.t(
   {
     showReset && (
       <reset-controller data-recipe={recipeId}>
-        <button type="button" class="reset-btn" aria-label="Reset progress">
+        <button
+          type="button"
+          class="reset-btn"
+          aria-label={Astro.locals.t(
+            "starlightRecipes.recipe.instructions.resetProgress"
+          )}
+        >
           <span class="reset-text">
             {Astro.locals.t("starlightRecipes.recipe.instructions.reset")}
           </span>

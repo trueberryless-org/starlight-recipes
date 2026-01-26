@@ -22,10 +22,16 @@ if (!isAnyRecipePage(id)) {
 
 const { entry, nextLink, prevLink } = await getRecipeEntry(id, locale);
 
-const videoMetadata =
-  config.processVideo && entry.data.video
-    ? await fetchYouTubeVideoMetadata(entry.data.video)
-    : undefined;
+let videoMetadata:
+  | Awaited<ReturnType<typeof fetchYouTubeVideoMetadata>>
+  | undefined;
+if (config.processVideo && entry.data.video) {
+  try {
+    videoMetadata = await fetchYouTubeVideoMetadata(entry.data.video);
+  } catch {
+    videoMetadata = undefined;
+  }
+}
 ---
 
 <Default>
