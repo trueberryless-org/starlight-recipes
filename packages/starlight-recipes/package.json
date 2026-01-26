@@ -48,12 +48,12 @@
     "youtube-sr": "^4.3.12"
   },
   "devDependencies": {
-    "@astrojs/starlight": "^0.34",
+    "@astrojs/starlight": "^0.37",
     "astro": "^5.5.0",
     "vitest": "^4.0.18"
   },
   "peerDependencies": {
-    "@astrojs/starlight": ">=0.34"
+    "@astrojs/starlight": ">=0.37"
   },
   "engines": {
     "node": "^18.17.1 || ^20.3.0 || >=21.0.0"
