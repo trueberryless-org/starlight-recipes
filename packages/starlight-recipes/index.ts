@@ -53,6 +53,7 @@ export default function starlightRecipes(
 
         const env = loadEnvironmentVariables();
         const ratingSecret = env.STARLIGHT_RECIPES_RATING_SECRET;
+        const ratingEnabled = !isAdapterMissing && !!ratingSecret;
         const shouldWarnAboutMissingSecret = !isAdapterMissing && !ratingSecret;
 
         if (shouldWarnAboutMissingSecret) {
@@ -74,7 +75,7 @@ export default function starlightRecipes(
           name: "starlight-recipes-integration",
           hooks: {
             "astro:config:setup": ({ injectRoute, updateConfig }) => {
-              if (!isAdapterMissing) {
+              if (ratingEnabled) {
                 injectRoute({
                   entrypoint: "starlight-recipes/routes/api/rating/rate.ts",
                   pattern: "/api/recipe/rate",
@@ -126,7 +127,7 @@ export default function starlightRecipes(
                       title: starlightConfig.title,
                       adapter: astroConfig.adapter,
                       trailingSlash: astroConfig.trailingSlash,
-                      ratingEnabled: !isAdapterMissing && !!ratingSecret,
+                      ratingEnabled,
                     }),
                   ],
                 },

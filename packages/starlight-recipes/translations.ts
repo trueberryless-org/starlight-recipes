@@ -27,9 +27,11 @@ export const Translations = {
     "starlightRecipes.recipe.instructions.reset": "Reset",
     "starlightRecipes.recipe.instructions.resetProgress": "Reset progress",
     "starlightRecipes.recipe.published": "Published",
-    "starlightRecipes.recipe.rating.empty": "No ratings",
     "starlightRecipes.recipe.rating.alreadyVoted": "Already voted!",
+    "starlightRecipes.recipe.rating.empty": "No ratings",
     "starlightRecipes.recipe.rating.serverError": "Server Error!",
+    "starlightRecipes.recipe.rating.starLabel_one": "Rate {{count}} star",
+    "starlightRecipes.recipe.rating.starLabel_other": "Rate {{count}} stars",
     "starlightRecipes.recipe.tags": "Tags:",
     "starlightRecipes.recipe.totalTime": "Total time",
     "starlightRecipes.recipe.video.heading": "Video",
@@ -83,9 +85,13 @@ export const Translations = {
     "starlightRecipes.recipe.instructions.resetProgress":
       "Fortschritt zurücksetzen",
     "starlightRecipes.recipe.published": "Veröffentlicht",
-    "starlightRecipes.recipe.rating.empty": "Keine Bewertungen",
     "starlightRecipes.recipe.rating.alreadyVoted": "Bereits abgestimmt!",
+    "starlightRecipes.recipe.rating.empty": "Keine Bewertungen",
     "starlightRecipes.recipe.rating.serverError": "Serverfehler!",
+    "starlightRecipes.recipe.rating.starLabel_one":
+      "Bewerte mit {{count}} Stern",
+    "starlightRecipes.recipe.rating.starLabel_other":
+      "Bewerten mit {{count}} Sternen",
     "starlightRecipes.recipe.tags": "Stichwörter:",
     "starlightRecipes.recipe.totalTime": "Gesamtzeit",
     "starlightRecipes.recipe.video.heading": "Video",

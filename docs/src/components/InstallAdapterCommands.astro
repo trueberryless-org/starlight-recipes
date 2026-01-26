@@ -164,6 +164,7 @@ const DEFAULT_ID = `${DEFAULT_PKG}-${DEFAULT_ADAPTER}`;
         const el = btn as HTMLElement;
         const isActive = el.getAttribute("data-value") === pkg;
         el.classList.toggle("active", isActive);
+        el.setAttribute("aria-pressed", String(isActive));
         el.style.display = "block";
       });
 
@@ -171,6 +172,7 @@ const DEFAULT_ID = `${DEFAULT_PKG}-${DEFAULT_ADAPTER}`;
         const el = btn as HTMLElement;
         const isActive = el.getAttribute("data-value") === adapter;
         el.classList.toggle("active", isActive);
+        el.setAttribute("aria-pressed", String(isActive));
         el.style.display = "block";
       });
     }
