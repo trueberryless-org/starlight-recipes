@@ -24,4 +24,3 @@ export class RecipesPage extends BasePage {
     return this.page.getByRole("link", { name: "Prior recipes" });
   }
 }
-

@@ -15,4 +15,3 @@ export abstract class BasePage {
     return this.page.locator("nav.sidebar");
   }
 }
-

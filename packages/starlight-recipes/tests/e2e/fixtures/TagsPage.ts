@@ -14,4 +14,3 @@ export class TagsPage extends BasePage {
     return this.page.goto(`/${locale ? `${locale}/` : ""}recipes/tags/${tag}`);
   }
 }
-

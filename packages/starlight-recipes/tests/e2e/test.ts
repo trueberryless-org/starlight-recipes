@@ -26,4 +26,3 @@ interface Fixtures {
   recipesPage: RecipesPage;
   tagsPage: TagsPage;
 }
-
