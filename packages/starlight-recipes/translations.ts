@@ -116,4 +116,4 @@ export const Translations = {
     "starlightRecipes.time.total_minutes":
       "$t(starlightRecipes.time.minutes, {'count': {{minutes}} })",
   },
-};
+} as const;

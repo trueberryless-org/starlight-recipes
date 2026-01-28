@@ -72,6 +72,7 @@ const serverErrorText = Astro.locals.t(
     private serverErrorText: string;
     private isInteractive: boolean;
     private votedKey: string;
+    private listenersBound = false;
 
     constructor() {
       super();
@@ -87,7 +88,8 @@ const serverErrorText = Astro.locals.t(
       this.refreshStats();
       this.checkVoted(this.votedKey);
 
-      if (!this.isInteractive) return;
+      if (!this.isInteractive || this.listenersBound) return;
+      this.listenersBound = true;
 
       const buttons = this.querySelectorAll(".star-btn");
       buttons.forEach((btn) => {

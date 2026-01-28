@@ -27,6 +27,7 @@ export function defineVitestConfig(
   return getViteConfig({
     plugins: [
       vitePluginStarlightRecipesConfig(config, {
+        base: context?.base ?? "",
         rootDir: rootDir.pathname,
         site: context?.site,
         srcDir: srcDir.pathname,

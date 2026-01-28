@@ -80,7 +80,7 @@ const DEFAULT_MANAGER = "npm";
         btn.addEventListener("click", () => {
           const val = btn.getAttribute("data-value");
           if (val) {
-            localStorage.setItem(PackageManagers.STORAGE_KEY, val);
+            if (!this._safeSet(PackageManagers.STORAGE_KEY, val)) return;
             window.dispatchEvent(
               new StorageEvent("storage", {
                 key: PackageManagers.STORAGE_KEY,
@@ -93,8 +93,25 @@ const DEFAULT_MANAGER = "npm";
       });
     }
 
+    _safeGet(key: string) {
+      try {
+        return localStorage.getItem(key);
+      } catch {
+        return null;
+      }
+    }
+
+    _safeSet(key: string, value: string) {
+      try {
+        localStorage.setItem(key, value);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
     updateUI() {
-      const active = localStorage.getItem(PackageManagers.STORAGE_KEY) || "npm";
+      const active = this._safeGet(PackageManagers.STORAGE_KEY) || "npm";
 
       this.querySelectorAll<HTMLElement>(".command-variant").forEach((v) => {
         v.style.display = v.dataset.id === active ? "block" : "none";

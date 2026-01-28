@@ -119,8 +119,25 @@ const DEFAULT_ID = `${DEFAULT_PKG}-${DEFAULT_ADAPTER}`;
       });
     }
 
+    _safeGet(key: string) {
+      try {
+        return localStorage.getItem(key);
+      } catch {
+        return null;
+      }
+    }
+
+    _safeSet(key: string, value: string) {
+      try {
+        localStorage.setItem(key, value);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
     save(key: string, value: string) {
-      localStorage.setItem(key, value);
+      if (!this._safeSet(key, value)) return;
       window.dispatchEvent(
         new StorageEvent("storage", {
           key,
@@ -139,8 +156,8 @@ const DEFAULT_ID = `${DEFAULT_PKG}-${DEFAULT_ADAPTER}`;
         this.querySelector<HTMLElement>(
           '.adapter-btn[data-default="true"]'
         )?.getAttribute("data-value") ?? "netlify";
-      const storedPkg = localStorage.getItem(AdapterInstaller.PKG_KEY);
-      const storedAdapter = localStorage.getItem(AdapterInstaller.ADAPTER_KEY);
+      const storedPkg = this._safeGet(AdapterInstaller.PKG_KEY);
+      const storedAdapter = this._safeGet(AdapterInstaller.ADAPTER_KEY);
       const pkg =
         storedPkg &&
         this.querySelector(`.pkg-btn[data-value="${CSS.escape(storedPkg)}"]`)

@@ -1,6 +1,29 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 
 import { getRelativeRecipeUrl } from '../../../libs/page'
+
+vi.mock("virtual:starlight-recipes-config", () => ({
+  default: {
+    prefix: "cookbook",
+  },
+}));
+
+vi.mock("virtual:starlight-recipes-context", () => ({
+  default: {
+    trailingSlash: "ignore",
+  },
+}));
+
+vi.mock("virtual:starlight/user-config", () => ({
+  default: {
+    isMultilingual: false,
+    defaultLocale: {
+      locale: undefined,
+      lang: "en",
+    },
+    locales: {},
+  },
+}));
 
 describe('getRelativeRecipeUrl', () => {
   test('returns the recipes root path', () => {

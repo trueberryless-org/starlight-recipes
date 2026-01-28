@@ -22,8 +22,6 @@ const trailingSlashTransformers: Record<
   never: stripTrailingSlash,
 };
 
-const base = stripTrailingSlash(import.meta.env.BASE_URL);
-
 const RECIPE_SYSTEM_PATHS = ["tags", "authors", "cuisine", "category"];
 
 export function getRelativeRecipeUrl(
@@ -31,43 +29,45 @@ export function getRelativeRecipeUrl(
   locale: Locale,
   ignoreTrailingSlash = false
 ) {
-  path = stripLeadingSlash(path);
-
-  return getRelativeUrl(
-    getPathWithLocale(
-      path ? `/${config.prefix}/${path}` : `/${config.prefix}`,
-      locale
-    ),
-    ignoreTrailingSlash
+  const cleanPath = stripLeadingSlash(path);
+  const localizedPath = getPathWithLocale(
+    cleanPath ? `/${config.prefix}/${cleanPath}` : `/${config.prefix}`,
+    locale
   );
+
+  return getRelativeUrl(localizedPath, ignoreTrailingSlash);
 }
 
 export function getRelativeUrl(path: string, ignoreTrailingSlash = false) {
-  path = stripLeadingSlash(path);
-  path = path ? `${base}/${path}` : `${base}/`;
+  const base = stripTrailingSlash(context.base || "/");
+  const cleanPath = stripLeadingSlash(path);
+
+  const combinedPath = cleanPath ? `${base}/${cleanPath}` : `${base}/`;
 
   if (ignoreTrailingSlash) {
-    return path;
+    return combinedPath;
   }
 
   const trailingSlashTransformer =
     trailingSlashTransformers[context.trailingSlash];
 
-  return trailingSlashTransformer(path);
+  return trailingSlashTransformer(combinedPath);
 }
 
 export function getPathWithLocale(path: string, locale: Locale): string {
-  const pathLocale = getLocaleFromPath(path);
-  if (pathLocale === locale) return path;
-  locale = locale ?? "";
-  if (pathLocale === path) return locale;
-  if (pathLocale)
-    return stripTrailingSlash(
-      path.replace(`${pathLocale}/`, locale ? `${locale}/` : "")
-    );
-  return path
-    ? `${stripTrailingSlash(locale)}/${stripLeadingSlash(path)}`
-    : locale;
+  const normalizedPath = stripLeadingSlash(stripTrailingSlash(path));
+  const currentLocale = getLocaleFromPath(normalizedPath);
+
+  let slug = normalizedPath;
+  if (currentLocale) {
+    const localePattern = new RegExp(`^${currentLocale}(/|$)`);
+    slug = normalizedPath.replace(localePattern, "");
+  }
+
+  const cleanSlug = stripLeadingSlash(slug);
+  const finalPath = locale ? `${locale}/${cleanSlug}` : cleanSlug;
+
+  return stripTrailingSlash(finalPath);
 }
 
 function escapeRegExp(str: string): string {
@@ -75,9 +75,11 @@ function escapeRegExp(str: string): string {
 }
 
 export function isAnyRecipesPage(slug: string) {
-  return new RegExp(
-    `^${escapeRegExp(getPathWithLocale(config.prefix, getLocaleFromPath(slug)))}(/?$|/.+/?$)`
-  ).test(slug);
+  const localizedPrefix = getPathWithLocale(
+    config.prefix,
+    getLocaleFromPath(slug)
+  );
+  return new RegExp(`^${escapeRegExp(localizedPrefix)}(/?$|/.+/?$)`).test(slug);
 }
 
 export function isAnyRecipePage(slug: string) {
@@ -112,31 +114,35 @@ export function isRecipePage(slug: string, recipeSlug: string) {
 }
 
 export function isRecipeTagPage(slug: string, tag: string) {
-  return (
-    slug ===
-    `${getPathWithLocale(config.prefix, getLocaleFromPath(slug))}/tags/${tag}`
+  const localizedPrefix = getPathWithLocale(
+    config.prefix,
+    getLocaleFromPath(slug)
   );
+  return slug === `${localizedPrefix}/tags/${tag}`;
 }
 
 export function isRecipeAuthorPage(slug: string, author: string) {
-  return (
-    slug ===
-    `${getPathWithLocale(config.prefix, getLocaleFromPath(slug))}/authors/${author}`
+  const localizedPrefix = getPathWithLocale(
+    config.prefix,
+    getLocaleFromPath(slug)
   );
+  return slug === `${localizedPrefix}/authors/${author}`;
 }
 
 export function isRecipeCuisinePage(slug: string, cuisine: string) {
-  return (
-    slug ===
-    `${getPathWithLocale(config.prefix, getLocaleFromPath(slug))}/cuisine/${cuisine}`
+  const localizedPrefix = getPathWithLocale(
+    config.prefix,
+    getLocaleFromPath(slug)
   );
+  return slug === `${localizedPrefix}/cuisine/${cuisine}`;
 }
 
 export function isRecipeCategoryPage(slug: string, category: string) {
-  return (
-    slug ===
-    `${getPathWithLocale(config.prefix, getLocaleFromPath(slug))}/category/${category}`
+  const localizedPrefix = getPathWithLocale(
+    config.prefix,
+    getLocaleFromPath(slug)
   );
+  return slug === `${localizedPrefix}/category/${category}`;
 }
 
 export function getPageProps(title: string): StarlightPageProps {
@@ -169,10 +175,11 @@ export function getSidebarProps(
 }
 
 export function getLocaleFromPath(path: string): Locale {
-  const baseSegment = path.split("/")[0];
-  return starlightConfig.locales &&
-    baseSegment &&
-    baseSegment in starlightConfig.locales
-    ? baseSegment
+  const normalizedPath = stripLeadingSlash(path);
+  const baseSegment = normalizedPath.split("/")[0];
+  const locales = starlightConfig.locales ?? {};
+
+  return baseSegment && baseSegment in locales
+    ? (baseSegment as Locale)
     : undefined;
 }

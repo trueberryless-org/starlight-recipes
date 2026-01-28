@@ -1,6 +1,7 @@
 name: Integration
 
-permissions: {}
+permissions:
+  contents: read
 
 on:
   push:

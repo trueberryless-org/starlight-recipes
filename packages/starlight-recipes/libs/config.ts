@@ -25,16 +25,11 @@ const configSchema = z
     /**
      * The number of recipes to display per page on the recipes page.
      */
-    recipeCount: z.number().int().min(1).default(5).transform(infinityToMax),
+    recipeCount: z.number().min(1).default(5).transform(infinityToMax),
     /**
      * The number of popular recipes to display in the sidebar.
      */
-    popularRecipeCount: z
-      .number()
-      .int()
-      .min(0)
-      .default(3)
-      .transform(infinityToMax),
+    popularRecipeCount: z.number().min(0).default(3).transform(infinityToMax),
     /**
      * Configuration for the interactive cooking experience.
      */
