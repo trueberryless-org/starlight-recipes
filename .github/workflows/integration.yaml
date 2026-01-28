@@ -45,5 +45,10 @@ jobs:
         run: pnpm astro sync
         working-directory: docs
 
-      - name: Test
-        run: pnpm test
+      - name: Unit Test
+        run: pnpm test:unit
+
+      - name: E2E Test
+        run: pnpm test:e2e
+        env:
+          CI: true
