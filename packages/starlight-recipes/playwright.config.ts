@@ -1,23 +1,21 @@
-import { defineConfig, devices } from "@playwright/test";
+import { type PlaywrightTestConfig, defineConfig } from "@playwright/test";
 
-export default defineConfig({
-  forbidOnly: !!process.env["CI"],
-  projects: [
-    {
-      name: "chromium",
-      use: { ...devices["Desktop Chrome"], headless: true },
-    },
-  ],
-  testDir: "tests/e2e",
+const config: PlaywrightTestConfig = {
+  testDir: "./tests/e2e",
+  testMatch: "**/*.test.ts",
+  fullyParallel: true,
   use: {
-    baseURL: "http://localhost:4321",
+    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:4321",
   },
-  webServer: [
-    {
-      command: "pnpm run build && pnpm run preview",
-      cwd: "../../docs",
-      reuseExistingServer: !process.env["CI"],
-      url: "http://localhost:4321",
-    },
-  ],
-});
+};
+
+if (!process.env.PLAYWRIGHT_BASE_URL) {
+  config.webServer = {
+    command:
+      'pnpm -C "../../docs" dev --host 127.0.0.1 --port 4321 --strictPort',
+    url: "http://127.0.0.1:4321",
+    reuseExistingServer: !process.env.CI,
+  };
+}
+
+export default defineConfig(config);

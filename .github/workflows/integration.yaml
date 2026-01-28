@@ -45,12 +45,6 @@ jobs:
         run: pnpm astro sync
         working-directory: docs
 
-      - name: Unit Test
+      - name: Test
         working-directory: packages/starlight-recipes
-        run: pnpm test:unit
-
-      - name: E2E Test
-        working-directory: packages/starlight-recipes
-        run: pnpm test:e2e
-        env:
-          CI: true
+        run: pnpm test
