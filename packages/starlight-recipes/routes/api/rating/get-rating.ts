@@ -60,12 +60,11 @@ export async function getRecipeRating(
     return fallbackResponse;
   }
 
-  const normalizedRecipeId = stripLocaleFromSlug(recipeId);
-
-  const sumKey = generateRatingHash(normalizedRecipeId, namespace, "sum");
-  const countKey = generateRatingHash(normalizedRecipeId, namespace, "count");
-
   try {
+    const normalizedRecipeId = stripLocaleFromSlug(recipeId);
+    const sumKey = generateRatingHash(normalizedRecipeId, namespace, "sum");
+    const countKey = generateRatingHash(normalizedRecipeId, namespace, "count");
+
     const sumUrl = buildCountifyUrl(sumKey, namespace);
     const countUrl = buildCountifyUrl(countKey, namespace);
 

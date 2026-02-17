@@ -50,8 +50,9 @@ describe("getSmartGridData", () => {
     const entries = [
       createEntry("a", false),
       createEntry("b", false),
-      createEntry("featured-1", true),
       createEntry("c", false),
+      createEntry("featured-1", true),
+      createEntry("d", false),
     ];
 
     const { smartEntries } = getSmartGridData(entries, 2);
@@ -59,9 +60,9 @@ describe("getSmartGridData", () => {
     expect(smartEntries.map((e: any) => e.id)).toEqual([
       "a",
       "b",
-      "featured-1",
       "c",
+      "d",
+      "featured-1",
     ]);
   });
 });
-

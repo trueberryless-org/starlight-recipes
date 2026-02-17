@@ -46,10 +46,7 @@ const configSchema = z
          */
         stepCheckbox: z.boolean().default(true),
       })
-      .default({
-        stepTimer: true,
-        stepCheckbox: true,
-      }),
+      .default({}),
     /**
      * Whether metadata for YouTube videos should be fetched or not.
      *

@@ -55,4 +55,23 @@ describe("fetchYouTubeVideoMetadata", () => {
 
     consoleError.mockRestore();
   });
+
+  test("returns undefined and logs when video is not found", async () => {
+    const consoleError = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
+    mockGetBasicInfo.mockResolvedValue(null);
+
+    const result = await fetchYouTubeVideoMetadata(
+      "https://youtube.com/watch?v=notfound"
+    );
+
+    expect(result).toBeUndefined();
+    expect(consoleError).toHaveBeenCalledWith(
+      expect.stringContaining("No video found at the provided URL")
+    );
+
+    consoleError.mockRestore();
+  });
 });

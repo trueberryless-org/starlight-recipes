@@ -11,6 +11,8 @@ export class TagsPage extends BasePage {
   }
 
   goto(tag: string, locale?: string) {
-    return this.page.goto(`/${locale ? `${locale}/` : ""}recipes/tags/${tag}`);
+    return this.page.goto(
+      `/${locale ? `${encodeURIComponent(locale)}/` : ""}recipes/tags/${encodeURIComponent(tag)}`
+    );
   }
 }

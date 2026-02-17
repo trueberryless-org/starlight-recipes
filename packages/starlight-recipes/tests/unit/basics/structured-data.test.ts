@@ -140,7 +140,7 @@ vi.mock("../../../libs/page", () => ({
     slug === `recipes/cuisine/${cuisine}`,
 }));
 
-vi.mock("../routes/api/rating/get-rating", () => ({
+vi.mock("../../../routes/api/rating/get-rating", () => ({
   getRecipeRating: vi.fn().mockResolvedValue({
     ratingValue: 4.5,
     ratingCount: 10,

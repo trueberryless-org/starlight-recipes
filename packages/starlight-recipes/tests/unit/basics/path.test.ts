@@ -18,6 +18,10 @@ describe("stripLeadingSlash", () => {
   test("handles the root path", () => {
     expect(stripLeadingSlash("/")).toBe("");
   });
+
+  test("handles empty string", () => {
+    expect(stripLeadingSlash("")).toBe("");
+  });
 });
 
 describe("stripTrailingSlash", () => {
@@ -31,6 +35,10 @@ describe("stripTrailingSlash", () => {
 
   test("handles the root path", () => {
     expect(stripTrailingSlash("/")).toBe("");
+  });
+
+  test("handles empty string", () => {
+    expect(stripTrailingSlash("")).toBe("");
   });
 });
 
@@ -46,5 +54,8 @@ describe("ensureTrailingSlash", () => {
   test("keeps root path unchanged", () => {
     expect(ensureTrailingSlash("/")).toBe("/");
   });
-});
 
+  test("handles empty string", () => {
+    expect(ensureTrailingSlash("")).toBe("/");
+  });
+});

@@ -165,10 +165,10 @@ export async function getRecipeEntries(
         recipeEntries.push(localizedEntry);
       } catch {
         recipeEntries.push(entry);
+      } finally {
+        // Restore the original `console.warn()` implementation.
+        console.warn = warn;
       }
-
-      // Restore the original `console.warn()` implementation.
-      console.warn = warn;
     }
   }
 

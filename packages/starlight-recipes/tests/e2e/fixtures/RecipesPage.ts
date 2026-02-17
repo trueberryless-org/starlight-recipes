@@ -12,7 +12,7 @@ export class RecipesPage extends BasePage {
 
   goto(index?: number, locale?: string) {
     return this.page.goto(
-      `/${locale ? `${locale}/` : ""}recipes${index ? `/${index}` : ""}`
+      `/${locale ? `${encodeURIComponent(locale)}/` : ""}recipes${index !== undefined ? `/${encodeURIComponent(index)}` : ""}`
     );
   }
 

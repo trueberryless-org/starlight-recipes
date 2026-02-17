@@ -12,7 +12,7 @@ export class AuthorsPage extends BasePage {
 
   goto(author: string, locale?: string) {
     return this.page.goto(
-      `/${locale ? `${locale}/` : ""}recipes/authors/${author}`
+      `/${locale ? `${encodeURIComponent(locale)}/` : ""}recipes/authors/${encodeURIComponent(author)}`
     );
   }
 }

@@ -94,7 +94,7 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
     /**
      * A list of tags associated with the recipe.
      *
-     * These tags will used as keywords for structured data: https://schema.org/keywords
+     * These tags will be used as keywords for structured data: https://schema.org/keywords
      */
     tags: z.string().array().optional(),
     /**
@@ -192,7 +192,7 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
     /**
      * The number of calories in each serving produced with this recipe.
      */
-    calories: z.number().optional(),
+    calories: z.number().nonnegative().optional(),
     /**
      * List of ingredients used in the recipe.
      */

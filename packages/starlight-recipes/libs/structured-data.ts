@@ -37,8 +37,8 @@ import { getAllTags } from "./tags";
 import { getCookTime, getPrepTime, getTotalTime } from "./time";
 import { fetchYouTubeVideoMetadata } from "./video";
 
-export async function getHead(context: APIContext): Promise<HeadConfig> {
-  const { starlightRoute } = context.locals;
+export async function getHead(apiContext: APIContext): Promise<HeadConfig> {
+  const { starlightRoute } = apiContext.locals;
   const { id, locale } = starlightRoute;
 
   const isRecipeOverviewPage = isAnyRecipeRootPage(id);

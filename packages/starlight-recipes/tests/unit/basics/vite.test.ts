@@ -6,9 +6,10 @@ import {
 } from "../../../libs/vite";
 
 const context: StarlightRecipesContext = {
+  base: "/test",
   rootDir: "/project",
   srcDir: "/project/src",
-  site: new URL("https://example.com"),
+  site: "https://example.com",
   title: "Recipes",
   adapter: undefined as any,
   trailingSlash: "ignore",
@@ -65,4 +66,3 @@ describe("getImagesVirtualModule", () => {
     expect(module).toContain('"Alice": alice');
   });
 });
-

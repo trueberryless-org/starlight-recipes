@@ -100,6 +100,7 @@ const serverErrorText = Astro.locals.t(
     }
 
     async handleVote(stars: string | null) {
+      if (!stars) return;
       if (localStorage.getItem(this.votedKey)) {
         this.showError(this.alreadyVotedText);
         return;
@@ -113,7 +114,7 @@ const serverErrorText = Astro.locals.t(
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             recipeId: this.recipeId,
-            stars: parseInt(stars!),
+            stars: parseInt(stars, 10),
           }),
         });
 

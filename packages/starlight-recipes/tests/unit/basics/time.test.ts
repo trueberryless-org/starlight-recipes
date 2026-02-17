@@ -20,7 +20,7 @@ const createEntry = (time: {
 });
 
 describe("getPrepTime", () => {
-  test("returns undefined when preparation is missing", () => {
+  test("returns undefined when no time values are provided", () => {
     expect(getPrepTime(createEntry({}))).toBeUndefined();
   });
 
@@ -48,7 +48,7 @@ describe("getCookTime", () => {
 });
 
 describe("getTotalTime", () => {
-  test("returns undefined when preparation is missing", () => {
+  test("returns undefined when no time values are provided", () => {
     expect(getTotalTime(createEntry({}))).toBeUndefined();
   });
 
@@ -86,7 +86,7 @@ describe("addDurations", () => {
     expect(addDurations("PT30M", "PT45M")).toBe("PT1H15M");
   });
 
-  test("ignores invalid inputs and returns PT0S", () => {
+  test("ignores invalid inputs and returns the valid portion", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
 
     expect(addDurations("invalid", "PT30M")).toBe("PT30M");

@@ -12,7 +12,7 @@ export default defineConfig({
     },
   ],
   use: {
-    baseURL: "http://localhost:4321",
+    baseURL: "http://172.0.0.1:4321",
   },
   webServer: [
     {

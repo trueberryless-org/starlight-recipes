@@ -60,7 +60,7 @@ export function getPathWithLocale(path: string, locale: Locale): string {
 
   let slug = normalizedPath;
   if (currentLocale) {
-    const localePattern = new RegExp(`^${currentLocale}(/|$)`);
+    const localePattern = new RegExp(`^${escapeRegExp(currentLocale)}(/|$)`);
     slug = normalizedPath.replace(localePattern, "");
   }
 
