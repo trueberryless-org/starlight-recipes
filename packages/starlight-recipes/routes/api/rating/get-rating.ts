@@ -4,7 +4,7 @@ import { stripLocaleFromSlug } from "../../../libs/i18n";
 import { COUNTIFY_PREFIX, generateRatingHash } from "../../../libs/rating";
 
 export const prerender = false;
-const TIMEOUT_DURATION_MS = 4000;
+const TIMEOUT_DURATION_MS = 10_000;
 
 const buildCountifyUrl = (key: string, namespace: string): string => {
   return `https://api.countify.xyz/get-total/${COUNTIFY_PREFIX}_${namespace}_${key}`;

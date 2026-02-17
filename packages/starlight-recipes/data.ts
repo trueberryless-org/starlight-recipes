@@ -145,11 +145,22 @@ export interface StarlightRecipesData {
           /**
            * The numeric quantity produced (e.g., 4, 12, 1.5).
            */
-          amount: number;
+          servings: number;
           /**
-           * The specific scale of measurement for the amount (e.g., "servings", "cookies", "loaves").
+           * Additional yield variations (e.g., amount: 24, unit: "cookies").
            */
-          unit: string;
+          additional?:
+            | {
+                /**
+                 * The numeric quantity produced (e.g., 4, 12, 1.5).
+                 */
+                amount?: number | undefined;
+                /**
+                 * The specific scale of measurement for the amount (e.g., "servings", "cookies", "loaves").
+                 */
+                unit?: string | undefined;
+              }[]
+            | undefined;
         }
       | undefined;
     /**

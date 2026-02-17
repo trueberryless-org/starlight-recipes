@@ -12,6 +12,7 @@ import {
 const createEntry = (time: {
   preparation?: number;
   cooking?: number;
+  total?: number;
 }): any => ({
   data: {
     time,
@@ -23,8 +24,12 @@ describe("getPrepTime", () => {
     expect(getPrepTime(createEntry({}))).toBeUndefined();
   });
 
-  test("converts minutes to ISO 8601 duration", () => {
+  test("converts minutes < 60 to ISO 8601 duration", () => {
     expect(getPrepTime(createEntry({ preparation: 30 }))).toBe("PT30M");
+  });
+
+  test("converts minutes > 60 to ISO 8601 duration", () => {
+    expect(getPrepTime(createEntry({ preparation: 90 }))).toBe("PT1H30M");
   });
 });
 
@@ -36,9 +41,17 @@ describe("getCookTime", () => {
   test("converts minutes to ISO 8601 duration", () => {
     expect(getCookTime(createEntry({ cooking: 45 }))).toBe("PT45M");
   });
+
+  test("converts minutes > 60 to ISO 8601 duration", () => {
+    expect(getCookTime(createEntry({ cooking: 120 }))).toBe("PT2H");
+  });
 });
 
 describe("getTotalTime", () => {
+  test("returns undefined when preparation is missing", () => {
+    expect(getTotalTime(createEntry({}))).toBeUndefined();
+  });
+
   test("adds preparation and cooking times when both are present", () => {
     const entry = createEntry({ preparation: 15, cooking: 45 });
 
@@ -53,6 +66,12 @@ describe("getTotalTime", () => {
 
   test("falls back to cooking time when preparation is missing", () => {
     const entry = createEntry({ cooking: 50 });
+
+    expect(getTotalTime(entry)).toBe("PT50M");
+  });
+
+  test("uses total time when overridden", () => {
+    const entry = createEntry({ preparation: 15, cooking: 20, total: 50 });
 
     expect(getTotalTime(entry)).toBe("PT50M");
   });
@@ -128,4 +147,3 @@ describe("formatNaturalTime", () => {
     expect(result).toBe("1 hour 30 minutes");
   });
 });
-

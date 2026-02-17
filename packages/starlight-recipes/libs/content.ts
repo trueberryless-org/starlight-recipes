@@ -175,7 +175,10 @@ export async function getRecipeEntries(
   validateRecipeEntries(recipeEntries);
 
   recipeEntries.sort((a, b) => {
-    return a.data.title.localeCompare(b.data.title, locale);
+    return (
+      (b.data.date?.getTime() ?? 0) - (a.data.date?.getTime() ?? 0) ||
+      a.data.title.localeCompare(b.data.title, locale)
+    );
   });
 
   recipeEntriesPerLocale.set(locale, recipeEntries);

@@ -63,6 +63,20 @@ The base prefix for all recipe routes.
 By default, an overview of all recipes will be available at `/recipes` and individual recipes at e.g. `/recipes/virgin-colada`.
 Setting this option to `'cookbook'` will make an overview of all recipes available at `/cookbook` and individual recipes at e.g. `/cookbook/virgin-colada`.
 
+### `processVideo`
+
+**Type:** `boolean`<br />
+**Default:** `false`
+
+Whether to automatically fetch and process metadata for YouTube videos provided in recipe [frontmatter](/guides/frontmatter) ([`video` property](/guides/frontmatter#video)).
+
+When enabled, the plugin will attempt to fetch information such as the video title, description, thumbnail, and duration from YouTube.
+This data is then used to populate the [`video` property](/guides/structured-data#video) in [Structured Data](/guides/structured-data), which is highly recommended by search engines for recipe visibility.
+
+:::caution[Performance Warning]
+Enabling this feature results in approximately a **threefold (3x) increase** in build duration, as the plugin must perform network requests for every recipe containing a video. Use this only if the SEO benefits outweigh the impact on your development and CI/CD workflow.
+:::
+
 ## Author configuration
 
 Global authors for all recipes or regular authors that can be referenced in individual recipes can be defined using the [`authors`](#authors) configuration option.

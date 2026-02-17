@@ -2,6 +2,8 @@
 title: Frontmatter
 ---
 
+import DocField from '@/components/DocField.astro';
+
 You can customize individual recipes by setting values in their frontmatter which is set at the top of your files between `---` separators:
 
 ```md
@@ -38,7 +40,10 @@ export const collections = {
 
 ## Frontmatter fields
 
-import DocField from '@/components/DocField.astro';
+All frontmatter fields of each recipe are not only used to create visual content on the overview pages and recipe pages, but also to generate [Structured Data](/guides/structured-data) and [Recipes Data](/guides/recipes-data).
+Each field specifies whether it is used for one or both of these data structures, and maps it to its corresponding properties.
+
+The more schema fields you complete for a recipe, the better its visibility in search results.
 
 ### `cover`
 
@@ -62,15 +67,10 @@ cover:
 
 #### `CoverConfig`
 
-```ts
-type CoverConfig = {
-  // Alternative text describing the cover image for assistive technologies.
-  alt: string;
-  // Relative path to an image file in your project,
-  // e.g. `../../assets/cover.png`, or a URL to a remote image.
-  image: string;
-};
-```
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `image` | `string` | **Required**. Relative path to a local image (e.g., `../../assets/cover.png`) or a remote URL. |
+| `alt` | `string` | **Required**. Alternative text describing the cover image for assistive technologies. |
 
 ### `date`
 
@@ -78,7 +78,7 @@ type CoverConfig = {
 
 <DocField
   description="The date the recipe was published."
-  links={[{ label: "datePublished", href: "/guides/structured-data#datePublished" }, { label: "createdAt", href: "/guides/recipes-data#createdAt" }]}
+  links={[{ label: "datePublished", href: "/guides/structured-data#datepublished" }, { label: "createdAt", href: "/guides/recipes-data#createdat" }]}
 />
 
 Must be a valid [YAML timestamp](https://yaml.org/type/timestamp.html).
@@ -89,32 +89,13 @@ date: 2024-03-11
 ---
 ```
 
-### `lastUpdated`
-
-**Type:** `Date | boolean`
-
-<DocField
-  description="The date the recipe was last updated."
-  links={[{ label: "updatedAt", href: "/guides/recipes-data#updatedAt" }]}
-/>
-
-If a date is specified in a recipe for this [Starlight frontmatter field](https://starlight.astro.build/reference/frontmatter/#lastupdated), such date will also be displayed next to the recipe date.
-
-Displayed only if different from the [`date`](#date) frontmatter field and must be a valid [YAML timestamp](https://yaml.org/type/timestamp.html).
-
-```md
----
-lastUpdated: 2024-07-01
----
-```
-
 ### `category`
 
 **Type:** `string`
 
 <DocField
   description="The type of meal or course your recipe is about."
-  links={[{ label: "recipeCategory", href: "/guides/structured-data#recipeCategory" }]}
+  links={[{ label: "recipeCategory", href: "/guides/structured-data#recipecategory" }]}
 />
 
 ```md
@@ -145,7 +126,7 @@ Here are some recommended values for categories:
 
 <DocField
   description="The region associated with your recipe."
-  links={[{ label: "recipeCuisine", href: "/guides/structured-data#recipeCuisine" }]}
+  links={[{ label: "recipeCuisine", href: "/guides/structured-data#recipecuisine" }]}
 />
 
 ```md
@@ -171,16 +152,16 @@ cuisine: "FR"
   links={[{ label: "keywords", href: "/guides/structured-data#keywords" }, { label: "tags", href: "/guides/recipes-data#tags" }]}
 />
 
-Other terms for your recipe such as the season ("summer"), the holiday ("Halloween"), or other descriptors ("quick", "easy", "authentic").
+Other terms for your recipe such as the season (`"Summer"`), the holiday (`"Halloween"`), or other descriptors (`"Quick"`, `"Easy"`, `"Authentic"`).
 Displayed at the bottom of a recipe and in the recipe list.
 
-Don't use a tag that's actually a `category` or `cuisine`.
+Don't use a tag that's actually a [`category`](#category) or [`cuisine`](#cuisine).
 
 ```md
 ---
 tags:
-  - Tag
-  - Another tag
+  - Spring
+  - Easter
 ---
 ```
 
@@ -223,22 +204,164 @@ authors:
 
 Check the ["Authors" guide](/guides/authors) for more informations.
 
-### `draft`
+### `time`
 
-**Type:** `boolean`<br />
-**Default:** `false`
+**Type:** [`TimeConfig`](#timeconfig)
 
 <DocField
-  description="Whether the recipe is a draft."
-  links={[{ label: "draft", href: "/guides/recipes-data#draft" }]}
+  description="Duration related data about the recipe."
+  links={[{ label: "prepTime", href: "/guides/structured-data#preptime" }, { label: "cookTime", href: "/guides/structured-data#cooktime" }, { label: "totalTime", href: "/guides/structured-data#totaltime" }, { label: "time", href: "/guides/recipes-data#time" }]}
 />
 
-Draft recipes are not included in [production builds](https://docs.astro.build/en/reference/cli-reference/#astro-build).
-Set to `true` to mark a recipe as a draft and make it only visible during development.
+Specify the time required to prepare and cook the dish.
 
 ```md
 ---
-draft: true
+time:
+  preparation: 15
+  cooking: 30
+  total: 45
+---
+```
+
+:::note
+If you provide `preparation` time, you must also provide `cooking` time, and vice versa.
+:::
+
+#### `TimeConfig`
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `preparation` | `number` | Time to prepare ingredients (in minutes). |
+| `cooking` | `number` | Time to cook the dish (in minutes). |
+| `total` | `number` | Total time until the dish is finished (in minutes). |
+
+### `yield`
+
+**Type:** [`YieldConfig`](#yieldconfig)
+
+<DocField
+  description="Details regarding the final output or portion size."
+  links={[{ label: "recipeYield", href: "/guides/structured-data#recipeyield" }, { label: "yield", href: "/guides/recipes-data#yield" }]}
+/>
+
+Defines how many servings or items the recipe produces.
+
+```md
+---
+yield:
+  servings: 4
+  additional:
+    - amount: 12
+      unit: "cookies"
+---
+```
+
+#### `YieldConfig`
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `servings` | `number` | **Required**. The numeric quantity produced. |
+| `additional` | `object[]` | Optional array of alternative yields (requires both `amount` and `unit`). |
+
+### `calories`
+
+**Type:** `number`
+
+<DocField
+  description="The number of calories in each serving."
+  links={[{ label: "calories", href: "/guides/structured-data#nutrition" }]}
+/>
+
+```md
+---
+calories: 450
+---
+```
+
+### `ingredients`
+
+**Type:** <code>(string | <a href="#ingredientobject">IngredientObject</a>)[]</code>
+
+<DocField
+  description="List of ingredients used in the recipe."
+  links={[{ label: "recipeIngredient", href: "/guides/structured-data#recipeingredient" }, { label: "ingredients", href: "/guides/recipes-data#ingredients" }]}
+/>
+
+Ingredients can be provided as simple strings or structured objects for better data parsing.
+
+```md
+---
+ingredients:
+  - 2 eggs
+  - quantity: 500
+    unit: "g"
+    name: "Flour"
+---
+```
+
+:::note
+It is recommended to specify all measureable ingredients with the `IngredientObject` to allow users to adjust the serving amount dynamically.
+Only ingredients with an non-numerous amount (like `Pinch of salt`) should be specified as a `string`.
+:::
+
+:::note
+If you provide a `unit` for one ingredient, you must also provide the `quantity` for this ingredient.
+:::
+
+#### `IngredientObject`
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `name` | `string` | **Required**. The name of the ingredient (e.g., "All-purpose flour"). |
+| `quantity` | `number` | Optional numeric amount (e.g., `2`, `1.5`, `500`). |
+| `unit` | `string` | Optional unit of measurement (e.g., "cups", "g", "tbsp"). |
+
+### `instructions`
+
+**Type:** <code>(string | <a href="#instructionstep">InstructionStep</a>)[]</code>
+
+<DocField
+  description="The steps to make the dish."
+  links={[{ label: "recipeInstructions", href: "/guides/structured-data#recipeinstructions" }, { label: "instructions", href: "/guides/recipes-data#instructions" }]}
+/>
+
+Instructions can be simple strings or detailed objects including images (`image` and `alt`), titles (`name`) and specific timing (`time`) for that step.
+
+```md
+---
+instructions:
+  - Preheat the oven to 180°C.
+  - name: "Mix ingredients"
+    text: "Combine flour and eggs in a large bowl."
+    time: 5
+    image: "../../../assets/mixing.png"
+    alt: "Mixing flour and eggs"
+---
+```
+
+#### `InstructionStep`
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `text` | `string` | **Required**. The instruction text. |
+| `name` | `string` | Optional title for the step. |
+| `image` | `string` | Path to an image for this specific step. |
+| `alt` | `string` | Alt text for the step image. |
+| `time` | `number` | Time required for this specific step (in minutes). |
+
+### `video`
+
+**Type:** `string`
+
+<DocField
+  description="A YouTube URL of a video depicting the recipe steps."
+  links={[{ label: "video", href: "/guides/structured-data#video" }]}
+/>
+
+```md
+---
+video: https://youtube.com/shorts/jYf3nheLZfE
 ---
 ```
 
@@ -268,3 +391,41 @@ The title gets used in the recipe list, on author and tags pages, besides the to
 />
 
 The recipe description is displayed in recipe lists when the recipe is [featured](#featured) and used for [recipe metadata](/guides/structured-data) and will be picked up by search engines and in social media previews.
+
+### `lastUpdated`
+
+**Type:** `Date | boolean`
+
+<DocField
+  description="The date the recipe was last updated."
+  links={[{ label: "updatedAt", href: "/guides/recipes-data#updatedat" }]}
+/>
+
+If a date is specified in a recipe for this [Starlight frontmatter field](https://starlight.astro.build/reference/frontmatter/#lastupdated), such date will also be displayed next to the recipe date.
+
+Displayed only if different from the [`date`](#date) frontmatter field and must be a valid [YAML timestamp](https://yaml.org/type/timestamp.html).
+
+```md
+---
+lastUpdated: 2024-07-01
+---
+```
+
+### `draft`
+
+**Type:** `boolean`<br />
+**Default:** `false`
+
+<DocField
+  description="Whether the recipe is a draft."
+  links={[{ label: "draft", href: "/guides/recipes-data#draft" }]}
+/>
+
+Draft recipes are not included in [production builds](https://docs.astro.build/en/reference/cli-reference/#astro-build).
+Set to `true` to mark a recipe as a draft and make it only visible during development.
+
+```md
+---
+draft: true
+---
+```

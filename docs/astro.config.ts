@@ -39,7 +39,7 @@ export default defineConfig({
       },
       plugins: [
         starlightRecipes({
-          processVideo: true,
+          // processVideo: true,
           cookingMode: {
             stepTimer: true,
             stepCheckbox: true,

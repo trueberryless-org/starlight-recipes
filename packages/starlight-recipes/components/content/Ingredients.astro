@@ -10,10 +10,10 @@ interface Props {
 const { entry } = Astro.props;
 const { yield: recipeYield, ingredients } = entry.data;
 
-const initialAmount = recipeYield?.amount || 1;
+const initialServings = recipeYield?.servings || 1;
 ---
 
-<recipe-ingredients data-base-yield={initialAmount}>
+<recipe-ingredients data-base-servings={initialServings}>
   <div class="ingredients-header">
     <div class="heading-wrapper">
       <AnchorHeading
@@ -27,13 +27,10 @@ const initialAmount = recipeYield?.amount || 1;
     </div>
 
     <div class="yield-pill">
-      <span class="yield-label"
-        >{
-          recipeYield?.unit ||
-            Astro.locals.t("starlightRecipes.recipe.ingredients.servings")
-        }</span
-      >
-      <div class="yield-controls-v2">
+      <span class="yield-label">
+        {Astro.locals.t("starlightRecipes.recipe.ingredients.servings")}
+      </span>
+      <div class="yield-controls">
         <button
           type="button"
           data-action="minus"
@@ -43,10 +40,10 @@ const initialAmount = recipeYield?.amount || 1;
         >
         <input
           type="number"
-          value={initialAmount}
+          value={initialServings}
           min="1"
           step="1"
-          aria-label="Current yield amount"
+          aria-label="Current servings"
           inputmode="numeric"
         />
         <button
@@ -57,6 +54,25 @@ const initialAmount = recipeYield?.amount || 1;
           )}>+</button
         >
       </div>
+
+      {
+        recipeYield?.additional && (
+          <span class="additional-yields-display">
+            (
+            {recipeYield.additional.map((y, i) => (
+              <span
+                class="extra-yield"
+                data-base-amount={y.amount}
+                data-unit={y.unit}
+              >
+                {y.amount} {y.unit}
+                {i < recipeYield.additional!.length - 1 ? ", " : ""}
+              </span>
+            ))}
+            )
+          </span>
+        )
+      }
     </div>
   </div>
 
@@ -67,15 +83,15 @@ const initialAmount = recipeYield?.amount || 1;
           return <li class="ingredient-row static">{ing}</li>;
         }
 
-        const perUnit =
+        const perServing =
           ing.quantity !== undefined && ing.quantity !== null
-            ? ing.quantity / initialAmount
+            ? ing.quantity / initialServings
             : null;
 
         return (
           <li class="ingredient-row">
             <div class="ing-meta">
-              <span class="amount" data-per-unit={perUnit}>
+              <span class="amount" data-per-serving={perServing}>
                 {ing.quantity}
               </span>
               <span class="unit">{ing.unit}</span>
@@ -94,19 +110,35 @@ const initialAmount = recipeYield?.amount || 1;
       super();
       const input = this.querySelector("input") as HTMLInputElement;
       const buttons = this.querySelectorAll("button");
+      const baseServings = parseInt(this.dataset.baseServings || "1");
 
-      const updateValues = (newYield: number) => {
-        const amounts = this.querySelectorAll(".amount[data-per-unit]");
+      const updateValues = (newServings: number) => {
+        // Update Ingredients
+        const amounts = this.querySelectorAll(".amount[data-per-serving]");
         amounts.forEach((el) => {
-          const perUnit = parseFloat(
-            (el as HTMLElement).dataset.perUnit || "0"
+          const perServing = parseFloat(
+            (el as HTMLElement).dataset.perServing || "0"
           );
-          el.textContent = Number((perUnit * newYield).toFixed(2)).toString();
+          el.textContent = Number(
+            (perServing * newServings).toFixed(2)
+          ).toString();
+        });
+
+        const extraYields = this.querySelectorAll(".extra-yield");
+        extraYields.forEach((el) => {
+          const baseAmount = parseFloat(
+            (el as HTMLElement).dataset.baseAmount || "0"
+          );
+          const unit = (el as HTMLElement).dataset.unit;
+          const scaled = Number(
+            ((baseAmount / baseServings) * newServings).toFixed(2)
+          );
+          el.textContent = `${scaled} ${unit}${el.nextElementSibling ? ", " : ""}`;
         });
 
         window.dispatchEvent(
           new CustomEvent("recipe:yieldChange", {
-            detail: { yield: newYield },
+            detail: { servings: newServings },
           })
         );
       };
@@ -152,16 +184,24 @@ const initialAmount = recipeYield?.amount || 1;
   }
 
   .yield-pill {
+    height: auto;
+    min-height: 38px;
+    padding: 0.25rem 1rem;
+    gap: 0.5rem;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
     background: rgba(255, 255, 255, 0.05);
-    padding: 0 0.5rem 0 1rem; /* Removed top/bottom padding to let height & flex center it */
     border-radius: 2rem;
     border: 1px solid var(--sl-color-gray-5);
     height: 38px;
     box-sizing: border-box;
     margin-top: 0;
+  }
+
+  .additional-yields-display {
+    font-size: 0.85rem;
+    color: var(--sl-color-gray-3);
+    white-space: nowrap;
   }
 
   .yield-label {
@@ -173,7 +213,7 @@ const initialAmount = recipeYield?.amount || 1;
     height: 100%;
   }
 
-  .yield-controls-v2 {
+  .yield-controls {
     display: flex;
     align-items: center;
     border-radius: 1.5rem;
@@ -187,7 +227,7 @@ const initialAmount = recipeYield?.amount || 1;
     font-size: 1.1rem;
     cursor: pointer;
     width: 28px;
-    height: 100%; /* Fill the container height */
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -268,7 +308,14 @@ const initialAmount = recipeYield?.amount || 1;
     }
     .yield-pill {
       width: 100%;
-      justify-content: space-between;
+      flex-wrap: wrap;
+      justify-content: center;
+      border-radius: 1rem;
+    }
+    .additional-yields-display {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 0.5rem;
     }
   }
 </style>

@@ -127,10 +127,6 @@ th {
   border-bottom: 1px solid oklch(28% 0.004 17);
 }
 
-th:first-child {
-  width: 70%;
-}
-
 tr:first-child th:first-child {
   border-top-left-radius: 0.75rem;
 }

@@ -158,8 +158,7 @@ export async function getRecipeHead(
     recipeStructuredData.prepTime = prepTime;
     recipeStructuredData.cookTime = cookTime;
     recipeStructuredData.totalTime = totalTime;
-  } else if (prepTime) recipeStructuredData.totalTime = prepTime;
-  else if (cookTime) recipeStructuredData.totalTime = cookTime;
+  }
 
   if (data.date)
     recipeStructuredData.datePublished = data.date.toISOString().split("T")[0]!;
@@ -225,7 +224,11 @@ export async function getRecipeHead(
   }
 
   if (data.yield) {
-    recipeStructuredData.recipeYield = `${data.yield.amount} ${data.yield.unit}`;
+    const primaryYield = data.yield.servings.toString();
+    const additional =
+      data.yield.additional?.map((y) => `${y.amount} ${y.unit}`.trim()) ?? [];
+
+    recipeStructuredData.recipeYield = [primaryYield, ...additional];
   }
 
   if (config.processVideo && data.video) {

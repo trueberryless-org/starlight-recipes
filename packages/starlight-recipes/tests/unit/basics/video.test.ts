@@ -2,24 +2,26 @@ import { describe, expect, test, vi } from "vitest";
 
 import { fetchYouTubeVideoMetadata } from "../../../libs/video";
 
-const mockGetVideo = vi.hoisted(() => vi.fn());
+const mockGetBasicInfo = vi.hoisted(() => vi.fn());
 
-vi.mock("youtube-sr", () => ({
-  YouTube: {
-    getVideo: mockGetVideo,
+vi.mock("@distube/ytdl-core", () => ({
+  default: {
+    getBasicInfo: mockGetBasicInfo,
   },
 }));
 
 describe("fetchYouTubeVideoMetadata", () => {
   test("returns mapped metadata when the video is found", async () => {
-    mockGetVideo.mockResolvedValue({
-      id: "abc123",
-      title: "Test Video",
-      description: "Video description",
-      uploadedAt: "2024-01-01T00:00:00.000Z",
-      thumbnail: { url: "https://example.com/thumb.jpg" },
-      duration: 120000,
-      views: 42,
+    mockGetBasicInfo.mockResolvedValue({
+      videoDetails: {
+        videoId: "abc123",
+        title: "Test Video",
+        description: "Video description",
+        publishDate: "2024-01-01T00:00:00.000Z",
+        thumbnails: [{ url: "https://example.com/thumb.jpg" }],
+        lengthSeconds: "120",
+        viewCount: "42",
+      },
     });
 
     const result = await fetchYouTubeVideoMetadata(
@@ -42,7 +44,7 @@ describe("fetchYouTubeVideoMetadata", () => {
       .spyOn(console, "error")
       .mockImplementation(() => {});
 
-    mockGetVideo.mockRejectedValue(error);
+    mockGetBasicInfo.mockRejectedValue(error);
 
     const result = await fetchYouTubeVideoMetadata(
       "https://youtube.com/watch?v=missing"
@@ -54,4 +56,3 @@ describe("fetchYouTubeVideoMetadata", () => {
     consoleError.mockRestore();
   });
 });
-

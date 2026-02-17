@@ -1,4 +1,4 @@
-import { type Video, YouTube } from "youtube-sr";
+import ytdl from "@distube/ytdl-core";
 
 import { secondsToIsoDuration } from "./time";
 
@@ -6,13 +6,13 @@ export const fetchYouTubeVideoMetadata = async (
   url: string
 ): Promise<YouTubeVideoMetadata | undefined> => {
   try {
-    const video = await YouTube.getVideo(url);
+    const info = await ytdl.getBasicInfo(url);
 
-    if (!video) {
+    if (!info) {
       throw new Error(`No video found at the provided URL: ${url}`);
     }
 
-    return mapVideoToSchema(video);
+    return mapVideoToSchema(info.videoDetails);
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
@@ -25,20 +25,19 @@ export const fetchYouTubeVideoMetadata = async (
   }
 };
 
-const mapVideoToSchema = (video: Video): YouTubeVideoMetadata => {
-  const videoId = video.id ?? "";
+const mapVideoToSchema = (video: any): YouTubeVideoMetadata => {
+  const videoId = video.videoId ?? "";
 
-  const rawDuration = video.duration ?? 0;
-  const durationInSeconds = Math.floor(rawDuration / 1000);
+  const durationInSeconds = parseInt(video.lengthSeconds ?? "0");
 
   return {
     name: video.title ?? "Unknown Title",
     description: video.description ?? "",
-    uploadDate: video.uploadedAt ?? new Date().toISOString(),
-    thumbnailUrl: video.thumbnail?.url ? [video.thumbnail.url] : [],
+    uploadDate: video.publishDate ?? new Date().toISOString(),
+    thumbnailUrl: video.thumbnails?.length ? [video.thumbnails[0].url] : [],
     duration: secondsToIsoDuration(durationInSeconds),
     embedUrl: `https://www.youtube.com/embed/${videoId}`,
-    userInteractionCount: video.views ?? 0,
+    userInteractionCount: parseInt(video.viewCount ?? "0"),
   };
 };
 

@@ -21,6 +21,10 @@ export const getCookTime = (
 export const getTotalTime = (
   entry: StarlightRecipeEntry
 ): string | undefined => {
+  const total = entry.data.time?.total;
+  if (total != undefined) {
+    return secondsToIsoDuration(total * 60);
+  }
   const prepTime = getPrepTime(entry);
   const cookTime = getCookTime(entry);
 

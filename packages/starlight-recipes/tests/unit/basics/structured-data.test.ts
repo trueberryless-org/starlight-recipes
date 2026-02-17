@@ -118,7 +118,10 @@ vi.mock("../../../libs/content", () => ({
         cover: { image: {} },
         tags: ["Vegan"],
         time: {},
-        yield: { amount: 4, unit: "servings" },
+        yield: {
+          servings: 4,
+          additional: [{ amount: 24, unit: "cookies" }]
+        },
         instructions: ["Step 1"],
       },
     },
@@ -156,6 +159,8 @@ describe("getRecipeHead", () => {
     expect(payload["@context"]).toBe("https://schema.org");
     expect(payload["@type"]).toBe("Recipe");
     expect(payload.name).toBe("Recipe A");
+
+    expect(payload.recipeYield).toEqual(["4", "24 cookies"]);
   });
 });
 
@@ -179,3 +184,57 @@ describe("getHead", () => {
   });
 });
 
+describe("getRecipeHead - recipeYield mapping", async () => {
+  const { getRecipeEntry } = vi.mocked(await import("../../../libs/content"));
+
+  test("returns only servings when additional yields are missing", async () => {
+    getRecipeEntry.mockResolvedValueOnce({
+      entry: {
+        id: "recipes/a",
+        data: { title: "A", yield: { servings: 6 } } as any,
+      },
+    } as any);
+
+    const head = await getRecipeHead("recipes/a", undefined);
+    const payload = JSON.parse(head.content ?? "{}");
+
+    expect(payload.recipeYield).toEqual(["6"]);
+  });
+
+  test("returns servings and multiple additional yields correctly", async () => {
+    getRecipeEntry.mockResolvedValueOnce({
+      entry: {
+        id: "recipes/a",
+        data: {
+          title: "A",
+          yield: {
+            servings: 2,
+            additional: [
+              { amount: 1, unit: "loaf" },
+              { amount: 12, unit: "slices" },
+            ],
+          },
+        } as any,
+      },
+    } as any);
+
+    const head = await getRecipeHead("recipes/a", undefined);
+    const payload = JSON.parse(head.content ?? "{}");
+
+    expect(payload.recipeYield).toEqual(["2", "1 loaf", "12 slices"]);
+  });
+
+  test("handles undefined yield gracefully", async () => {
+    getRecipeEntry.mockResolvedValueOnce({
+      entry: {
+        id: "recipes/a",
+        data: { title: "A", yield: undefined } as any,
+      },
+    } as any);
+
+    const head = await getRecipeHead("recipes/a", undefined);
+    const payload = JSON.parse(head.content ?? "{}");
+
+    expect(payload.recipeYield).toBeUndefined();
+  });
+});

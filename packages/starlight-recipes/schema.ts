@@ -29,11 +29,21 @@ export const recipesAuthorSchema = z.object({
 
 export const ingredientSchema = z.union([
   z.string(),
-  z.object({
-    quantity: z.number().optional(),
-    unit: z.string().optional(),
-    name: z.string(),
-  }),
+  z
+    .object({
+      name: z.string(),
+      quantity: z.number().optional(),
+      unit: z.string().optional(),
+    })
+    .superRefine((val, ctx) => {
+      if (val.quantity === undefined && val.unit !== undefined) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "If unit is set, quantity must also be set.",
+          path: ["quantity"],
+        });
+      }
+    }),
 ]);
 
 export const instructionStepSchema = (image: ImageFunction) =>
@@ -70,16 +80,17 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
      */
     date: z.date(),
     /**
-     * The author(s) of the recipe.
-     * If not provided, the authors will be inferred from the `authors` configuration option if defined.
+     * The type of meal or course your recipe is about.
      */
-    authors: z
-      .union([
-        z.string(),
-        recipesAuthorSchema,
-        z.array(z.union([z.string(), recipesAuthorSchema])),
-      ])
-      .optional(),
+    category: z.string().optional(),
+    /**
+     * The region associated with your recipe.
+     *
+     * If a valid ISO 3166-1 two-letter country code is provided (e.g., "AT" or "JP"),
+     * the localized country name will be returned with the corresponding country emoji flag appended.
+     * For non-ISO strings (e.g., "Mediterranean"), the text will be returned as-is.
+     */
+    cuisine: z.string().optional(),
     /**
      * A list of tags associated with the recipe.
      *
@@ -92,31 +103,50 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
      */
     featured: z.boolean().optional(),
     /**
-     * The type of meal or course your recipe is about.
+     * The author(s) of the recipe.
+     * If not provided, the authors will be inferred from the `authors` configuration option if defined.
      */
-    category: z.string().optional(),
-    /**
-     * The region associated with your recipe.
-     *
-     * If a valid ISO 3166-1 two-letter country code is provided (e.g., "AT" or "JP"),
-     * the localized country name will be returned with the corresponding country emoji flag appended.
-     * For non-ISO strings (e.g., "Mediterranean"), the text will be returned as-is.
-     */
-    cuisine: z.string().optional(),
-
+    authors: z
+      .union([
+        z.string(),
+        recipesAuthorSchema,
+        z.array(z.union([z.string(), recipesAuthorSchema])),
+      ])
+      .optional(),
     /**
      * Duration related data about the recipe.
      */
-    time: z.object({
-      /**
-       * The length of time it takes to prepare ingredients and workspace for the dish in minutes.
-       */
-      preparation: z.number().nonnegative().optional(),
-      /**
-       * The time it takes to actually cook the dish in minutes.
-       */
-      cooking: z.number().nonnegative().optional(),
-    }),
+    time: z
+      .object({
+        /**
+         * The length of time it takes to prepare ingredients and workspace for the dish in minutes.
+         */
+        preparation: z.number().nonnegative().optional(),
+        /**
+         * The time it takes to actually cook the dish in minutes.
+         */
+        cooking: z.number().nonnegative().optional(),
+        /**
+         * The total time until the dish is finished.
+         */
+        total: z.number().nonnegative().optional(),
+      })
+      .superRefine((val, ctx) => {
+        if (val.preparation !== undefined && val.cooking === undefined) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Cooking time must be provided if preparation time is set",
+            path: ["cooking"],
+          });
+        }
+        if (val.cooking !== undefined && val.preparation === undefined) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Preparation time must be provided if cooking time is set",
+            path: ["preparation"],
+          });
+        }
+      }),
     /**
      * Details regarding the final output or portion size of the recipe.
      */
@@ -125,11 +155,38 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
         /**
          * The numeric quantity produced (e.g., 4, 12, 1.5).
          */
-        amount: z.number(),
+        servings: z.number().nonnegative(),
         /**
-         * The specific scale of measurement for the amount (e.g., "servings", "cookies", "loaves").
+         * Additional yield variations (e.g., amount: 24, unit: "cookies").
          */
-        unit: z.string(),
+        additional: z
+          .array(
+            z
+              .object({
+                /**
+                 * The numeric quantity produced (e.g., 4, 12, 1.5).
+                 */
+                amount: z.number().nonnegative().optional(),
+                /**
+                 * The specific scale of measurement for the amount (e.g., "servings", "cookies", "loaves").
+                 */
+                unit: z.string().optional(),
+              })
+              .superRefine((val, ctx) => {
+                if (
+                  (val.amount !== undefined && val.unit === undefined) ||
+                  (val.amount === undefined && val.unit !== undefined)
+                ) {
+                  ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message:
+                      "If amount is set, unit must also be set, and vice versa.",
+                    path: val.amount === undefined ? ["amount"] : ["unit"],
+                  });
+                }
+              })
+          )
+          .optional(),
       })
       .optional(),
     /**

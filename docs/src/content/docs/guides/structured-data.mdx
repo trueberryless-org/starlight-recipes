@@ -107,6 +107,8 @@ import DocField from '@/components/DocField.astro';
 
 Starlight Recipes focuses on [Google-supported and -recommended properties](https://developers.google.com/search/docs/appearance/structured-data/recipe#structured-data-type-definitions) as Google's convention is the most influential -- though this is likely a mix of market dominance, [citogenesis](https://xkcd.com/978/) and a "[Reiteration](https://en.wikipedia.org/wiki/Illusory_truth_effect) Loop".
 
+Each supported structured data property maps back to a specific frontmatter field in your Markdown or MDX files.
+
 ### `name`
 
 <DocField
@@ -124,6 +126,16 @@ Starlight Recipes focuses on [Google-supported and -recommended properties](http
 />
 
 Starlight Recipes will use the cover image to generate three images with the following aspect ratios for [best results](https://developers.google.com/search/docs/appearance/structured-data/recipe/#:~:text=aspect%20ratios): 16x9, 4x3, and 1x1.
+
+### `datePublished`
+
+<DocField
+  description="The date the recipe was published."
+  links={[{ label: "date", href: "/guides/frontmatter#date" }]}
+  direction="upstream"
+/>
+
+This will be converted to an [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601).
 
 ### `description`
 
@@ -167,5 +179,97 @@ Supports single or multiple authors (though too many may spoil the broth).
   direction="upstream"
 />
 
-For example: the season ("summer"), the holiday ("Halloween"), or other descriptors ("quick", "easy", "authentic").<br />
-Don't use a tag that's actually a [recipeCategory](#recipecategory) or [recipeCuisine](#recipecuisine).
+For example: the season (`"Summer"`), the holiday (`"Halloween"`), or other descriptors (`"Quick"`, `"Easy"`, `"Authentic"`).
+
+Don't use a tag that's actually a [`recipeCategory`](#recipecategory) or [`recipeCuisine`](#recipecuisine).
+
+### `averageRating`
+
+The average user rating and total number of ratings for the recipe.
+
+This is automatically calculated if the [rating system](/interactive/rating-system) is enabled.
+
+### `prepTime`
+
+<DocField
+  description="The length of time it takes to prepare the recipe."
+  links={[{ label: "time.preparation", href: "/guides/frontmatter#time" }]}
+  direction="upstream"
+/>
+
+Minutes will be converted into the [ISO 8601 duration format](https://en.wikipedia.org/wiki/ISO_8601#Durations).
+
+### `cookTime`
+
+<DocField
+  description="The length of time it takes to cook the recipe."
+  links={[{ label: "time.cooking", href: "/guides/frontmatter#time" }]}
+  direction="upstream"
+/>
+
+Minutes will be converted into the [ISO 8601 duration format](https://en.wikipedia.org/wiki/ISO_8601#Durations).
+
+### `totalTime`
+
+<DocField
+  description="The total time it takes to finish making the dish."
+  links={[{ label: "time.total", href: "/guides/frontmatter#time" }]}
+  direction="upstream"
+/>
+
+Minutes will be converted into the [ISO 8601 duration format](https://en.wikipedia.org/wiki/ISO_8601#Durations).
+
+:::note
+If `totalTime` is not explicitly provided in the frontmatter, it is automatically calculated as the sum of `prepTime` and `cookTime`.
+:::
+
+### `nutrition`
+
+<DocField
+  description="Nutritional information about the recipe, specifically calories."
+  links={[{ label: "calories", href: "/guides/frontmatter#calories" }]}
+  direction="upstream"
+/>
+
+Maps to the `nutrition.calories` property.
+
+### `recipeIngredient`
+
+<DocField
+  description="A list of ingredients required for the recipe."
+  links={[{ label: "ingredients", href: "/guides/frontmatter#ingredients" }]}
+  direction="upstream"
+/>
+
+Structured [`IngredientObject`](/guides/frontmatter#ingredientobject) entries are flattened into a single string following the format: `"{quantity} {unit} {name}"`.
+
+### `recipeInstructions`
+
+<DocField
+  description="A step-by-step guide to making the recipe."
+  links={[{ label: "instructions", href: "/guides/frontmatter#instructions" }]}
+  direction="upstream"
+/>
+
+Maps to an array of `HowToStep` objects.
+`name`, `text`, and `image` from [`InstructionStep`](/guides/frontmatter#instructionstep) are included in the structured step.
+
+### `recipeYield`
+
+<DocField
+  description="The quantity or number of servings produced by the recipe."
+  links={[{ label: "yield", href: "/guides/frontmatter#yield" }]}
+  direction="upstream"
+/>
+
+This property includes both the primary `servings` count and any strings generated from the `additional` yields array.
+
+### `video`
+
+<DocField
+  description="A video object representing the recipe's video content."
+  links={[{ label: "video", href: "/guides/frontmatter#video" }]}
+  direction="upstream"
+/>
+
+If [`processVideo`](/configuration#processvideo) is enabled, Starlight Recipes fetches metadata directly from the YouTube API to populate the `VideoObject`, including the thumbnail, upload date, and duration.
