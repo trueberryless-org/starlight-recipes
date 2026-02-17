@@ -16,7 +16,8 @@ export default defineConfig({
   },
   webServer: [
     {
-      command: "pnpm run build && pnpm run preview",
+      command:
+        "PLAYWRIGHT=true pnpm run build && PLAYWRIGHT=true pnpm run preview",
       cwd: "../../docs",
       reuseExistingServer: !process.env["CI"],
       url: "http://localhost:4321",
