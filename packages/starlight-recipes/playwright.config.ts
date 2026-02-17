@@ -12,15 +12,15 @@ export default defineConfig({
     },
   ],
   use: {
-    baseURL: "http://127.0.0.1:4321",
+    baseURL: "http://172.0.0.1:4321",
   },
   webServer: [
     {
-      command: "pnpm run build && pnpm dlx netlify serve",
+      command: "pnpm run build && pnpm run preview",
       cwd: "../../docs",
       reuseExistingServer: !process.env["CI"],
-      url: "http://127.0.0.1:8888",
-      timeout: 60000,
+      url: "http://localhost:4321",
+      timeout: 120000,
     },
   ],
 });
