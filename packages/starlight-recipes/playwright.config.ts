@@ -20,7 +20,7 @@ export default defineConfig({
       cwd: "../../docs",
       reuseExistingServer: !process.env["CI"],
       url: "http://localhost:4321",
-      timeout: 120000,
+      timeout: 60000,
     },
   ],
 });

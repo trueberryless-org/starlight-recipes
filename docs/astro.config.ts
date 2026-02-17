@@ -1,4 +1,5 @@
 import netlify from "@astrojs/netlify";
+import node from "@astrojs/node";
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import starlightLinksValidator from "starlight-links-validator";
@@ -6,7 +7,7 @@ import starlightRecipes from "starlight-recipes";
 
 export default defineConfig({
   site: "https://starlight-recipes.trueberryless.org",
-  adapter: netlify(),
+  adapter: process.env.PLAYWRIGHT ? node({ mode: "standalone" }) : netlify(),
   integrations: [
     starlight({
       title: "Starlight Recipes",

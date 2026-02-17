@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@astrojs/netlify": "^6.5.13",
+    "@astrojs/node": "^9.5.3",
     "@astrojs/starlight": "^0.37.3",
     "@expressive-code/plugin-collapsible-sections": "^0.41.5",
     "astro": "^5.16.14",
