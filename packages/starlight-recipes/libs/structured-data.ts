@@ -153,10 +153,13 @@ export async function getRecipeHead(
 
   const prepTime = getPrepTime(recipe.entry);
   const cookTime = getCookTime(recipe.entry);
-  const totalTime = getTotalTime(recipe.entry);
-  if (prepTime && cookTime && totalTime) {
+  if (prepTime && cookTime) {
     recipeStructuredData.prepTime = prepTime;
     recipeStructuredData.cookTime = cookTime;
+  }
+
+  const totalTime = getTotalTime(recipe.entry);
+  if (totalTime) {
     recipeStructuredData.totalTime = totalTime;
   }
 
@@ -165,7 +168,7 @@ export async function getRecipeHead(
   if (data.description) recipeStructuredData.description = data.description;
   const tags = data.tags?.join(", ");
   if (tags) recipeStructuredData.keywords = tags;
-  if (data.calories)
+  if (data.calories && data.yield?.servings)
     recipeStructuredData.nutrition = {
       "@type": "NutritionInformation",
       calories: `${data.calories} calories`,

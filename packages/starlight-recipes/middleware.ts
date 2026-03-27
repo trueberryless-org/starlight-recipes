@@ -87,12 +87,7 @@ async function getRecipeEntriesData(
       const tags = getEntryTags(entry);
 
       const averageRating = await getRecipeRating(entry.id);
-      const time = {
-        preparation: entry.data.time?.preparation,
-        cooking: entry.data.time?.cooking,
-        total:
-          (entry.data.time?.preparation ?? 0) + (entry.data.time?.cooking ?? 0),
-      };
+      const time = entry.data.time;
       const cuisine = resolveCuisine(entry.data.cuisine, locale);
 
       const recipesData: StarlightRecipesData["recipes"][number] = {

@@ -112,8 +112,7 @@ export interface StarlightRecipesData {
        */
       cooking?: number | undefined;
       /**
-       * The total time required for the recipe (preparation + cooking),
-       * measured in minutes.
+       * The total time required for the recipe, measured in minutes.
        */
       total?: number | undefined;
     };

@@ -60,152 +60,164 @@ export const instructionStepSchema = (image: ImageFunction) =>
   ]);
 
 export const recipeEntrySchema = ({ image }: SchemaContext) =>
-  z.object({
-    /**
-     * The cover image for the recipe.
-     */
-    cover: z.object({
+  z
+    .object({
       /**
-       * Alternative text describing the cover image for assistive technologies.
+       * The cover image for the recipe.
        */
-      alt: z.string(),
-      /**
-       * Relative path to an image file in your project, e.g. `../../assets/cover.png`, or a URL to a remote image.
-       */
-      image: z.union([image(), z.string()]),
-    }),
-    /**
-     * The publish date of the recipe which must be a valid YAML timestamp.
-     * @see https://yaml.org/type/timestamp.html
-     */
-    date: z.date(),
-    /**
-     * The type of meal or course your recipe is about.
-     */
-    category: z.string().optional(),
-    /**
-     * The region associated with your recipe.
-     *
-     * If a valid ISO 3166-1 two-letter country code is provided (e.g., "AT" or "JP"),
-     * the localized country name will be returned with the corresponding country emoji flag appended.
-     * For non-ISO strings (e.g., "Mediterranean"), the text will be returned as-is.
-     */
-    cuisine: z.string().optional(),
-    /**
-     * A list of tags associated with the recipe.
-     *
-     * These tags will be used as keywords for structured data: https://schema.org/keywords
-     */
-    tags: z.string().array().optional(),
-    /**
-     * Defines whether the recipe is featured or not.
-     * Featured recipes are displayed in a dedicated sidebar group above popular recipes.
-     */
-    featured: z.boolean().optional(),
-    /**
-     * The author(s) of the recipe.
-     * If not provided, the authors will be inferred from the `authors` configuration option if defined.
-     */
-    authors: z
-      .union([
-        z.string(),
-        recipesAuthorSchema,
-        z.array(z.union([z.string(), recipesAuthorSchema])),
-      ])
-      .optional(),
-    /**
-     * Duration related data about the recipe.
-     */
-    time: z
-      .object({
+      cover: z.object({
         /**
-         * The length of time it takes to prepare ingredients and workspace for the dish in minutes.
+         * Alternative text describing the cover image for assistive technologies.
          */
-        preparation: z.number().nonnegative().optional(),
+        alt: z.string(),
         /**
-         * The time it takes to actually cook the dish in minutes.
+         * Relative path to an image file in your project, e.g. `../../assets/cover.png`, or a URL to a remote image.
          */
-        cooking: z.number().nonnegative().optional(),
-        /**
-         * The total time until the dish is finished.
-         */
-        total: z.number().nonnegative().optional(),
-      })
-      .superRefine((val, ctx) => {
-        if (val.preparation !== undefined && val.cooking === undefined) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Cooking time must be provided if preparation time is set",
-            path: ["cooking"],
-          });
-        }
-        if (val.cooking !== undefined && val.preparation === undefined) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Preparation time must be provided if cooking time is set",
-            path: ["preparation"],
-          });
-        }
+        image: z.union([image(), z.string()]),
       }),
-    /**
-     * Details regarding the final output or portion size of the recipe.
-     */
-    yield: z
-      .object({
-        /**
-         * The numeric quantity produced (e.g., 4, 12, 1.5).
-         */
-        servings: z.number().nonnegative(),
-        /**
-         * Additional yield variations (e.g., amount: 24, unit: "cookies").
-         */
-        additional: z
-          .array(
-            z
-              .object({
-                /**
-                 * The numeric quantity produced (e.g., 4, 12, 1.5).
-                 */
-                amount: z.number().nonnegative().optional(),
-                /**
-                 * The specific scale of measurement for the amount (e.g., "servings", "cookies", "loaves").
-                 */
-                unit: z.string().optional(),
-              })
-              .superRefine((val, ctx) => {
-                if (
-                  (val.amount !== undefined && val.unit === undefined) ||
-                  (val.amount === undefined && val.unit !== undefined)
-                ) {
-                  ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message:
-                      "If amount is set, unit must also be set, and vice versa.",
-                    path: val.amount === undefined ? ["amount"] : ["unit"],
-                  });
-                }
-              })
-          )
-          .optional(),
-      })
-      .optional(),
-    /**
-     * The number of calories in each serving produced with this recipe.
-     */
-    calories: z.number().nonnegative().optional(),
-    /**
-     * List of ingredients used in the recipe.
-     */
-    ingredients: z.array(ingredientSchema).default([]),
-    /**
-     * The steps to make the dish.
-     */
-    instructions: z.array(instructionStepSchema(image)).default([]),
-    /**
-     * A YouTube URL of a video depicting the steps to make the dish.
-     */
-    video: z.string().url().optional(),
-  });
+      /**
+       * The publish date of the recipe which must be a valid YAML timestamp.
+       * @see https://yaml.org/type/timestamp.html
+       */
+      date: z.date(),
+      /**
+       * The type of meal or course your recipe is about.
+       */
+      category: z.string().optional(),
+      /**
+       * The region associated with your recipe.
+       *
+       * If a valid ISO 3166-1 two-letter country code is provided (e.g., "AT" or "JP"),
+       * the localized country name will be returned with the corresponding country emoji flag appended.
+       * For non-ISO strings (e.g., "Mediterranean"), the text will be returned as-is.
+       */
+      cuisine: z.string().optional(),
+      /**
+       * A list of tags associated with the recipe.
+       *
+       * These tags will be used as keywords for structured data: https://schema.org/keywords
+       */
+      tags: z.string().array().optional(),
+      /**
+       * Defines whether the recipe is featured or not.
+       * Featured recipes are displayed in a dedicated sidebar group above popular recipes.
+       */
+      featured: z.boolean().optional(),
+      /**
+       * The author(s) of the recipe.
+       * If not provided, the authors will be inferred from the `authors` configuration option if defined.
+       */
+      authors: z
+        .union([
+          z.string(),
+          recipesAuthorSchema,
+          z.array(z.union([z.string(), recipesAuthorSchema])),
+        ])
+        .optional(),
+      /**
+       * Duration related data about the recipe.
+       */
+      time: z
+        .object({
+          /**
+           * The length of time it takes to prepare ingredients and workspace for the dish in minutes.
+           */
+          preparation: z.number().nonnegative().optional(),
+          /**
+           * The time it takes to actually cook the dish in minutes.
+           */
+          cooking: z.number().nonnegative().optional(),
+          /**
+           * The total time until the dish is finished.
+           */
+          total: z.number().nonnegative().optional(),
+        })
+        .superRefine((val, ctx) => {
+          if (val.preparation !== undefined && val.cooking === undefined) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message:
+                "Cooking time must be provided if preparation time is set",
+              path: ["cooking"],
+            });
+          }
+          if (val.cooking !== undefined && val.preparation === undefined) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              message:
+                "Preparation time must be provided if cooking time is set",
+              path: ["preparation"],
+            });
+          }
+        }),
+      /**
+       * Details regarding the final output or portion size of the recipe.
+       */
+      yield: z
+        .object({
+          /**
+           * The numeric quantity produced (e.g., 4, 12, 1.5).
+           */
+          servings: z.number().nonnegative(),
+          /**
+           * Additional yield variations (e.g., amount: 24, unit: "cookies").
+           */
+          additional: z
+            .array(
+              z
+                .object({
+                  /**
+                   * The numeric quantity produced (e.g., 4, 12, 1.5).
+                   */
+                  amount: z.number().nonnegative().optional(),
+                  /**
+                   * The specific scale of measurement for the amount (e.g., "servings", "cookies", "loaves").
+                   */
+                  unit: z.string().optional(),
+                })
+                .superRefine((val, ctx) => {
+                  if (
+                    (val.amount !== undefined && val.unit === undefined) ||
+                    (val.amount === undefined && val.unit !== undefined)
+                  ) {
+                    ctx.addIssue({
+                      code: z.ZodIssueCode.custom,
+                      message:
+                        "If amount is set, unit must also be set, and vice versa.",
+                      path: val.amount === undefined ? ["amount"] : ["unit"],
+                    });
+                  }
+                })
+            )
+            .optional(),
+        })
+        .optional(),
+      /**
+       * The number of calories in each serving produced with this recipe.
+       */
+      calories: z.number().nonnegative().optional(),
+      /**
+       * List of ingredients used in the recipe.
+       */
+      ingredients: z.array(ingredientSchema).default([]),
+      /**
+       * The steps to make the dish.
+       */
+      instructions: z.array(instructionStepSchema(image)).default([]),
+      /**
+       * A YouTube URL of a video depicting the steps to make the dish.
+       */
+      video: z.string().url().optional(),
+    })
+    .superRefine((val, ctx) => {
+      if (val.calories !== undefined && val.yield?.servings === undefined) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "If calories are set, yield.servings must also be set.",
+          path: ["yield", "servings"],
+        });
+      }
+    });
 
 export function recipesSchema(context: SchemaContext) {
   // Checking for `context` to provide a better migration error message.
@@ -221,7 +233,7 @@ If you believe this is a bug, please file an issue at https://github.com/trueber
     );
   }
 
-  return recipeEntrySchema(context).partial();
+  return recipeEntrySchema(context)._def.schema.partial();
 }
 
 export type StarlightRecipesAuthor = z.infer<typeof recipesAuthorSchema>;

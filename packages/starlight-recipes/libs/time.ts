@@ -22,17 +22,7 @@ export const getTotalTime = (
   entry: StarlightRecipeEntry
 ): string | undefined => {
   const total = entry.data.time?.total;
-  if (total != undefined) {
-    return secondsToIsoDuration(total * 60);
-  }
-  const prepTime = getPrepTime(entry);
-  const cookTime = getCookTime(entry);
-
-  if (prepTime != undefined && cookTime != undefined) {
-    return addDurations(prepTime, cookTime);
-  }
-
-  return prepTime ?? cookTime;
+  return total != undefined ? secondsToIsoDuration(total * 60) : undefined;
 };
 
 type DurationUnits = Omit<Duration, "negative">;
