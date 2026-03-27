@@ -7,9 +7,9 @@ import type { Locale } from "../../libs/i18n";
 import PrevNextLinks from "../starlight/PrevNextLinks.astro";
 import Categories from "../taxonomy/Categories.astro";
 import Cuisines from "../taxonomy/Cuisines.astro";
-
 import Tags from "../taxonomy/Tags.astro";
 import Flexbox from "../ui/Flexbox.astro";
+import PrintButton from "../ui/PrintButton.astro";
 
 interface Props {
   entry: StarlightRecipeEntry;
@@ -22,10 +22,13 @@ const { entry, locale, nextLink, prevLink } = Astro.props;
 ---
 
 <div class="recipe-footer">
-  <Flexbox>
-    <Cuisines {entry} {locale} />
-    <Categories {entry} {locale} />
-  </Flexbox>
+  <div class="footer-top-row">
+    <Flexbox>
+      <Cuisines {entry} {locale} />
+      <Categories {entry} {locale} />
+    </Flexbox>
+    <PrintButton />
+  </div>
   <Tags {entry} {locale} />
   <PrevNextLinks next={nextLink} prev={prevLink} />
 </div>
@@ -36,5 +39,13 @@ const { entry, locale, nextLink, prevLink } = Astro.props;
     flex-direction: column;
     gap: 0.5rem;
     margin-block-start: 2rem;
+  }
+
+  .footer-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
   }
 </style>

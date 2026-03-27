@@ -52,3 +52,50 @@ if (config.processVideo && entry.data.video) {
   }
   <Footer {entry} {locale} {nextLink} {prevLink} />
 </Default>
+
+<style is:global>
+  @media print {
+    /* Hide interactive/web-only components */
+    .yield-controls,
+        reset-controller,
+        .marker-check,
+        .step-input,
+        .timer-pill,
+        .icon-play,
+        .icon-pause,
+        .icon-check,
+        .starlight-recipes-video-card, /* Or whatever ShowcaseMediaCard renders */
+        .prev-next-links,
+        footer,
+        nav {
+      display: none !important;
+    }
+
+    /* Ensure the ingredient list doesn't look like a web app */
+    .yield-pill {
+      background: none !important;
+      border: none !important;
+      padding: 0 !important;
+    }
+
+    /* Show the step numbers clearly since the custom markers are hidden */
+    .sl-steps > li {
+      padding-inline-start: 3rem !important;
+    }
+
+    .sl-steps > li::before {
+      display: block !important; /* Force standard list numbering for print */
+    }
+
+    /* Hide connector lines for print since interactive markers are hidden */
+    .sl-steps > li::after {
+      display: none !important;
+    }
+
+    /* Keep the images but make sure they don't break across pages */
+    img {
+      break-inside: avoid;
+      max-height: 300px;
+    }
+  }
+</style>

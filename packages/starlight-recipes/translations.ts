@@ -26,6 +26,7 @@ export const Translations = {
     "starlightRecipes.recipe.instructions.heading": "Instructions",
     "starlightRecipes.recipe.instructions.reset": "Reset",
     "starlightRecipes.recipe.instructions.resetProgress": "Reset progress",
+    "starlightRecipes.recipe.print": "Print Recipe",
     "starlightRecipes.recipe.published": "Published",
     "starlightRecipes.recipe.rating.alreadyVoted": "Already voted!",
     "starlightRecipes.recipe.rating.empty": "No ratings",
@@ -84,6 +85,7 @@ export const Translations = {
     "starlightRecipes.recipe.instructions.reset": "Zurücksetzen",
     "starlightRecipes.recipe.instructions.resetProgress":
       "Fortschritt zurücksetzen",
+    "starlightRecipes.recipe.print": "Rezept ausdrucken",
     "starlightRecipes.recipe.published": "Veröffentlicht",
     "starlightRecipes.recipe.rating.alreadyVoted": "Bereits abgestimmt!",
     "starlightRecipes.recipe.rating.empty": "Keine Bewertungen",
