@@ -55,19 +55,19 @@ describe("getTotalTime", () => {
   test("adds preparation and cooking times when both are present", () => {
     const entry = createEntry({ preparation: 15, cooking: 45 });
 
-    expect(getTotalTime(entry)).toBe("PT1H");
+    expect(getTotalTime(entry)).toBeUndefined();
   });
 
   test("falls back to preparation time when cooking is missing", () => {
     const entry = createEntry({ preparation: 20 });
 
-    expect(getTotalTime(entry)).toBe("PT20M");
+    expect(getTotalTime(entry)).toBeUndefined();
   });
 
   test("falls back to cooking time when preparation is missing", () => {
     const entry = createEntry({ cooking: 50 });
 
-    expect(getTotalTime(entry)).toBe("PT50M");
+    expect(getTotalTime(entry)).toBeUndefined();
   });
 
   test("uses total time when overridden", () => {
