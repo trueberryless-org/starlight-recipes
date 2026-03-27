@@ -21,8 +21,8 @@
     "start": "astro dev"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.37.2",
-    "astro": "^5.16.7",
+    "@astrojs/starlight": "^0.38.2",
+    "astro": "^5.18.1",
     "sharp": "^0.34.5",
     "starlight-recipes": "workspace:*"
   },
