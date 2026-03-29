@@ -1,0 +1,416 @@
+---
+interface Props {
+  recipeId: string;
+  votingEnabled?: boolean;
+}
+
+const { recipeId, votingEnabled } = Astro.props;
+
+const noRatingsText = Astro.locals.t("starlightRecipes.recipe.rating.empty");
+const alreadyVotedText = Astro.locals.t(
+  "starlightRecipes.recipe.rating.alreadyVoted"
+);
+const serverErrorText = Astro.locals.t(
+  "starlightRecipes.recipe.rating.serverError"
+);
+---
+
+<recipe-rating
+  data-recipe-id={recipeId}
+  data-interactive={votingEnabled ? "true" : "false"}
+  data-no-ratings-text={noRatingsText}
+  data-already-voted-text={alreadyVotedText}
+  data-server-error-text={serverErrorText}
+  class="not-content"
+  style="margin: 0"
+>
+  <div class="rating-wrapper">
+    <div class="rating-container" id="main-container">
+      <div class="stars-wrapper" id="stars-container">
+        {
+          [5, 4, 3, 2, 1].map((num) => (
+            <button
+              type="button"
+              class="star-btn"
+              data-value={num}
+              aria-label={Astro.locals.t(
+                "starlightRecipes.recipe.rating.starLabel",
+                { count: num }
+              )}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="star-icon"
+              >
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+              </svg>
+            </button>
+          ))
+        }
+      </div>
+
+      <div class="rating-stats">
+        <div class="loading-spinner" id="spinner"></div>
+        <span class="avg-value">...</span>
+        <span class="count-value"></span>
+      </div>
+    </div>
+    <div class="error-msg" id="error-display"></div>
+  </div>
+</recipe-rating>
+
+<script>
+  import { stripLocaleFromSlug } from "../../libs/i18n";
+
+  class RecipeRating extends HTMLElement {
+    private recipeId: string;
+    private noRatingsText: string;
+    private alreadyVotedText: string;
+    private serverErrorText: string;
+    private isInteractive: boolean;
+    private votedKey: string;
+    private listenersBound = false;
+
+    constructor() {
+      super();
+      this.recipeId = this.dataset.recipeId!;
+      this.noRatingsText = this.dataset.noRatingsText || "No ratings";
+      this.alreadyVotedText = this.dataset.alreadyVotedText || "Already Voted!";
+      this.serverErrorText = this.dataset.serverErrorText || "Server Error!";
+      this.isInteractive = this.dataset.interactive === "true";
+      this.votedKey = `sl-recipes-voted-${stripLocaleFromSlug(this.recipeId)}`;
+    }
+
+    connectedCallback() {
+      this.refreshStats();
+      this.checkVoted(this.votedKey);
+
+      if (!this.isInteractive || this.listenersBound) return;
+      this.listenersBound = true;
+
+      const buttons = this.querySelectorAll(".star-btn");
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", () =>
+          this.handleVote(btn.getAttribute("data-value"))
+        );
+      });
+    }
+
+    async handleVote(stars: string | null) {
+      if (!stars) return;
+      if (localStorage.getItem(this.votedKey)) {
+        this.showError(this.alreadyVotedText);
+        return;
+      }
+
+      this.setLoading(true);
+
+      try {
+        const url = new URL("/api/rating", window.location.origin);
+        const res = await fetch(url.toString(), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            recipeId: this.recipeId,
+            stars: parseInt(stars, 10),
+          }),
+        });
+
+        const isSuccess = res.ok;
+        const isRateLimited = res.status === 403;
+
+        if (isSuccess) {
+          const updatedData = await res.json();
+          this.handleSuccess(updatedData);
+        } else if (isRateLimited) {
+          this.handleRateLimit();
+        } else {
+          this.handleServerError();
+        }
+      } catch (e) {
+        console.error("Voting failed", e);
+        this.handleServerError();
+      } finally {
+        this.setLoading(false);
+      }
+    }
+
+    handleSuccess(data: { ratingValue: number; ratingCount: number }) {
+      localStorage.setItem(this.votedKey, "true");
+      this.checkVoted(this.votedKey);
+      this.updateUI(data.ratingValue, data.ratingCount);
+    }
+
+    handleRateLimit() {
+      localStorage.setItem(this.votedKey, "true");
+      this.checkVoted(this.votedKey);
+      this.showError(this.alreadyVotedText);
+    }
+
+    handleServerError() {
+      this.showError(this.serverErrorText);
+    }
+
+    showError(message: string) {
+      const container = this.querySelector(".rating-container");
+      const errorMsg = this.querySelector("#error-display");
+
+      if (errorMsg) errorMsg.textContent = message;
+
+      container?.classList.add("shake-error");
+      errorMsg?.classList.add("visible");
+
+      setTimeout(() => {
+        container?.classList.remove("shake-error");
+        errorMsg?.classList.remove("visible");
+      }, 2000);
+    }
+
+    setLoading(isLoading: boolean) {
+      const container = this.querySelector(".rating-container");
+      if (isLoading) {
+        container?.classList.add("is-loading");
+      } else {
+        container?.classList.remove("is-loading");
+      }
+    }
+
+    checkVoted(key: string) {
+      if (localStorage.getItem(key) || !this.isInteractive) {
+        this.querySelector(".rating-container")?.classList.add("is-voted");
+      }
+    }
+
+    highlightStars(rating: number) {
+      this.querySelectorAll(".star-btn").forEach((btn) =>
+        btn.classList.remove("selected")
+      );
+      const roundedRating = Math.round(rating);
+      if (roundedRating > 0) {
+        const starToSelect = this.querySelector(
+          `.star-btn[data-value="${roundedRating}"]`
+        );
+        starToSelect?.classList.add("selected");
+      }
+    }
+
+    updateUI(avg: number, count: number) {
+      const avgEl = this.querySelector(".avg-value");
+      const countEl = this.querySelector(".count-value");
+
+      if (avgEl) {
+        avgEl.textContent =
+          avg > 0 ? Number(avg).toFixed(1) : this.noRatingsText;
+      }
+      if (countEl) countEl.textContent = `(${count})`;
+
+      if (localStorage.getItem(this.votedKey) || !this.isInteractive) {
+        this.highlightStars(avg);
+      }
+    }
+
+    async refreshStats() {
+      const spinner = this.querySelector("#spinner");
+      spinner?.classList.add("active");
+
+      try {
+        const url = new URL("/api/rating", window.location.origin);
+        url.searchParams.set("id", this.recipeId);
+
+        const res = await fetch(url.toString());
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const data = await res.json();
+        if (data && typeof data.ratingValue === "number") {
+          this.updateUI(data.ratingValue, data.ratingCount);
+        }
+      } catch (e) {
+        console.error("Could not fetch ratings", e);
+      } finally {
+        spinner?.classList.remove("active");
+      }
+    }
+  }
+
+  customElements.define("recipe-rating", RecipeRating);
+</script>
+
+<style>
+  .rating-wrapper {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .rating-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--sl-color-gray-6, #1e293b);
+    border-radius: 99px;
+    border: 1px solid var(--sl-color-gray-5);
+  }
+
+  .error-msg {
+    position: absolute;
+    bottom: -1.5rem;
+    font-size: 0.75rem;
+    color: #ef4444;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .error-msg.visible {
+    opacity: 1;
+  }
+
+  .shake-error {
+    animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    border-color: #ef4444 !important;
+  }
+
+  @keyframes shake {
+    10%,
+    90% {
+      transform: translate3d(-1px, 0, 0);
+    }
+    20%,
+    80% {
+      transform: translate3d(2px, 0, 0);
+    }
+    30%,
+    50%,
+    70% {
+      transform: translate3d(-3px, 0, 0);
+    }
+    40%,
+    60% {
+      transform: translate3d(3px, 0, 0);
+    }
+  }
+
+  .is-loading {
+    pointer-events: none;
+    opacity: 0.8;
+  }
+
+  .is-loading .star-icon {
+    animation: star-pulse 1.5s infinite ease-in-out;
+  }
+
+  @keyframes star-pulse {
+    0% {
+      color: var(--sl-color-gray-4);
+      transform: scale(1);
+    }
+    50% {
+      color: #facc15;
+      transform: scale(1.1);
+    }
+    100% {
+      color: var(--sl-color-gray-4);
+      transform: scale(1);
+    }
+  }
+
+  .loading-spinner {
+    display: none;
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--sl-color-gray-4);
+    border-top: 2px solid #facc15;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .loading-spinner.active {
+    display: inline-block;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .rating-container.is-voted {
+    background: var(--sl-color-gray-6, #1e293b);
+    opacity: 0.7;
+    filter: grayscale(0.4);
+    border-color: transparent;
+  }
+
+  .is-voted .star-btn {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .is-voted .avg-value,
+  .is-voted .count-value {
+    color: var(--sl-color-gray-3);
+  }
+
+  .stars-wrapper {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+  }
+
+  .star-btn {
+    background: none;
+    border: none;
+    padding: 0 1px;
+    cursor: pointer;
+    color: var(--sl-color-gray-4);
+    transition:
+      transform 0.1s ease,
+      color 0.2s ease;
+    display: flex;
+    align-items: center;
+  }
+
+  .star-btn:hover {
+    transform: scale(1.2);
+  }
+
+  .star-btn:hover,
+  .star-btn:hover ~ .star-btn,
+  .star-btn.selected,
+  .star-btn.selected ~ .star-btn {
+    color: #facc15;
+  }
+
+  .star-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .rating-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    line-height: 1;
+  }
+
+  .avg-value {
+    font-weight: 700;
+    color: var(--sl-color-white);
+    white-space: nowrap;
+  }
+
+  .count-value {
+    color: var(--sl-color-gray-3);
+  }
+</style>

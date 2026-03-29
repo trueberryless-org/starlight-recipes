@@ -1,0 +1,54 @@
+---
+
+---
+
+<button class="print-button not-content" onclick="window.print()">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+    <path
+      d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
+    ></path>
+    <rect x="6" y="14" width="12" height="8"></rect>
+  </svg>
+  <span
+    >{Astro.locals.t("starlightRecipes.recipe.print") || "Print Recipe"}</span
+  >
+</button>
+
+<style>
+  .print-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    background: var(--sl-color-gray-6);
+    color: var(--sl-color-white);
+    border: 1px solid var(--sl-color-gray-5);
+    font-size: var(--sl-text-xs);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .print-button:hover {
+    background: var(--sl-color-accent-low);
+    border-color: var(--sl-color-accent);
+  }
+
+  @media print {
+    .print-button {
+      display: none;
+    }
+  }
+</style>

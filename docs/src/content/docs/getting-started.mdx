@@ -1,49 +1,43 @@
 ---
 title: Getting Started
+description: Step-by-step instructions to setup Starlight Recipes.
 ---
 
-Starlight plugin to create a recipe website.
+An opinionated [Starlight](https://starlight.astro.build) plugin to create a recipe website.
+
+Starlight Recipes supports the following features:
+
+- Paginated recipe browsing and discovery
+- Global and per-recipe author attribution
+- High-resolution cover image support
+- Custom sidebar with featured content
+- Cooking mode: Integrated timers and checkboxes
+- Dynamic ingredient scaling by serving size
+- Print-optimized layouts for every recipe
+- Automated SEO via [recipe structured data](/guides/structured-data)
+
+The following features are available when you allow [on-demand rendering](https://docs.astro.build/en/guides/on-demand-rendering/):
+
+- Automatic [rating system](/interactive/rating-system) based on [Countify](https://countify.xyz/)
+
+Check out the [demo](/recipes) for a preview of an example cookbook.
 
 ## Prerequisites
 
 You will need to have a Starlight website set up.
 If you don't have one yet, you can follow the ["Getting Started"](https://starlight.astro.build/getting-started) guide in the Starlight docs to create one.
 
-## Installation
+## Installation and setup
 
-import { Steps, Tabs, TabItem } from '@astrojs/starlight/components'
+import { Steps, TabItem } from '@astrojs/starlight/components'
+import InstallAdapterCommands from '@/components/InstallAdapterCommands.astro'
+import PackageManagers from '@/components/PackageManagers.astro'
 
 <Steps>
 
-1. `starlight-recipes` is a Starlight [plugin](https://starlight.astro.build/reference/plugins/). Install it by running the following command in your terminal:
+1. Starlight Recipes is a Starlight [plugin](https://starlight.astro.build/reference/plugins/). Install it by running the following command in your terminal:
 
-   <Tabs syncKey="pkg">
-
-   <TabItem label="npm">
-
-   ```sh
-   npm install starlight-recipes
-   ```
-
-   </TabItem>
-
-   <TabItem label="pnpm">
-
-   ```sh
-   pnpm add starlight-recipes
-   ```
-
-   </TabItem>
-
-   <TabItem label="Yarn">
-
-   ```sh
-   yarn add starlight-recipes
-   ```
-
-   </TabItem>
-
-   </Tabs>
+   <PackageManagers pkg="starlight-recipes" />
 
 2. Configure the plugin in your Starlight [configuration](https://starlight.astro.build/reference/configuration/#plugins) in the `astro.config.mjs` file.
 
@@ -63,6 +57,67 @@ import { Steps, Tabs, TabItem } from '@astrojs/starlight/components'
    })
    ```
 
-3. [Start the development server](https://starlight.astro.build/getting-started/#start-the-development-server) to preview the plugin in action.
+3. Starlight Recipes uses [Astro's content collections](https://docs.astro.build/en/guides/content-collections/), which are configured in the `src/content.config.ts` file.
+
+    Update the content config file to add support for customizing individual recipes using their frontmatter:
+
+    ```diff lang="ts"
+    // src/content.config.ts
+    import { defineCollection } from 'astro:content';
+    import { docsLoader } from '@astrojs/starlight/loaders';
+    import { docsSchema } from '@astrojs/starlight/schema';
+    +import { recipesSchema } from 'starlight-recipes/schema'
+
+    export const collections = {
+      docs: defineCollection({
+        loader: docsLoader(),
+        schema: docsSchema({
+    +      extend: (context) => recipesSchema(context)
+        })
+      }),
+    };
+    ```
+
+    If you are already [extending Starlight's schema](https://starlight.astro.build/reference/frontmatter/#extend) with additional fields, you can rely on [Zod's API](https://v3.zod.dev/?id=merge) to compose schemas together, e.g. `recipesSchema(context).merge(mySchema)`.
+
+4. Add [Astro's `site` configuration](https://docs.astro.build/en/reference/configuration-reference/#site) to enable [Structured Data](/guides/structured-data).
+    This is necessary to generate valid SEO images.
+
+    ```diff lang="js"
+    // astro.config.mjs
+    import starlight from '@astrojs/starlight'
+    import { defineConfig } from 'astro/config'
+    import starlightRecipes from 'starlight-recipes'
+
+    export default defineConfig({
+    + site: "https://example.com",
+      integrations: [
+        starlight({
+        plugins: [starlightRecipes()],
+        title: 'My Docs',
+        }),
+      ],
+    })
+    ```
+
+5. Add any [Astro Server Adapter](https://docs.astro.build/en/guides/on-demand-rendering/#server-adapters) to unlock [interactive features](/interactive).
+
+    <InstallAdapterCommands />
+
+6. Create your first recipe by copying the recipe's cover image into a new project folder, like `src/assets/`, and creating a `.md` or `.mdx` file in the `src/content/docs/recipes/` directory:
+
+    ```md
+    ---
+    // src/content/docs/recipes/virgin-colada.md
+    title: Virgin Colada
+    cover:
+      alt: A tall glass of Virgin Colada with a pineapple wedge and cherry
+      image: "../../../assets/virgin-colada.png"
+    ---
+    ```
+
+7. [Start the development server](https://starlight.astro.build/getting-started/#start-the-development-server) to preview the plugin in action.
 
 </Steps>
+
+The Starlight Recipes plugin behavior can be tweaked using various [configuration options](/configuration).

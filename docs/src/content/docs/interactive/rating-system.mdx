@@ -1,0 +1,61 @@
+---
+title: Rating System
+description: Learn how Starlight Recipes' rating system works and what you need to set up.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+import GuidGenerator from '@/components/GuidGenerator.astro';
+import InstallAdapterCommands from '@/components/InstallAdapterCommands.astro';
+
+Starlight Recipes integrates a rating system based on [Countify](https://countify.xyz/).
+Every user can submit one vote from one to five stars and the average stars together with the count of votes will be shown on overview pages and recipe pages.
+
+In this guide you will learn what you need to do to enable this rating system.
+
+## Setup rating system
+
+The rating system requires additional configuration in order to be enabled.
+
+<Steps>
+
+1. Install and setup any [Astro Server Adapter](https://docs.astro.build/en/guides/on-demand-rendering/#server-adapters).
+
+    <InstallAdapterCommands />
+
+2. Additionally, you must generate a random GUID and set the environment variable `STARLIGHT_RECIPES_RATING_SECRET` to this string.
+   This GUID acts as a secret to prevent people from guessing the Countify ID so they could spam ratings.
+
+   Click on this button to generate a random variable for you:
+
+   <GuidGenerator />
+
+   :::danger
+   If you change this GUID, all your ratings will be reset as a different GUID represents another namespace.
+   :::
+
+</Steps>
+
+## How the rating system works
+
+When the [setup](#setup-rating-system) is completed, a hash of each recipe is generated based on the [id](https://docs.astro.build/en/reference/modules/astro-content/#id) of the recipe - aka the slugified file name.
+
+Based on this hash and your secret GUID, two counters are initialized for each recipe:
+
+- `sum`: Increases by the amount of stars voted by the user
+- `count`: Increases by one with each vote
+
+The average rating value therefore calculates with:
+
+```sh
+Average = sum / count
+```
+
+:::danger
+Because the filename is used to make the rating work, the rating will reset when you rename the recipe file.
+:::
+
+The calculated average rating is used to sort the most popular recipes at build time.
+If you want the sorting to be updated, redeploy your site to fetch the fresh data.
+
+You can configure how many recipes should be shown in the sidebar with [`popularRecipeCount`](/configuration#popularrecipecount).
+If the rating system is disabled, the popular sidebar group will not be shown.

@@ -1,0 +1,155 @@
+.expressive-code .frame {
+  --ec-brdRad: 12px;
+  border-radius: var(--ec-brdRad);
+  overflow: hidden;
+}
+
+.expressive-code .title {
+  border-top-left-radius: var(--ec-brdRad) !important;
+  border-top-right-radius: calc(var(--ec-brdRad) / 2);
+}
+
+.expressive-code .header {
+  border-top-left-radius: var(--ec-brdRad);
+  border-top-right-radius: var(--ec-brdRad);
+  overflow: hidden;
+}
+
+.card {
+  border-radius: 0.5rem;
+}
+
+.starlight-aside {
+  border-radius: 0.5rem;
+  border: 1px solid;
+  padding: 1rem;
+  margin: 1.5rem 0;
+}
+
+.starlight-aside--note {
+  background-color: oklch(23% 0.04 274);
+  border-color: oklch(36% 0.034 274);
+  color: oklch(90% 0.008 17);
+}
+
+.starlight-aside--note a {
+  color: oklch(89% 0.05 274);
+}
+
+.starlight-aside--tip {
+  background-color: oklch(24% 0.04 314);
+  border-color: oklch(36% 0.033 314);
+}
+
+.starlight-aside--tip a {
+  color: oklch(92% 0.05 314);
+}
+
+.starlight-aside--caution {
+  background-color: oklch(24% 0.04 84);
+  border-color: oklch(42% 0.042 84);
+}
+
+.starlight-aside--caution a {
+  color: oklch(96% 0.04 84);
+}
+
+.starlight-aside--danger {
+  background-color: oklch(22% 0.04 13);
+  border-color: oklch(37% 0.03 13);
+}
+
+.starlight-aside--danger a {
+  color: oklch(92% 0.04 13);
+}
+
+[data-theme="light"] .starlight-aside--note {
+  background-color: oklch(95% 0.02 274);
+  border-color: oklch(77% 0.05 274);
+  color: oklch(30% 0.015 17);
+}
+
+[data-theme="light"] .starlight-aside--note a {
+  color: oklch(35% 0.1 274);
+}
+
+[data-theme="light"] .starlight-aside--tip {
+  background-color: oklch(95% 0.02 314);
+  border-color: oklch(77% 0.05 314);
+}
+
+[data-theme="light"] .starlight-aside--tip a {
+  color: oklch(35% 0.1 314);
+}
+
+[data-theme="light"] .starlight-aside--caution {
+  background-color: oklch(96% 0.02 84);
+  border-color: oklch(78% 0.06 84);
+}
+
+[data-theme="light"] .starlight-aside--caution a {
+  color: oklch(35% 0.1 84);
+}
+
+[data-theme="light"] .starlight-aside--danger {
+  background-color: oklch(95% 0.02 13);
+  border-color: oklch(78% 0.04 13);
+}
+
+[data-theme="light"] .starlight-aside--danger a {
+  color: oklch(35% 0.1 13);
+}
+
+table {
+  width: 100%;
+  display: table;
+  margin: 2.5rem 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 0.75rem;
+  border: 1px solid oklch(28% 0.004 17);
+  overflow: hidden;
+}
+
+thead {
+  width: 100%;
+}
+
+tr {
+  width: 100%;
+}
+
+th {
+  width: auto;
+  font-weight: 600;
+  text-align: left;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid oklch(28% 0.004 17);
+}
+
+tr:first-child th:first-child {
+  border-top-left-radius: 0.75rem;
+}
+
+tr:first-child th:last-child {
+  border-top-right-radius: 0.75rem;
+}
+
+td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid oklch(28% 0.004 17);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+[data-theme="light"] th {
+  background-color: oklch(96% 0.003 17);
+  border-bottom-color: oklch(88% 0.004 17);
+}
+
+[data-theme="light"] table,
+[data-theme="light"] td {
+  border-color: oklch(88% 0.004 17);
+}

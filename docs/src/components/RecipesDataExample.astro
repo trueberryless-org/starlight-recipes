@@ -1,0 +1,19 @@
+<ul>
+  {
+    [...Astro.locals.starlightRecipes.recipes]
+      .sort((a, b) => {
+        const ratingA = a.averageRating?.ratingValue ?? 0;
+        const ratingB = b.averageRating?.ratingValue ?? 0;
+        return ratingB - ratingA;
+      })
+      .slice(0, 5)
+      .map((recipe) => (
+        <li>
+          <a href={recipe.href}>{recipe.title}</a>
+          {recipe.averageRating && (
+            <em>({recipe.averageRating.ratingValue}/5 stars)</em>
+          )}
+        </li>
+      ))
+  }
+</ul>

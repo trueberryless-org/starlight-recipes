@@ -1,0 +1,20 @@
+---
+import Default from "@astrojs/starlight/components/MarkdownContent.astro";
+
+import StarlightRecipesMarkdownContent from "../components/starlight/MarkdownContent.astro";
+import { isAnyRecipePage } from "../libs/page";
+
+const { id } = Astro.locals.starlightRoute;
+---
+
+{
+  isAnyRecipePage(id) ? (
+    <StarlightRecipesMarkdownContent>
+      <slot />
+    </StarlightRecipesMarkdownContent>
+  ) : (
+    <Default>
+      <slot />
+    </Default>
+  )
+}

@@ -1,0 +1,34 @@
+---
+import type { Locale } from "../../libs/i18n";
+import { getRelativeRecipeUrl } from "../../libs/page";
+
+interface Props {
+  slug: string;
+  label: string;
+  locale: Locale;
+}
+
+const { slug, label, locale } = Astro.props;
+---
+
+<a href={getRelativeRecipeUrl(slug, locale)}>{label}</a>
+
+<style>
+  a {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background: var(--sl-color-gray-6, #1e293b);
+    border-radius: 99px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--sl-color-white);
+    text-decoration: none;
+    transition: background 0.3s ease;
+    line-height: 1;
+  }
+
+  a:hover {
+    background: var(--sl-color-gray-5);
+  }
+</style>

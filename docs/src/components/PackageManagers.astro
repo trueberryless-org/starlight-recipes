@@ -1,0 +1,208 @@
+---
+import { Code } from "@astrojs/starlight/components";
+
+interface Props {
+  pkg: string;
+}
+
+const { pkg } = Astro.props;
+
+const managers = [
+  { id: "npm", cmd: `npm install ${pkg}` },
+  { id: "pnpm", cmd: `pnpm add ${pkg}` },
+  { id: "yarn", cmd: `yarn add ${pkg}` },
+];
+
+const DEFAULT_MANAGER = "npm";
+---
+
+<package-managers class="installer-wrapper not-prose not-content">
+  <div class="controls">
+    <div class="selector">
+      {
+        managers.map((m) => (
+          <button
+            class="pill"
+            type="button"
+            data-value={m.id}
+            data-default={m.id === DEFAULT_MANAGER}
+          >
+            {m.id}
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="code-stack">
+    {
+      managers.map((m) => (
+        <div
+          class="command-variant"
+          data-id={m.id}
+          data-default={m.id === DEFAULT_MANAGER}
+        >
+          <Code code={m.cmd} lang="sh" />
+        </div>
+      ))
+    }
+  </div>
+</package-managers>
+
+<script>
+  class PackageManagers extends HTMLElement {
+    static STORAGE_KEY = "starlight-synced-tabs__pkg";
+    static _memoryStore = new Map();
+    _bound = false;
+
+    _onStorage = (e: StorageEvent) => {
+      if (e.key === PackageManagers.STORAGE_KEY) {
+        if (e.newValue) PackageManagers._memoryStore.set(e.key, e.newValue);
+        this.updateUI();
+      }
+    };
+
+    connectedCallback() {
+      this.setAttribute("hydrated", "");
+      this.updateUI();
+
+      if (!this._bound) {
+        this._bindEvents();
+        this._bound = true;
+      }
+      window.addEventListener("storage", this._onStorage);
+    }
+
+    disconnectedCallback() {
+      window.removeEventListener("storage", this._onStorage);
+    }
+
+    _bindEvents() {
+      this.querySelectorAll(".pill").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const val = btn.getAttribute("data-value");
+          if (val) {
+            this._safeSet(PackageManagers.STORAGE_KEY, val);
+            this.updateUI();
+            window.dispatchEvent(
+              new StorageEvent("storage", {
+                key: PackageManagers.STORAGE_KEY,
+                newValue: val,
+                storageArea: localStorage,
+              })
+            );
+          }
+        });
+      });
+    }
+
+    _safeGet(key: string) {
+      try {
+        return (
+          localStorage.getItem(key) ?? PackageManagers._memoryStore.get(key)
+        );
+      } catch {
+        return PackageManagers._memoryStore.get(key);
+      }
+    }
+
+    _safeSet(key: string, value: string) {
+      PackageManagers._memoryStore.set(key, value);
+      try {
+        localStorage.setItem(key, value);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    updateUI() {
+      const defaultManager =
+        this.querySelector<HTMLElement>(
+          '.pill[data-default="true"]'
+        )?.getAttribute("data-value") ?? "npm";
+      const stored = this._safeGet(PackageManagers.STORAGE_KEY);
+      const active =
+        stored &&
+        Array.from(this.querySelectorAll<HTMLElement>(".command-variant")).some(
+          (variant) => variant.dataset.id === stored
+        )
+          ? stored
+          : defaultManager;
+
+      this.querySelectorAll<HTMLElement>(".command-variant").forEach((v) => {
+        v.style.display = v.dataset.id === active ? "block" : "none";
+      });
+
+      this.querySelectorAll<HTMLElement>(".pill").forEach((btn) => {
+        btn.classList.toggle(
+          "active",
+          btn.getAttribute("data-value") === active
+        );
+        btn.style.display = "block";
+      });
+    }
+  }
+
+  if (!customElements.get("package-managers")) {
+    customElements.define("package-managers", PackageManagers);
+  }
+</script>
+
+<style>
+  /* Hide non-default elements until the custom element is hydrated */
+  package-managers:not([hydrated]) .pill:not([data-default="true"]),
+  package-managers:not([hydrated]) .command-variant:not([data-default="true"]) {
+    display: none;
+  }
+
+  .installer-wrapper {
+    margin: 1.5rem 0;
+    border: 1px solid var(--sl-color-gray-6);
+    border-radius: 0.75rem;
+    background-color: var(--sl-color-gray-7);
+    padding: 1rem;
+    display: block;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .selector {
+    display: flex;
+    gap: 0.25rem;
+    background: var(--sl-color-gray-6);
+    padding: 0.2rem;
+    border-radius: 0.5rem;
+  }
+
+  .pill {
+    background: transparent;
+    border: none;
+    color: var(--sl-color-gray-3);
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .pill:hover {
+    color: var(--sl-color-white);
+  }
+
+  .pill.active {
+    background: var(--sl-color-accent-high);
+    color: var(--sl-color-black);
+  }
+
+  :global([data-theme="light"]) .pill.active {
+    background: var(--sl-color-accent);
+  }
+</style>

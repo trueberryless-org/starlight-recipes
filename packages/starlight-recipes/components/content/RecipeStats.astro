@@ -1,0 +1,109 @@
+---
+import type { StarlightRecipeEntry } from "../../libs/content";
+import { formatNaturalTime } from "../../libs/time";
+
+interface Props {
+  entry: StarlightRecipeEntry;
+}
+
+const { entry } = Astro.props;
+const { time, date } = entry.data;
+const calories = entry.data.yield?.calories;
+
+const totalMinutes = (time?.preparation || 0) + (time?.cooking || 0);
+const formattedTime = formatNaturalTime(totalMinutes, Astro.locals.t);
+
+const hasStats =
+  totalMinutes > 0 || date || (calories !== undefined && calories !== null);
+---
+
+{
+  hasStats && (
+    <div class="recipe-stats-container not-content">
+      {totalMinutes > 0 && (
+        <div class="stat-item">
+          <span class="stat-label">
+            {Astro.locals.t("starlightRecipes.recipe.totalTime")}
+          </span>
+          <span class="stat-value">{formattedTime}</span>
+        </div>
+      )}
+
+      {date && (
+        <div class="stat-item">
+          <span class="stat-label">
+            {Astro.locals.t("starlightRecipes.recipe.published")}
+          </span>
+          <span class="stat-value">
+            <time datetime={date.toISOString()}>
+              {Astro.locals.t("starlightRecipes.recipe.date", { date })}
+            </time>
+          </span>
+        </div>
+      )}
+
+      {calories !== undefined && calories !== null && (
+        <div class="stat-item">
+          <span class="stat-label">
+            {Astro.locals.t("starlightRecipes.recipe.calories")}
+          </span>
+          <span class="stat-value">
+            {Astro.locals.t("starlightRecipes.recipe.caloriesValue", {
+              calories,
+            })}
+          </span>
+        </div>
+      )}
+    </div>
+  )
+}
+
+<style>
+  .recipe-stats-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 1.5rem 0;
+    color: var(--sl-color-white);
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    text-align: center;
+  }
+
+  .stat-item + .stat-item {
+    border-left: 1px solid var(--sl-color-gray-5);
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--sl-color-gray-3);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+  }
+
+  .stat-value {
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 500px) {
+    .recipe-stats-container {
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .stat-item + .stat-item {
+      border-left: none;
+      border-top: 1px solid var(--sl-color-gray-5);
+      width: 100%;
+      padding-top: 1rem;
+    }
+  }
+</style>
