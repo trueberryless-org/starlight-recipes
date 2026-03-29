@@ -4,7 +4,6 @@ import config from "virtual:starlight-recipes-config";
 import context from "virtual:starlight-recipes-context";
 import starlightConfig from "virtual:starlight/user-config";
 
-import { getRecipeRating } from "../routes/api/rating/get-rating";
 import type { StarlightRecipesFrontmatter } from "../schema";
 import { DefaultLocale, type Locale } from "./i18n";
 import {
@@ -13,6 +12,7 @@ import {
   getRelativeUrl,
 } from "./page";
 import { stripLeadingSlash, stripTrailingSlash } from "./path";
+import { getRecipeRating } from "./rating";
 
 const recipeEntriesPerLocale = new Map<Locale, StarlightRecipeEntry[]>();
 

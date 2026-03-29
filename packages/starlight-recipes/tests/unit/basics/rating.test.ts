@@ -1,6 +1,10 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
 import { COUNTIFY_PREFIX, generateRatingHash } from "../../../libs/rating";
+
+vi.mock("../../../libs/i18n", () => ({
+  stripLocaleFromSlug: (slug: string) => slug,
+}));
 
 describe("generateRatingHash", () => {
   test("generates a deterministic hash for the same inputs", () => {
@@ -29,4 +33,3 @@ describe("COUNTIFY_PREFIX", () => {
     expect(COUNTIFY_PREFIX).toBe("STARLIGHT_RECIPES");
   });
 });
-

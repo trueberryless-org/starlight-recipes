@@ -23,9 +23,9 @@ import {
   isRecipeRoot,
   isRecipeTagPage,
 } from "./libs/page";
+import { getRecipeRating } from "./libs/rating";
 import { getHead } from "./libs/structured-data";
 import { getAllTags, getEntryTags } from "./libs/tags";
-import { getRecipeRating } from "./routes/api/rating/get-rating";
 
 const recipeDataPerLocale = new Map<Locale, StarlightRecipesData>();
 

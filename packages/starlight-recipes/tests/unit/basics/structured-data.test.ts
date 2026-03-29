@@ -1,9 +1,9 @@
 import { describe, expect, test, vi } from "vitest";
 
 import {
+  type HeadConfig,
   getHead,
   getRecipeHead,
-  type HeadConfig,
 } from "../../../libs/structured-data";
 
 vi.mock("astro:assets", () => ({
@@ -120,7 +120,7 @@ vi.mock("../../../libs/content", () => ({
         time: {},
         yield: {
           servings: 4,
-          additional: [{ amount: 24, unit: "cookies" }]
+          additional: [{ amount: 24, unit: "cookies" }],
         },
         instructions: ["Step 1"],
       },
@@ -140,7 +140,7 @@ vi.mock("../../../libs/page", () => ({
     slug === `recipes/cuisine/${cuisine}`,
 }));
 
-vi.mock("../../../routes/api/rating/get-rating", () => ({
+vi.mock("../../../libs/rating", () => ({
   getRecipeRating: vi.fn().mockResolvedValue({
     ratingValue: 4.5,
     ratingCount: 10,

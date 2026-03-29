@@ -77,15 +77,8 @@ export default function starlightRecipes(
             "astro:config:setup": ({ injectRoute, updateConfig }) => {
               if (ratingEnabled) {
                 injectRoute({
-                  entrypoint: "starlight-recipes/routes/api/rating/rate.ts",
-                  pattern: "/api/rating/rate",
-                  prerender: false,
-                });
-
-                injectRoute({
-                  entrypoint:
-                    "starlight-recipes/routes/api/rating/get-rating.ts",
-                  pattern: "/api/rating/get-rating",
+                  entrypoint: "starlight-recipes/routes/api/rating.ts",
+                  pattern: "/api/rating",
                   prerender: false,
                 });
               }

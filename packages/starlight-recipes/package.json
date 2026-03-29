@@ -23,6 +23,7 @@
     "./routes/Cuisine.astro": "./routes/Cuisine.astro",
     "./routes/Category.astro": "./routes/Category.astro",
     "./routes/Tags.astro": "./routes/Tags.astro",
+    "./routes/api/rating.ts": "./routes/api/rating.ts",
     "./routes/api/rating/get-rating.ts": "./routes/api/rating/get-rating.ts",
     "./routes/api/rating/rate.ts": "./routes/api/rating/rate.ts",
     "./data": "./data.ts",

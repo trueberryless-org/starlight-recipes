@@ -10,7 +10,6 @@ import type {
 import config from "virtual:starlight-recipes-config";
 import context from "virtual:starlight-recipes-context";
 
-import { getRecipeRating } from "../routes/api/rating/get-rating";
 import type { StarlightRecipesFrontmatter } from "../schema";
 import { getAllAuthors, getEntryAuthors } from "./authors";
 import {
@@ -33,6 +32,7 @@ import {
   stripLeadingSlash,
   stripTrailingSlash,
 } from "./path";
+import { getRecipeRating } from "./rating";
 import { getAllTags } from "./tags";
 import { getCookTime, getPrepTime, getTotalTime } from "./time";
 import { fetchYouTubeVideoMetadata } from "./video";

@@ -63,7 +63,6 @@ const serverErrorText = Astro.locals.t(
 
 <script>
   import { stripLocaleFromSlug } from "../../libs/i18n";
-  import { getRelativeUrl } from "../../libs/page";
 
   class RecipeRating extends HTMLElement {
     private recipeId: string;
@@ -109,7 +108,8 @@ const serverErrorText = Astro.locals.t(
       this.setLoading(true);
 
       try {
-        const res = await fetch(getRelativeUrl("/api/rating/rate"), {
+        const url = new URL("/api/rating", window.location.origin);
+        const res = await fetch(url.toString(), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -216,16 +216,17 @@ const serverErrorText = Astro.locals.t(
       spinner?.classList.add("active");
 
       try {
-        const res = await fetch(
-          getRelativeUrl(
-            `/api/rating/get-rating?id=${encodeURIComponent(this.recipeId)}`
-          )
-        );
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
-        }
+        const url = new URL("/api/rating", window.location.origin);
+        url.searchParams.set("id", this.recipeId);
+
+        const res = await fetch(url.toString());
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
         const data = await res.json();
-        this.updateUI(data.ratingValue, data.ratingCount);
+        if (data && typeof data.ratingValue === "number") {
+          this.updateUI(data.ratingValue, data.ratingCount);
+        }
       } catch (e) {
         console.error("Could not fetch ratings", e);
       } finally {
