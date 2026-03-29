@@ -69,7 +69,7 @@ describe("fetchYouTubeVideoMetadata", () => {
 
     expect(result).toBeUndefined();
     expect(consoleError).toHaveBeenCalledWith(
-      expect.stringContaining("No video found at the provided URL")
+      expect.stringContaining("Missing video details for URL: https://youtube.com/watch?v=notfound")
     );
 
     consoleError.mockRestore();

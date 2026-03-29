@@ -108,7 +108,6 @@ async function getRecipeEntriesData(
         })),
         averageRating,
         time,
-        calories: entry.data.calories,
         category: entry.data.category,
         cuisine,
         ingredients: entry.data.ingredients,

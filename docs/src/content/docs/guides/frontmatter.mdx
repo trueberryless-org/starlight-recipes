@@ -1,5 +1,6 @@
 ---
 title: Frontmatter
+description: Learn which fields you can add to your recipe.
 ---
 
 import DocField from '@/components/DocField.astro';
@@ -242,15 +243,16 @@ If you provide `preparation` time, you must also provide `cooking` time, and vic
 
 <DocField
   description="Details regarding the final output or portion size."
-  links={[{ label: "recipeYield", href: "/guides/structured-data#recipeyield" }, { label: "yield", href: "/guides/recipes-data#yield" }]}
+  links={[{ label: "recipeYield", href: "/guides/structured-data#recipeyield" }, { label: "nutrition", href: "/guides/structured-data#nutrition" }, { label: "yield", href: "/guides/recipes-data#yield" }]}
 />
 
-Defines how many servings or items the recipe produces.
+Defines how many servings, calories, or items the recipe produces.
 
 ```md
 ---
 yield:
   servings: 4
+  calories: 180
   additional:
     - amount: 12
       unit: "cookies"
@@ -262,22 +264,8 @@ yield:
 | Field | Type | Description |
 | :--- | :--- | :--- |
 | `servings` | `number` | **Required**. The numeric quantity produced. |
+| `calories` | `number` | Optional number of calories in each serving. |
 | `additional` | `object[]` | Optional array of alternative yields (requires both `amount` and `unit`). |
-
-### `calories`
-
-**Type:** `number`
-
-<DocField
-  description="The number of calories in each serving."
-  links={[{ label: "calories", href: "/guides/structured-data#nutrition" }]}
-/>
-
-```md
----
-calories: 450
----
-```
 
 ### `ingredients`
 

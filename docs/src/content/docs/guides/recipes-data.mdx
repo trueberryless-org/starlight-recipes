@@ -90,7 +90,7 @@ const authorList = new Intl.ListFormat(Astro.currentLocale, {
 }).format(authorNames)
 ---
 
-<p><b>Authors:</b> {authorList}</p>
+<p><b>Authors:</b>&nbsp;{authorList}</p>
 ```
 
 <Fragment slot="preview">
@@ -108,34 +108,72 @@ Here is a summary of the whole type of the object:
 
 ```graphql
 {
-    recipes: {
-        title: string;
-        href: string;
-        createdAt: Date;
-        updatedAt: Date | undefined;
-        draft: boolean;
-        featured: boolean;
-        cover: { alt: string; image: ImageMetadata | string } | undefined;
-        entry: CollectionEntry;
-        authors: { name: string; title: string | undefined; url: string | undefined; }[];
-        tags: { label: string; href: string; }[];
-        averageRating: { ratingValue: number; ratingCount: number; } | undefined;
-        time: { preparation: number | undefined; cooking: number | undefined; total: number | undefined; };
-        calories: number | undefined;
-        category: string | undefined;
-        cuisine: string | undefined;
-        ingredients: string[] | { name: string; quantity: number | undefined; unit: string | undefined; }[];
-        instructions: string[] | {
-            text: string;
-            name: string | undefined;
-            url: string | undefined;
-            image: ImageMetadata | string | undefined;
-            alt: string | undefined;
-            time: number | undefined;
-        }[];
-        yield: { amount: number; unit: string; } | undefined;
+  recipes: {
+    title: string;
+    href: string;
+    createdAt: Date;
+    updatedAt: Date | undefined;
+    draft: boolean;
+    featured: boolean;
+    cover: {
+      alt: string;
+      image: ImageMetadata | string;
+    } | undefined;
+    entry: StarlightRecipeEntry;
+    authors: {
+      name: string;
+      title: string | undefined;
+      url: string | undefined;
     }[];
-    authors: { name: string; title: string | undefined; url: string | undefined; }[];
+    tags: {
+      label: string;
+      href: string;
+    }[];
+    averageRating: {
+      ratingValue: number;
+      ratingCount: number;
+    } | undefined;
+    time: {
+      preparation: number | undefined;
+      cooking: number | undefined;
+      total: number | undefined;
+    } | undefined;
+    category: string | undefined;
+    cuisine: {
+      slug: string;
+      name: string;
+      flag: string | null;
+      label: string;
+      isCountry: boolean;
+    } | undefined;
+    ingredients: {
+      name: string;
+      quantity: number | undefined;
+      unit: string | undefined;
+      note: string | undefined;
+    }[];
+    instructions: {
+      text: string;
+      name: string | undefined;
+      url: string | undefined;
+      image: ImageMetadata | string | undefined;
+      alt: string | undefined;
+      time: number | undefined;
+    }[];
+    yield: {
+      servings: number;
+      calories: number | undefined;
+      additional: {
+        amount: number | undefined;
+        unit: string | undefined;
+      }[];
+    } | undefined;
+  }[];
+  authors: {
+    name: string;
+    title: string | undefined;
+    url: string | undefined;
+  }[];
 }
 ```
 

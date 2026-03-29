@@ -9,16 +9,20 @@ const { tagName: Element, isLink, picture } = resolveAuthorData(author);
 <Element href={isLink ? author.url : undefined} class="author">
   {
     picture.src &&
-      (!picture.isRemote ? (
+      (typeof picture.src === "string" ? (
+        <img
+          src={picture.src}
+          alt={author.name}
+          loading={picture.isRemote ? "lazy" : "eager"}
+        />
+      ) : (
         <Image
           alt={author.name}
           loading="eager"
-          src={picture.src as ImageMetadata}
+          src={picture.src}
           height={40}
           width={40}
         />
-      ) : (
-        <img src={picture.src as string} alt={author.name} loading="lazy" />
       ))
   }
 

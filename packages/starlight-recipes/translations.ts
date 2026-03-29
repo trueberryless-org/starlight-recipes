@@ -20,6 +20,8 @@ export const Translations = {
     "starlightRecipes.recipe.ingredients.heading": "Ingredients",
     "starlightRecipes.recipe.ingredients.decreaseYield": "Decrease yield",
     "starlightRecipes.recipe.ingredients.increaseYield": "Increase yield",
+    "starlightRecipes.recipe.ingredients.currentServingsAriaLabel":
+      "Current servings",
     "starlightRecipes.recipe.ingredients.servings": "Servings",
     "starlightRecipes.recipe.instructions.confirmReset": "Confirm?",
     "starlightRecipes.recipe.instructions.done": "Done!",
@@ -78,6 +80,8 @@ export const Translations = {
     "starlightRecipes.recipe.ingredients.heading": "Zutaten",
     "starlightRecipes.recipe.ingredients.decreaseYield": "Ertrag verringern",
     "starlightRecipes.recipe.ingredients.increaseYield": "Ertrag steigern",
+    "starlightRecipes.recipe.ingredients.currentServingsAriaLabel":
+      "Aktuelle Portionen",
     "starlightRecipes.recipe.ingredients.servings": "Portionen",
     "starlightRecipes.recipe.instructions.confirmReset": "Bestätigen?",
     "starlightRecipes.recipe.instructions.done": "Fertig!",

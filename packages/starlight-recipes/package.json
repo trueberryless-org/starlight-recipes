@@ -54,7 +54,8 @@
     "vitest": "^4.0.18"
   },
   "peerDependencies": {
-    "@astrojs/starlight": ">=0.37"
+    "@astrojs/starlight": ">=0.37",
+    "astro": ">=5.0.0"
   },
   "engines": {
     "node": "^18.17.1 || ^20.3.0 || >=21.0.0"

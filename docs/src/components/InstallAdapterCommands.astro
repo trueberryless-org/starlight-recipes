@@ -73,6 +73,7 @@ const DEFAULT_ID = `${DEFAULT_PKG}-${DEFAULT_ADAPTER}`;
   class AdapterInstaller extends HTMLElement {
     static PKG_KEY = "starlight-synced-tabs__pkg";
     static ADAPTER_KEY = "starlight-synced-tabs__adapter";
+    static _memoryStore = new Map<string, string>();
 
     _bound = false;
 
@@ -81,6 +82,7 @@ const DEFAULT_ID = `${DEFAULT_PKG}-${DEFAULT_ADAPTER}`;
         e.key === AdapterInstaller.PKG_KEY ||
         e.key === AdapterInstaller.ADAPTER_KEY;
       if (isRelevantKey) {
+        if (e.newValue) AdapterInstaller._memoryStore.set(e.key!, e.newValue);
         this.updateUI();
       }
     };
@@ -121,13 +123,16 @@ const DEFAULT_ID = `${DEFAULT_PKG}-${DEFAULT_ADAPTER}`;
 
     _safeGet(key: string) {
       try {
-        return localStorage.getItem(key);
+        return (
+          localStorage.getItem(key) ?? AdapterInstaller._memoryStore.get(key)
+        );
       } catch {
-        return null;
+        return AdapterInstaller._memoryStore.get(key);
       }
     }
 
     _safeSet(key: string, value: string) {
+      AdapterInstaller._memoryStore.set(key, value);
       try {
         localStorage.setItem(key, value);
         return true;
@@ -137,7 +142,8 @@ const DEFAULT_ID = `${DEFAULT_PKG}-${DEFAULT_ADAPTER}`;
     }
 
     save(key: string, value: string) {
-      if (!this._safeSet(key, value)) return;
+      this._safeSet(key, value);
+      this.updateUI();
       window.dispatchEvent(
         new StorageEvent("storage", {
           key,

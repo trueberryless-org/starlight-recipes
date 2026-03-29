@@ -101,25 +101,23 @@ export interface StarlightRecipesData {
     /**
      * Duration related data about the recipe.
      */
-    time: {
-      /**
-       * The length of time it takes to prepare ingredients and workspace
-       * for the dish, measured in minutes.
-       */
-      preparation?: number | undefined;
-      /**
-       * The time it takes to actually cook the dish, measured in minutes.
-       */
-      cooking?: number | undefined;
-      /**
-       * The total time required for the recipe, measured in minutes.
-       */
-      total?: number | undefined;
-    };
-    /**
-     * The number of calories in each serving produced with this recipe.
-     */
-    calories: number | undefined;
+    time:
+      | {
+          /**
+           * The length of time it takes to prepare ingredients and workspace
+           * for the dish, measured in minutes.
+           */
+          preparation?: number | undefined;
+          /**
+           * The time it takes to actually cook the dish, measured in minutes.
+           */
+          cooking?: number | undefined;
+          /**
+           * The total time required for the recipe, measured in minutes.
+           */
+          total?: number | undefined;
+        }
+      | undefined;
     /**
      * The type of meal or course your recipe is about.
      */
@@ -146,20 +144,22 @@ export interface StarlightRecipesData {
            */
           servings: number;
           /**
+           * The number of calories in each serving produced with this recipe.
+           */
+          calories?: number | undefined;
+          /**
            * Additional yield variations (e.g., amount: 24, unit: "cookies").
            */
-          additional?:
-            | {
-                /**
-                 * The numeric quantity produced (e.g., 4, 12, 1.5).
-                 */
-                amount?: number | undefined;
-                /**
-                 * The specific scale of measurement for the amount (e.g., "servings", "cookies", "loaves").
-                 */
-                unit?: string | undefined;
-              }[]
-            | undefined;
+          additional?: {
+            /**
+             * The numeric quantity produced (e.g., 4, 12, 1.5).
+             */
+            amount?: number | undefined;
+            /**
+             * The specific scale of measurement for the amount (e.g., "servings", "cookies", "loaves").
+             */
+            unit?: string | undefined;
+          }[];
         }
       | undefined;
     /**

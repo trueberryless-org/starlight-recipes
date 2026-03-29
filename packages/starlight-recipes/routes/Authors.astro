@@ -24,7 +24,6 @@ const pageProps = getPageProps(author.name);
   <Count
     >{
       Astro.locals.t("starlightRecipes.authors.count", {
-        interpolation: { escapeValue: false },
         count: entries.length,
         author: author.name,
       })

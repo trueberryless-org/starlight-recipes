@@ -10,99 +10,106 @@ interface Props {
 const { entry } = Astro.props;
 const { yield: recipeYield, ingredients } = entry.data;
 
+const hasIngredients = ingredients && ingredients.length > 0;
 const initialServings = recipeYield?.servings || 1;
 ---
 
-<recipe-ingredients data-base-servings={initialServings}>
-  <div class="ingredients-header">
-    <div class="heading-wrapper">
-      <AnchorHeading
-        level="2"
-        id={githubSlugger(
-          Astro.locals.t("starlightRecipes.recipe.ingredients.heading")
-        )}
-      >
-        {Astro.locals.t("starlightRecipes.recipe.ingredients.heading")}
-      </AnchorHeading>
-    </div>
+{
+  hasIngredients && (
+    <recipe-ingredients data-base-servings={initialServings}>
+      <div class="ingredients-header">
+        <div class="heading-wrapper">
+          <AnchorHeading
+            level="2"
+            id={githubSlugger(
+              Astro.locals.t("starlightRecipes.recipe.ingredients.heading")
+            )}
+          >
+            {Astro.locals.t("starlightRecipes.recipe.ingredients.heading")}
+          </AnchorHeading>
+        </div>
 
-    <div class="yield-pill">
-      <span class="yield-label">
-        {Astro.locals.t("starlightRecipes.recipe.ingredients.servings")}
-      </span>
-      <div class="yield-controls">
-        <button
-          type="button"
-          data-action="minus"
-          aria-label={Astro.locals.t(
-            "starlightRecipes.recipe.ingredients.decreaseYield"
-          )}>−</button
-        >
-        <input
-          type="number"
-          value={initialServings}
-          min="1"
-          step="1"
-          aria-label="Current servings"
-          inputmode="numeric"
-        />
-        <button
-          type="button"
-          data-action="plus"
-          aria-label={Astro.locals.t(
-            "starlightRecipes.recipe.ingredients.increaseYield"
-          )}>+</button
-        >
+        <div class="yield-pill">
+          <span class="yield-label">
+            {Astro.locals.t("starlightRecipes.recipe.ingredients.servings")}
+          </span>
+          <div class="yield-controls">
+            <button
+              type="button"
+              data-action="minus"
+              aria-label={Astro.locals.t(
+                "starlightRecipes.recipe.ingredients.decreaseYield"
+              )}
+            >
+              −
+            </button>
+            <input
+              type="number"
+              value={initialServings}
+              min="1"
+              step="1"
+              aria-label={Astro.locals.t(
+                "starlightRecipes.recipe.ingredients.currentServingsAriaLabel"
+              )}
+              inputmode="numeric"
+            />
+            <button
+              type="button"
+              data-action="plus"
+              aria-label={Astro.locals.t(
+                "starlightRecipes.recipe.ingredients.increaseYield"
+              )}
+            >
+              +
+            </button>
+          </div>
+
+          {recipeYield?.additional && (
+            <span class="additional-yields-display">
+              (
+              {recipeYield.additional.map((y, i) => (
+                <span
+                  class="extra-yield"
+                  data-base-amount={y.amount}
+                  data-unit={y.unit}
+                >
+                  {y.amount} {y.unit}
+                  {i < recipeYield.additional!.length - 1 ? ", " : ""}
+                </span>
+              ))}
+              )
+            </span>
+          )}
+        </div>
       </div>
 
-      {
-        recipeYield?.additional && (
-          <span class="additional-yields-display">
-            (
-            {recipeYield.additional.map((y, i) => (
-              <span
-                class="extra-yield"
-                data-base-amount={y.amount}
-                data-unit={y.unit}
-              >
-                {y.amount} {y.unit}
-                {i < recipeYield.additional!.length - 1 ? ", " : ""}
-              </span>
-            ))}
-            )
-          </span>
-        )
-      }
-    </div>
-  </div>
+      <ul class="ingredient-list not-content">
+        {ingredients.map((ing) => {
+          if (typeof ing === "string") {
+            return <li class="ingredient-row static">{ing}</li>;
+          }
 
-  <ul class="ingredient-list not-content">
-    {
-      ingredients.map((ing) => {
-        if (typeof ing === "string") {
-          return <li class="ingredient-row static">{ing}</li>;
-        }
+          const perServing =
+            ing.quantity !== undefined && ing.quantity !== null
+              ? ing.quantity / initialServings
+              : null;
 
-        const perServing =
-          ing.quantity !== undefined && ing.quantity !== null
-            ? ing.quantity / initialServings
-            : null;
-
-        return (
-          <li class="ingredient-row">
-            <div class="ing-meta">
-              <span class="amount" data-per-serving={perServing}>
-                {ing.quantity}
-              </span>
-              <span class="unit">{ing.unit}</span>
-            </div>
-            <span class="name">{ing.name}</span>
-          </li>
-        );
-      })
-    }
-  </ul>
-</recipe-ingredients>
+          return (
+            <li class="ingredient-row">
+              <div class="ing-meta">
+                <span class="amount" data-per-serving={perServing}>
+                  {ing.quantity}
+                </span>
+                <span class="unit">{ing.unit}</span>
+              </div>
+              <span class="name">{ing.name}</span>
+            </li>
+          );
+        })}
+      </ul>
+    </recipe-ingredients>
+  )
+}
 
 <script>
   class RecipeIngredients extends HTMLElement {

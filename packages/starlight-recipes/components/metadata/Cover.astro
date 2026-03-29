@@ -12,6 +12,7 @@ interface Props {
 const { cover, aspectRatio, featured = false } = Astro.props;
 
 const image = cover.image;
+const isRemote = typeof image === "string" && /^(https?:)?\/\//.test(image);
 
 const commonImageProps = {
   alt: cover.alt,
@@ -20,7 +21,11 @@ const commonImageProps = {
 
 const imageProps: ComponentProps<typeof Image> =
   typeof image === "string"
-    ? { ...commonImageProps, inferSize: true, src: image }
+    ? {
+        ...commonImageProps,
+        src: image,
+        ...(isRemote ? {} : { inferSize: true }),
+      }
     : { ...commonImageProps, src: image };
 ---
 

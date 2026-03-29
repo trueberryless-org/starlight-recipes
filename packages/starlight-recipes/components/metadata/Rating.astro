@@ -109,7 +109,7 @@ const serverErrorText = Astro.locals.t(
       this.setLoading(true);
 
       try {
-        const res = await fetch(getRelativeUrl("/api/recipe/rate"), {
+        const res = await fetch(getRelativeUrl("/api/rating/rate"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -218,9 +218,12 @@ const serverErrorText = Astro.locals.t(
       try {
         const res = await fetch(
           getRelativeUrl(
-            `/api/recipe/get-rating?id=${encodeURIComponent(this.recipeId)}`
+            `/api/rating/get-rating?id=${encodeURIComponent(this.recipeId)}`
           )
         );
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
         const data = await res.json();
         this.updateUI(data.ratingValue, data.ratingCount);
       } catch (e) {

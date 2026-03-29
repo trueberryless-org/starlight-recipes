@@ -168,11 +168,6 @@ export async function getRecipeHead(
   if (data.description) recipeStructuredData.description = data.description;
   const tags = data.tags?.join(", ");
   if (tags) recipeStructuredData.keywords = tags;
-  if (data.calories && data.yield?.servings)
-    recipeStructuredData.nutrition = {
-      "@type": "NutritionInformation",
-      calories: `${data.calories} calories`,
-    };
 
   if (data.category) recipeStructuredData.recipeCategory = data.category;
   if (data.cuisine) {
@@ -232,25 +227,35 @@ export async function getRecipeHead(
       data.yield.additional?.map((y) => `${y.amount} ${y.unit}`.trim()) ?? [];
 
     recipeStructuredData.recipeYield = [primaryYield, ...additional];
+
+    if (data.yield.calories && data.yield.servings)
+      recipeStructuredData.nutrition = {
+        "@type": "NutritionInformation",
+        calories: `${data.yield.calories} calories`,
+      };
   }
 
   if (config.processVideo && data.video) {
-    const video = await fetchYouTubeVideoMetadata(data.video);
-    if (video)
-      recipeStructuredData.video = {
-        "@type": "VideoObject",
-        name: video.name,
-        description: video.description,
-        thumbnailUrl: video.thumbnailUrl,
-        embedUrl: video.embedUrl,
-        uploadDate: video.uploadDate,
-        duration: video.duration,
-        interactionStatistic: {
-          "@type": "InteractionCounter",
-          interactionType: { "@type": "WatchAction" },
-          userInteractionCount: video.userInteractionCount,
-        },
-      };
+    try {
+      const video = await fetchYouTubeVideoMetadata(data.video);
+      if (video)
+        recipeStructuredData.video = {
+          "@type": "VideoObject",
+          name: video.name,
+          description: video.description,
+          thumbnailUrl: video.thumbnailUrl,
+          embedUrl: video.embedUrl,
+          uploadDate: video.uploadDate,
+          duration: video.duration,
+          interactionStatistic: {
+            "@type": "InteractionCounter",
+            interactionType: { "@type": "WatchAction" },
+            userInteractionCount: video.userInteractionCount,
+          },
+        };
+    } catch {
+      console.log(`Video ${data.video}`);
+    }
   }
 
   const recipeWithContext: WithContext<Recipe> = {

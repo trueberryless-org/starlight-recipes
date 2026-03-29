@@ -104,18 +104,20 @@ import PackageManagers from '@/components/PackageManagers.astro'
 
     <InstallAdapterCommands />
 
-6. Create your first recipe by creating a `.md` or `.mdx` file in the `src/content/docs/recipes/` directory:
+6. Create your first recipe by copying the recipe's cover image into a new project folder, like `src/assets/`, and creating a `.md` or `.mdx` file in the `src/content/docs/recipes/` directory:
 
     ```md
     ---
     // src/content/docs/recipes/virgin-colada.md
-    title: Non-Alcoholic Piña Colada
+    title: Virgin Colada
     cover:
-      alt: A beautiful Virgin Colada
-      image: ../../../assets/virgin-colada.png
+      alt: A tall glass of Virgin Colada with a pineapple wedge and cherry
+      image: "../../../assets/virgin-colada.png"
     ---
     ```
 
 7. [Start the development server](https://starlight.astro.build/getting-started/#start-the-development-server) to preview the plugin in action.
 
 </Steps>
+
+The Starlight Recipes plugin behavior can be tweaked using various [configuration options](/configuration).

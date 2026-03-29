@@ -8,6 +8,7 @@ const TIMEOUT_DURATION_MS = 4000;
 
 const votedUsers = new Map<string, number>();
 const VOTE_TTL_MS = 24 * 60 * 60 * 1000;
+const MAX_ENTRIES = 10000;
 
 function hasRecentVote(key: string) {
   const ts = votedUsers.get(key);
@@ -20,18 +21,6 @@ function hasRecentVote(key: string) {
 }
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
-  const ip = clientAddress;
-
-  if (!ip) {
-    return new Response(
-      JSON.stringify({ error: "Client address unavailable" }),
-      {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-  }
-
   const NAMESPACE = import.meta.env.STARLIGHT_RECIPES_RATING_SECRET;
 
   if (!NAMESPACE) {
@@ -55,7 +44,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       });
     }
 
-    const voteKey = `${ip}:${stripLocaleFromSlug(recipeId)}`;
+    const voteKey = `${clientAddress}:${stripLocaleFromSlug(recipeId)}`;
     if (hasRecentVote(voteKey)) {
       return new Response(JSON.stringify({ error: "Forbidden" }), {
         status: 403,
@@ -100,6 +89,10 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     const sumData = await sumRes.json();
     const countData = await countRes.json();
 
+    if (votedUsers.size >= MAX_ENTRIES) {
+      const oldestKey = votedUsers.keys().next().value;
+      if (oldestKey) votedUsers.delete(oldestKey);
+    }
     votedUsers.set(voteKey, Date.now());
 
     return new Response(

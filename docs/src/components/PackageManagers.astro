@@ -52,10 +52,12 @@ const DEFAULT_MANAGER = "npm";
 <script>
   class PackageManagers extends HTMLElement {
     static STORAGE_KEY = "starlight-synced-tabs__pkg";
+    static _memoryStore = new Map();
     _bound = false;
 
     _onStorage = (e: StorageEvent) => {
       if (e.key === PackageManagers.STORAGE_KEY) {
+        if (e.newValue) PackageManagers._memoryStore.set(e.key, e.newValue);
         this.updateUI();
       }
     };
@@ -80,7 +82,8 @@ const DEFAULT_MANAGER = "npm";
         btn.addEventListener("click", () => {
           const val = btn.getAttribute("data-value");
           if (val) {
-            if (!this._safeSet(PackageManagers.STORAGE_KEY, val)) return;
+            this._safeSet(PackageManagers.STORAGE_KEY, val);
+            this.updateUI();
             window.dispatchEvent(
               new StorageEvent("storage", {
                 key: PackageManagers.STORAGE_KEY,
@@ -95,13 +98,16 @@ const DEFAULT_MANAGER = "npm";
 
     _safeGet(key: string) {
       try {
-        return localStorage.getItem(key);
+        return (
+          localStorage.getItem(key) ?? PackageManagers._memoryStore.get(key)
+        );
       } catch {
-        return null;
+        return PackageManagers._memoryStore.get(key);
       }
     }
 
     _safeSet(key: string, value: string) {
+      PackageManagers._memoryStore.set(key, value);
       try {
         localStorage.setItem(key, value);
         return true;
@@ -111,7 +117,18 @@ const DEFAULT_MANAGER = "npm";
     }
 
     updateUI() {
-      const active = this._safeGet(PackageManagers.STORAGE_KEY) || "npm";
+      const defaultManager =
+        this.querySelector<HTMLElement>(
+          '.pill[data-default="true"]'
+        )?.getAttribute("data-value") ?? "npm";
+      const stored = this._safeGet(PackageManagers.STORAGE_KEY);
+      const active =
+        stored &&
+        Array.from(this.querySelectorAll<HTMLElement>(".command-variant")).some(
+          (variant) => variant.dataset.id === stored
+        )
+          ? stored
+          : defaultManager;
 
       this.querySelectorAll<HTMLElement>(".command-variant").forEach((v) => {
         v.style.display = v.dataset.id === active ? "block" : "none";

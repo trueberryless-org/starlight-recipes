@@ -1,7 +1,9 @@
-interface ImportMetaEnv {
-  readonly MODE: string;
+/// <reference types="astro/client" />
+
+declare global {
+  interface ImportMetaEnv {
+    readonly MODE: string;
+  }
 }
 
-interface ImportMeta {
-  readonly env: ImportMetaEnv;
-}
+export {};

@@ -12,7 +12,10 @@ export async function mockRecipes(recipes: Parameters<typeof mockRecipe>[]) {
 
   return {
     ...mod,
-    getCollection: () => mocks,
+    getCollection: (collection: string) => {
+      if (collection !== "docs") return [];
+      return mocks;
+    },
   };
 }
 

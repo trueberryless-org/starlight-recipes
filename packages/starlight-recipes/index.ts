@@ -78,14 +78,14 @@ export default function starlightRecipes(
               if (ratingEnabled) {
                 injectRoute({
                   entrypoint: "starlight-recipes/routes/api/rating/rate.ts",
-                  pattern: "/api/recipe/rate",
+                  pattern: "/api/rating/rate",
                   prerender: false,
                 });
 
                 injectRoute({
                   entrypoint:
                     "starlight-recipes/routes/api/rating/get-rating.ts",
-                  pattern: "/api/recipe/get-rating",
+                  pattern: "/api/rating/get-rating",
                   prerender: false,
                 });
               }
@@ -143,7 +143,7 @@ export default function starlightRecipes(
 
 function loadEnvironmentVariables(): Record<string, string> {
   const root = process.cwd();
-  const mode = process.env.MODE ?? "production";
+  const mode = process.env.MODE ?? process.env.NODE_ENV ?? "production";
 
   const files = [".env", ".env.local", `.env.${mode}`, `.env.${mode}.local`];
 

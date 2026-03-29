@@ -13,7 +13,7 @@ export default defineConfig({
     },
   ],
   use: {
-    baseURL: "http://172.0.0.1:4321",
+    baseURL: "http://127.0.0.1:4321",
   },
   webServer: [
     {
@@ -21,7 +21,7 @@ export default defineConfig({
         "PLAYWRIGHT=true pnpm run build && PLAYWRIGHT=true pnpm run preview",
       cwd: "../../docs",
       reuseExistingServer: !process.env["CI"],
-      url: "http://localhost:4321",
+      url: "http://127.0.0.1:4321",
       timeout: 300000,
     },
   ],

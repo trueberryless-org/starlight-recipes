@@ -8,8 +8,8 @@ export const fetchYouTubeVideoMetadata = async (
   try {
     const info = await ytdl.getBasicInfo(url);
 
-    if (!info) {
-      throw new Error(`No video found at the provided URL: ${url}`);
+    if (!info?.videoDetails?.videoId) {
+      throw new Error(`Missing video details for URL: ${url}`);
     }
 
     return mapVideoToSchema(info.videoDetails);
@@ -26,9 +26,13 @@ export const fetchYouTubeVideoMetadata = async (
 };
 
 const mapVideoToSchema = (video: any): YouTubeVideoMetadata => {
-  const videoId = video.videoId ?? "";
+  const videoId = (video.videoId ?? "").trim();
+  if (!videoId) {
+    throw new Error("Invalid YouTube metadata: missing videoId");
+  }
 
-  const durationInSeconds = parseInt(video.lengthSeconds ?? "0");
+  const durationInSeconds =
+    Number.parseInt(video.lengthSeconds ?? "0", 10) || 0;
 
   return {
     name: video.title ?? "Unknown Title",
@@ -37,7 +41,7 @@ const mapVideoToSchema = (video: any): YouTubeVideoMetadata => {
     thumbnailUrl: video.thumbnails?.length ? [video.thumbnails[0].url] : [],
     duration: secondsToIsoDuration(durationInSeconds),
     embedUrl: `https://www.youtube.com/embed/${videoId}`,
-    userInteractionCount: parseInt(video.viewCount ?? "0"),
+    userInteractionCount: Number.parseInt(video.viewCount ?? "0", 10) || 0,
   };
 };
 

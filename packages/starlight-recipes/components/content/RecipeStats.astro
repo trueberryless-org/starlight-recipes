@@ -7,7 +7,8 @@ interface Props {
 }
 
 const { entry } = Astro.props;
-const { time, date, calories } = entry.data;
+const { time, date } = entry.data;
+const calories = entry.data.yield?.calories;
 
 const totalMinutes = (time?.preparation || 0) + (time?.cooking || 0);
 const formattedTime = formatNaturalTime(totalMinutes, Astro.locals.t);

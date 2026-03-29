@@ -10,7 +10,11 @@ import {
 import { formatNaturalTime } from "../../libs/time";
 
 const { entry } = Astro.props;
-const { steps, recipeId } = prepareInstructionsProps(entry);
+const hasInstructions =
+  entry.data.instructions && entry.data.instructions.length > 0;
+const { steps, recipeId } = hasInstructions
+  ? prepareInstructionsProps(entry)
+  : { steps: [], recipeId: null };
 
 const globalConfig = config.cookingMode;
 const showReset = globalConfig.stepCheckbox || globalConfig.stepTimer;
@@ -20,202 +24,207 @@ const instructionsTitle = Astro.locals.t(
 );
 ---
 
-<div class="instructions-header">
-  <AnchorHeading level="2" id={githubSlugger(instructionsTitle)}>
-    {instructionsTitle}
-  </AnchorHeading>
+{
+  hasInstructions && (
+    <>
+      <div class="instructions-header">
+        <AnchorHeading level="2" id={githubSlugger(instructionsTitle)}>
+          {instructionsTitle}
+        </AnchorHeading>
 
-  {
-    showReset && (
-      <reset-controller data-recipe={recipeId}>
-        <button
-          type="button"
-          class="reset-btn"
-          aria-label={Astro.locals.t(
-            "starlightRecipes.recipe.instructions.resetProgress"
-          )}
-        >
-          <span class="reset-text">
-            {Astro.locals.t("starlightRecipes.recipe.instructions.reset")}
-          </span>
-          <span class="reset-confirm">
-            {Astro.locals.t(
-              "starlightRecipes.recipe.instructions.confirmReset"
-            )}
-          </span>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            class="icon-reset"
-          >
-            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-            <path d="M3 3v5h5" />
-          </svg>
-        </button>
-      </reset-controller>
-    )
-  }
-</div>
-
-<ol class="sl-steps not-content">
-  {
-    steps.map((step) => {
-      const config = getStepDisplayConfig(step, globalConfig);
-
-      return (
-        <li
-          class:list={[
-            {
-              "is-timed": config.useTimer,
-              "is-checkbox": config.useCheckbox,
-              "is-static": config.isStatic,
-            },
-          ]}
-        >
-          {config.useTimer && (
-            <step-timer
-              data-time={step.time}
-              data-step={step.stepNum}
-              data-recipe={recipeId}
-              data-done-text={doneText}
-              data-initial-label={formatNaturalTime(step.time!, Astro.locals.t)}
+        {showReset && (
+          <reset-controller data-recipe={recipeId}>
+            <button
+              type="button"
+              class="reset-btn"
+              aria-label={Astro.locals.t(
+                "starlightRecipes.recipe.instructions.resetProgress"
+              )}
             >
-              <button
-                class="timer-pill"
-                aria-label={`Start ${step.time} minute timer`}
+              <span class="reset-text">
+                {Astro.locals.t("starlightRecipes.recipe.instructions.reset")}
+              </span>
+              <span class="reset-confirm">
+                {Astro.locals.t(
+                  "starlightRecipes.recipe.instructions.confirmReset"
+                )}
+              </span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                class="icon-reset"
               >
-                <span class="pill-left">
-                  <span class="step-index">{step.stepNum}</span>
-                  <span class="icon-play">
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      height="1rem"
-                      width="1rem"
-                    >
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </span>
-                  <span class="icon-pause">
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      height="1rem"
-                      width="1rem"
-                    >
-                      <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-                    </svg>
-                  </span>
-                  <span class="icon-check">
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="3"
-                      height="1rem"
-                      width="1rem"
-                    >
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  </span>
-                </span>
-                <span class="pill-right">
-                  <span class="time-display">
-                    {formatNaturalTime(step.time!, Astro.locals.t)}
-                  </span>
-                </span>
-              </button>
-              <div class="step-content">
-                {step.name && <strong>{step.name}</strong>}
-                <div set:html={step.text} />
-                {step.image &&
-                  (step.isRemoteImage ? (
-                    <img
-                      src={step.image as string}
-                      alt={step.alt || ""}
-                      loading="lazy"
-                    />
-                  ) : (
-                    <Image
-                      src={step.image as ImageMetadata}
-                      alt={step.alt || ""}
-                    />
-                  ))}
-              </div>
-            </step-timer>
-          )}
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+              </svg>
+            </button>
+          </reset-controller>
+        )}
+      </div>
 
-          {config.useCheckbox && (
-            <step-checkbox data-recipe={recipeId} data-step={step.stepNum}>
-              <div class="step-marker">
-                <span class="marker-number">{step.stepNum}</span>
-                <span class="marker-check">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="3"
-                    width="14"
-                    height="14"
+      <ol class="sl-steps not-content">
+        {steps.map((step) => {
+          const config = getStepDisplayConfig(step, globalConfig);
+
+          return (
+            <li
+              class:list={[
+                {
+                  "is-timed": config.useTimer,
+                  "is-checkbox": config.useCheckbox,
+                  "is-static": config.isStatic,
+                },
+              ]}
+            >
+              {config.useTimer && (
+                <step-timer
+                  data-time={step.time}
+                  data-step={step.stepNum}
+                  data-recipe={recipeId}
+                  data-done-text={doneText}
+                  data-initial-label={formatNaturalTime(
+                    step.time!,
+                    Astro.locals.t
+                  )}
+                >
+                  <button
+                    class="timer-pill"
+                    aria-label={`Start ${step.time} minute timer`}
                   >
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                </span>
-                <input
-                  type="checkbox"
-                  class="step-input"
-                  aria-label={`Mark step ${step.stepNum} as done`}
-                />
-              </div>
-              <div class="step-content">
-                {step.name && <strong>{step.name}</strong>}
-                <div set:html={step.text} />
-                {step.image &&
-                  (step.isRemoteImage ? (
-                    <img
-                      src={step.image as string}
-                      alt={step.alt || ""}
-                      loading="lazy"
-                    />
-                  ) : (
-                    <Image
-                      src={step.image as ImageMetadata}
-                      alt={step.alt || ""}
-                    />
-                  ))}
-              </div>
-            </step-checkbox>
-          )}
+                    <span class="pill-left">
+                      <span class="step-index">{step.stepNum}</span>
+                      <span class="icon-play">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          height="1rem"
+                          width="1rem"
+                        >
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </span>
+                      <span class="icon-pause">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          height="1rem"
+                          width="1rem"
+                        >
+                          <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                        </svg>
+                      </span>
+                      <span class="icon-check">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="3"
+                          height="1rem"
+                          width="1rem"
+                        >
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      </span>
+                    </span>
+                    <span class="pill-right">
+                      <span class="time-display">
+                        {formatNaturalTime(step.time!, Astro.locals.t)}
+                      </span>
+                    </span>
+                  </button>
+                  <div class="step-content">
+                    {step.name && <strong>{step.name}</strong>}
+                    <div set:html={step.text} />
+                    {step.image &&
+                      (step.isRemoteImage ? (
+                        <img
+                          src={step.image as string}
+                          alt={step.alt || ""}
+                          loading="lazy"
+                        />
+                      ) : (
+                        <Image
+                          src={step.image as ImageMetadata}
+                          alt={step.alt || ""}
+                        />
+                      ))}
+                  </div>
+                </step-timer>
+              )}
 
-          {config.isStatic && (
-            <div class="step-content">
-              {step.name && <strong class="step-title">{step.name}</strong>}
-              <div class="text-content" set:html={step.text} />
-              {step.image &&
-                (step.isRemoteImage ? (
-                  <img
-                    src={step.image as string}
-                    alt={step.alt || ""}
-                    loading="lazy"
-                  />
-                ) : (
-                  <Image
-                    src={step.image as ImageMetadata}
-                    alt={step.alt || ""}
-                  />
-                ))}
-            </div>
-          )}
-        </li>
-      );
-    })
-  }
-</ol>
+              {config.useCheckbox && (
+                <step-checkbox data-recipe={recipeId} data-step={step.stepNum}>
+                  <div class="step-marker">
+                    <span class="marker-number">{step.stepNum}</span>
+                    <span class="marker-check">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="3"
+                        width="14"
+                        height="14"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </span>
+                    <input
+                      type="checkbox"
+                      class="step-input"
+                      aria-label={`Mark step ${step.stepNum} as done`}
+                    />
+                  </div>
+                  <div class="step-content">
+                    {step.name && <strong>{step.name}</strong>}
+                    <div set:html={step.text} />
+                    {step.image &&
+                      (step.isRemoteImage ? (
+                        <img
+                          src={step.image as string}
+                          alt={step.alt || ""}
+                          loading="lazy"
+                        />
+                      ) : (
+                        <Image
+                          src={step.image as ImageMetadata}
+                          alt={step.alt || ""}
+                        />
+                      ))}
+                  </div>
+                </step-checkbox>
+              )}
+
+              {config.isStatic && (
+                <div class="step-content">
+                  {step.name && <strong class="step-title">{step.name}</strong>}
+                  <div class="text-content" set:html={step.text} />
+                  {step.image &&
+                    (step.isRemoteImage ? (
+                      <img
+                        src={step.image as string}
+                        alt={step.alt || ""}
+                        loading="lazy"
+                      />
+                    ) : (
+                      <Image
+                        src={step.image as ImageMetadata}
+                        alt={step.alt || ""}
+                      />
+                    ))}
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </>
+  )
+}
 
 <script>
   class ResetController extends HTMLElement {
