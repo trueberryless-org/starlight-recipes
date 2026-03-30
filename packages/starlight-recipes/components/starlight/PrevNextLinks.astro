@@ -12,7 +12,11 @@ const { next, prev } = Astro.props;
 
 {
   prev || next ? (
-    <div class="pagination" data-pagefind-ignore>
+    <div
+      class="pagination"
+      data-pagefind-ignore
+      data-has-both={prev && next ? "true" : "false"}
+    >
       <CardGrid>
         {prev && (
           <LinkCard
@@ -64,12 +68,12 @@ const { next, prev } = Astro.props;
   }
 
   @container (min-width: 30rem) {
-    .pagination :global(.card-grid) {
+    .pagination[data-has-both="true"] :global(.card-grid) {
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr;
     }
 
-    .pagination :global(.sl-link-card:has([rel="next"])) {
+    .pagination[data-has-both="true"] :global(.sl-link-card:has([rel="next"])) {
       grid-column: 2;
     }
   }

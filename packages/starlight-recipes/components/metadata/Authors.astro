@@ -13,17 +13,17 @@ const authors = getEntryAuthors(entry);
 const hasAuthors = authors.length > 0;
 ---
 
-<div class="not-content">
-  {
-    hasAuthors ? (
+{
+  hasAuthors ? (
+    <div class="not-content">
       <div class="authors">
         {authors.map((author) => (
           <Author {author} />
         ))}
       </div>
-    ) : null
-  }
-</div>
+    </div>
+  ) : null
+}
 
 <style>
   .authors {
