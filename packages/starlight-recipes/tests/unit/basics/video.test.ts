@@ -1,5 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 
+import { recipesSchema } from "../../../schema";
 import { fetchYouTubeVideoMetadata } from "../../../libs/video";
 
 const mockGetBasicInfo = vi.hoisted(() => vi.fn());
@@ -73,5 +74,44 @@ describe("fetchYouTubeVideoMetadata", () => {
     );
 
     consoleError.mockRestore();
+  });
+});
+
+describe("video frontmatter schema", () => {
+  test("accepts legacy string URL form", () => {
+    const schema = recipesSchema({
+      // image function shape is provided by Astro at runtime; only type is important here
+      image: (() => ({})) as any,
+    });
+
+    const result = schema.parse({
+      video: "https://youtube.com/watch?v=abc123",
+    });
+
+    expect(result.video).toBe("https://youtube.com/watch?v=abc123");
+  });
+
+  test("accepts processed flattened object form", () => {
+    const schema = recipesSchema({
+      // image function shape is provided by Astro at runtime; only type is important here
+      image: (() => ({})) as any,
+    });
+
+    const video = {
+      url: "https://youtube.com/watch?v=abc123",
+      name: "Test Video",
+      description: "Video description",
+      thumbnailUrl: ["https://example.com/thumb.jpg"],
+      uploadDate: "2024-01-01T00:00:00.000Z",
+      duration: "PT2M",
+      embedUrl: "https://www.youtube.com/embed/abc123",
+      userInteractionCount: 42,
+    } as const;
+
+    const result = schema.parse({
+      video,
+    });
+
+    expect(result.video).toEqual(video);
   });
 });

@@ -12,6 +12,7 @@ import {
   type StarlightRecipesUserConfig,
   validateConfig,
 } from "./libs/config";
+import { preprocessRecipeVideos } from "./libs/video";
 import { vitePluginStarlightRecipesConfig } from "./libs/vite";
 import { Translations } from "./translations";
 
@@ -71,6 +72,16 @@ export default function starlightRecipes(
 
         updateStarlightConfig({ components });
 
+        const starlightAnyConfig = starlightConfig as any;
+        const hasLocales =
+          starlightAnyConfig &&
+          starlightAnyConfig.locales &&
+          Object.keys(starlightAnyConfig.locales).length > 0;
+
+        const localeKeys: string[] = hasLocales
+          ? Object.keys(starlightAnyConfig.locales)
+          : ["root"];
+
         addIntegration({
           name: "starlight-recipes-integration",
           hooks: {
@@ -125,6 +136,22 @@ export default function starlightRecipes(
                     }),
                   ],
                 },
+              });
+            },
+            "astro:build:setup": async () => {
+              logger.info("Fetching YouTube metadata for recipe videos...");
+              await preprocessRecipeVideos({
+                srcDir: astroConfig.srcDir.pathname,
+                prefix: config.prefix,
+                locales: localeKeys,
+              });
+            },
+            "astro:server:setup": async () => {
+              logger.info("Fetching YouTube metadata for recipe videos...");
+              await preprocessRecipeVideos({
+                srcDir: astroConfig.srcDir.pathname,
+                prefix: config.prefix,
+                locales: localeKeys,
               });
             },
           },

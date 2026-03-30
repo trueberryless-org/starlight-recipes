@@ -7,13 +7,12 @@ import {
 } from "../../../libs/structured-data";
 
 vi.mock("astro:assets", () => ({
-  getImage: vi.fn().mockResolvedValue({ src: "/images/cover-1000.webp" }),
+	getImage: vi.fn().mockResolvedValue({ src: "/images/cover-1000.webp" }),
 }));
 
 vi.mock("virtual:starlight-recipes-config", () => ({
   default: {
     prefix: "recipes",
-    processVideo: false,
   },
 }));
 
@@ -112,6 +111,7 @@ vi.mock("../../../libs/content", () => ({
   getRecipeEntry: vi.fn().mockResolvedValue({
     entry: {
       id: "recipes/a",
+      filePath: "/virtual/recipes/a.mdx",
       data: {
         title: "Recipe A",
         description: "Tasty",
@@ -148,20 +148,139 @@ vi.mock("../../../libs/rating", () => ({
 }));
 
 describe("getRecipeHead", () => {
-  test("builds a Recipe structured data script tag", async () => {
-    const head = await getRecipeHead("recipes/a", undefined);
+	test("builds a Recipe structured data script tag", async () => {
+		const head = await getRecipeHead("recipes/a", undefined);
 
     expect(head.tag).toBe("script");
     expect(head.attrs?.type).toBe("application/ld+json");
 
-    const payload = JSON.parse(head.content ?? "{}");
+		const payload = JSON.parse(head.content ?? "{}");
 
     expect(payload["@context"]).toBe("https://schema.org");
     expect(payload["@type"]).toBe("Recipe");
     expect(payload.name).toBe("Recipe A");
 
-    expect(payload.recipeYield).toEqual(["4", "24 cookies"]);
-  });
+		expect(payload.recipeYield).toEqual(["4", "24 cookies"]);
+	});
+});
+
+describe("getRecipeHead - instruction step images", async () => {
+	const { getRecipeEntry } = vi.mocked(await import("../../../libs/content"));
+	const { getImage } = vi.mocked(await import("astro:assets"));
+
+	test("uses absolute URL for local ImageMetadata-like step image", async () => {
+		getImage.mockImplementation(async (options: any) => {
+			// Cover images use the cover.image object directly; step images
+			// use the step image object which we distinguish by src path.
+			if (typeof options?.src === "object" && options.src?.src?.includes("/path/to/image.png")) {
+				return { src: "/_astro/step-image.webp" } as any;
+			}
+
+			return { src: "/images/cover-1000.webp" } as any;
+		});
+		getRecipeEntry.mockResolvedValueOnce({
+			entry: {
+				id: "recipes/with-step-image",
+				filePath: "/virtual/recipes/with-step-image.mdx",
+				data: {
+					title: "Recipe With Step Image",
+					cover: { image: {} },
+					instructions: [
+						{
+							text: "Do something",
+							image: {
+								src: "/@fs/path/to/image.png",
+								width: 800,
+								height: 600,
+								format: "png",
+							},
+						},
+					],
+				},
+			},
+		} as any);
+
+		const head = await getRecipeHead("recipes/with-step-image", undefined);
+		const payload = JSON.parse(head.content ?? "{}");
+
+		expect(payload.recipeInstructions[0].image).toBe(
+			"https://example.com/_astro/step-image.webp",
+		);
+	});
+
+	test("keeps remote URL step image unchanged", async () => {
+		getRecipeEntry.mockResolvedValueOnce({
+			entry: {
+				id: "recipes/with-remote-step-image",
+				filePath: "/virtual/recipes/with-remote-step-image.mdx",
+				data: {
+					title: "Recipe With Remote Step Image",
+					cover: { image: {} },
+					instructions: [
+						{
+							text: "Do something",
+							image: "https://cdn.example.com/step.jpg",
+						},
+					],
+				},
+			},
+		} as any);
+
+		const head = await getRecipeHead(
+			"recipes/with-remote-step-image",
+			undefined,
+		);
+		const payload = JSON.parse(head.content ?? "{}");
+
+		expect(payload.recipeInstructions[0].image).toBe(
+			"https://cdn.example.com/step.jpg",
+		);
+	});
+});
+
+describe("getRecipeHead - video metadata from processed frontmatter", async () => {
+	const { getRecipeEntry } = vi.mocked(await import("../../../libs/content"));
+
+	test("maps processed video frontmatter to VideoObject", async () => {
+		getRecipeEntry.mockResolvedValueOnce({
+			entry: {
+				id: "recipes/with-video",
+				filePath: "/virtual/recipes/with-video.mdx",
+				data: {
+					title: "Recipe With Video",
+					cover: { image: {} },
+					video: {
+						url: "https://youtube.com/watch?v=abc123",
+						name: "Test Video",
+						description: "Video description",
+						thumbnailUrl: ["https://example.com/thumb.jpg"],
+						uploadDate: "2024-01-01T00:00:00.000Z",
+						duration: "PT2M",
+						embedUrl: "https://www.youtube.com/embed/abc123",
+						userInteractionCount: 42,
+					},
+				},
+			},
+		} as any);
+
+		const head = await getRecipeHead("recipes/with-video", undefined);
+		const payload = JSON.parse(head.content ?? "{}");
+
+		expect(payload.video).toEqual({
+			"@type": "VideoObject",
+			name: "Test Video",
+			description: "Video description",
+			thumbnailUrl: ["https://example.com/thumb.jpg"],
+			embedUrl: "https://www.youtube.com/embed/abc123",
+			uploadDate: "2024-01-01T00:00:00.000Z",
+			duration: "PT2M",
+			interactionStatistic: {
+				"@type": "InteractionCounter",
+				interactionType: { "@type": "WatchAction" },
+				userInteractionCount: 42,
+			},
+		});
+	});
 });
 
 describe("getHead", () => {

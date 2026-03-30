@@ -7,7 +7,6 @@ import type {
   Recipe,
   WithContext,
 } from "schema-dts";
-import config from "virtual:starlight-recipes-config";
 import context from "virtual:starlight-recipes-context";
 
 import type { StarlightRecipesFrontmatter } from "../schema";
@@ -35,7 +34,7 @@ import {
 import { getRecipeRating } from "./rating";
 import { getAllTags } from "./tags";
 import { getCookTime, getPrepTime, getTotalTime } from "./time";
-import { fetchYouTubeVideoMetadata } from "./video";
+import type { VideoFrontmatterProcessed } from "./video";
 
 export async function getHead(apiContext: APIContext): Promise<HeadConfig> {
   const { starlightRoute } = apiContext.locals;
@@ -194,8 +193,8 @@ export async function getRecipeHead(
   }
 
   if (data.instructions && data.instructions.length > 0) {
-    recipeStructuredData.recipeInstructions = data.instructions.map(
-      (step): HowToStep => {
+    const instructions: HowToStep[] = await Promise.all(
+      data.instructions.map(async (step): Promise<HowToStep> => {
         const isString = typeof step === "string";
 
         const baseStep = {
@@ -208,17 +207,18 @@ export async function getRecipeHead(
         }
 
         const { name, url, image } = step;
+        const imageUrl = await getInstructionStepImageUrl(image);
 
         return {
           ...baseStep,
           ...(name && { name }),
           ...(url && { url }),
-          ...(image && {
-            image: typeof image === "string" ? image : image.src,
-          }),
+          ...(imageUrl && { image: imageUrl }),
         };
-      }
+      })
     );
+
+    recipeStructuredData.recipeInstructions = instructions;
   }
 
   if (data.yield) {
@@ -235,27 +235,25 @@ export async function getRecipeHead(
       };
   }
 
-  if (config.processVideo && data.video) {
-    try {
-      const video = await fetchYouTubeVideoMetadata(data.video);
-      if (video)
-        recipeStructuredData.video = {
-          "@type": "VideoObject",
-          name: video.name,
-          description: video.description,
-          thumbnailUrl: video.thumbnailUrl,
-          embedUrl: video.embedUrl,
-          uploadDate: video.uploadDate,
-          duration: video.duration,
-          interactionStatistic: {
+  const v = data.video as VideoFrontmatterProcessed | undefined;
+
+  if (v) {
+    recipeStructuredData.video = {
+      "@type": "VideoObject",
+      name: v.name,
+      description: v.description,
+      thumbnailUrl: v.thumbnailUrl,
+      embedUrl: v.embedUrl ?? undefined,
+      uploadDate: v.uploadDate,
+      duration: v.duration,
+      interactionStatistic: v.userInteractionCount
+        ? {
             "@type": "InteractionCounter",
             interactionType: { "@type": "WatchAction" },
-            userInteractionCount: video.userInteractionCount,
-          },
-        };
-    } catch {
-      console.log(`Video ${data.video}`);
-    }
+            userInteractionCount: v.userInteractionCount,
+          }
+        : undefined,
+    } as any;
   }
 
   const recipeWithContext: WithContext<Recipe> = {
@@ -300,6 +298,37 @@ async function getRecommendedImages(
   );
 
   return processedImages;
+}
+
+async function getInstructionStepImageUrl(
+  image: any
+): Promise<string | undefined> {
+  if (!image) return undefined;
+
+  if (typeof image === "string") {
+    if (/^(https?:)?\/\//.test(image)) {
+      return image;
+    }
+
+    const result = await getImage({
+      src: image,
+      width: 1000,
+      format: "webp",
+    });
+
+    return resolveImageUrl(result.src);
+  }
+
+  const typedImage = image as { width?: number; height?: number };
+  const { width, height } = typedImage;
+  const result = await getImage({
+    src: image as any,
+    width: width ?? 1000,
+    height,
+    format: "webp",
+  });
+
+  return resolveImageUrl(result.src);
 }
 
 function mapAuthors(

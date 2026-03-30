@@ -59,6 +59,48 @@ export const instructionStepSchema = (image: ImageFunction) =>
     }),
   ]);
 
+export const videoMetadataSchema = z.object({
+  /** The title of the video. */
+  name: z.string(),
+  /**
+   * A list of thumbnail image URLs for this video.
+   * At least one is required; up to three are recommended for Google.
+   */
+  thumbnailUrl: z.array(z.string()).min(1),
+  /**
+   * The date and time the video was first published, in ISO 8601 format.
+   */
+  uploadDate: z.string(),
+  /** A description of the video. */
+  description: z.string().optional(),
+  /**
+   * The duration of the video in ISO 8601 format (for example, PT30M5S).
+   */
+  duration: z.string().optional(),
+  /**
+   * A URL pointing to a player for the video (for example, a YouTube embed URL).
+   */
+  embedUrl: z.string().url().optional(),
+  /** The number of times the video has been watched. */
+  userInteractionCount: z.number().nonnegative().optional(),
+});
+
+const videoProcessedFrontmatterSchema = videoMetadataSchema.extend({
+  /**
+   * The original source URL of the video (for example, a YouTube watch URL).
+   */
+  url: z.string().url(),
+});
+
+const videoFrontmatterSchema = z
+  .union([
+    // Author-facing raw form: just a URL string.
+    z.string().url(),
+    // Plugin-processed form: flattened VideoObject-like metadata.
+    videoProcessedFrontmatterSchema,
+  ])
+  .optional();
+
 export const recipeEntrySchema = ({ image }: SchemaContext) =>
   z.object({
     /**
@@ -218,9 +260,19 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
      */
     instructions: z.array(instructionStepSchema(image)).default([]),
     /**
-     * A YouTube URL of a video depicting the steps to make the dish.
+     * Video information for this recipe.
+     *
+     * Authors can provide this as a simple YouTube URL in the frontmatter.
+     * On dev/build startup, the starlight-recipes plugin will automatically
+     * replace that URL with a processed object that follows the core
+     * properties of https://schema.org/VideoObject (flattened, including
+     * the original `url`).
+     *
+     * When present at runtime, `name`, `thumbnailUrl`, and `uploadDate` are
+     * guaranteed by the plugin; other fields are optional but recommended
+     * for better Google Recipe rich results.
      */
-    video: z.string().url().optional(),
+    video: videoFrontmatterSchema,
   });
 
 export function recipesSchema(context: SchemaContext) {
@@ -245,9 +297,24 @@ export type StarlightRecipesIngredientSchema = z.infer<typeof ingredientSchema>;
 export type StarlightRecipesInstructionStepSchema = z.infer<
   ReturnType<typeof instructionStepSchema>
 >;
-export type StarlightRecipesFrontmatter = z.infer<
-  ReturnType<typeof recipeEntrySchema>
+
+type RawFrontmatterSchema = z.infer<ReturnType<typeof recipeEntrySchema>>;
+
+export type StarlightRecipesVideoProcessed = z.infer<
+  typeof videoProcessedFrontmatterSchema
 >;
+
+// Runtime/frontmatter type used by the plugin and consumers.
+export type StarlightRecipesVideoFrontmatter =
+  | StarlightRecipesVideoProcessed
+  | undefined;
+
+export type StarlightRecipesFrontmatter = Omit<
+  RawFrontmatterSchema,
+  "video"
+> & {
+  video?: StarlightRecipesVideoProcessed;
+};
 
 interface SchemaContext {
   image: ImageFunction;

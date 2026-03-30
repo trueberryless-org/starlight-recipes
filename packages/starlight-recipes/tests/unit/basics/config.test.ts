@@ -16,7 +16,6 @@ describe("validateConfig", () => {
       stepTimer: true,
       stepCheckbox: true,
     });
-    expect(result.processVideo).toBe(false);
   });
 
   test("normalizes the prefix by stripping surrounding slashes", () => {
@@ -45,4 +44,3 @@ describe("validateConfig", () => {
     ).toThrowError(/Invalid starlight-recipes configuration/);
   });
 });
-

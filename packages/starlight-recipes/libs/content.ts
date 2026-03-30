@@ -17,7 +17,7 @@ import { getRecipeRating } from "./rating";
 const recipeEntriesPerLocale = new Map<Locale, StarlightRecipeEntry[]>();
 
 export async function getRecipesStaticPaths() {
-  const paths = [];
+  const paths: GetStaticPathsResult = [];
 
   if (starlightConfig.isMultilingual) {
     for (const localeKey of Object.keys(starlightConfig.locales)) {
@@ -160,7 +160,10 @@ export async function getRecipeEntries(
           getPathWithLocale(entry.id, locale)
         );
         if (!localizedEntry) throw new Error("Unavailable localized entry.");
-        if (localizedEntry.data.draft === true)
+        if (
+          import.meta.env.MODE === "production" &&
+          localizedEntry.data.draft === true
+        )
           throw new Error("Draft localized entry.");
         recipeEntries.push(localizedEntry);
       } catch {

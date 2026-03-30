@@ -5,7 +5,7 @@ import { recipesAuthorSchema } from "../schema";
 import { stripLeadingSlash, stripTrailingSlash } from "./path";
 
 const configSchema = z
-  .object({
+  .strictObject({
     /**
      * A list of global author(s).
      *
@@ -44,7 +44,7 @@ const configSchema = z
      * Configuration for the interactive cooking experience.
      */
     cookingMode: z
-      .object({
+      .strictObject({
         /**
          * Enables countdown timers for instructions. Requires a defined "time"
          * field in the step frontmatter to initialize the interactive trigger.
@@ -56,13 +56,8 @@ const configSchema = z
          */
         stepCheckbox: z.boolean().default(true),
       })
+      .strict()
       .default({}),
-    /**
-     * Whether metadata for YouTube videos should be fetched or not.
-     *
-     * Enabling this feature improves SEO through Structured Data, though it results in about a threefold increase in build duration.
-     */
-    processVideo: z.boolean().default(false),
   })
   .default({});
 

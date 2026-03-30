@@ -10,8 +10,6 @@ import Ingredients from "../content/Ingredients.astro";
 import ShowcaseMediaCard from "../ui/ShowcaseMediaCard.astro";
 import RecipeStats from "../content/RecipeStats.astro";
 import { getRecipeEntry } from "../../libs/content";
-import { fetchYouTubeVideoMetadata } from "../../libs/video";
-import config from "virtual:starlight-recipes-config";
 import { isAnyRecipePage } from "../../libs/page";
 
 const { id, locale } = Astro.locals.starlightRoute;
@@ -22,16 +20,12 @@ if (!isAnyRecipePage(id)) {
 
 const { entry, nextLink, prevLink } = await getRecipeEntry(id, locale);
 
-let videoMetadata:
-  | Awaited<ReturnType<typeof fetchYouTubeVideoMetadata>>
+const video = entry.data.video as
+  | import("../../libs/video").VideoFrontmatterProcessed
   | undefined;
-if (config.processVideo && entry.data.video) {
-  try {
-    videoMetadata = await fetchYouTubeVideoMetadata(entry.data.video);
-  } catch {
-    videoMetadata = undefined;
-  }
-}
+
+const videoUrl = video?.url;
+const cardTitle = video?.name ?? entry.data.title;
 ---
 
 <Default>
@@ -44,9 +38,9 @@ if (config.processVideo && entry.data.video) {
   <slot />
 
   {
-    entry.data.video && (
-      <ShowcaseMediaCard title={videoMetadata?.name}>
-        <YouTube id={entry.data.video} />
+    videoUrl && (
+      <ShowcaseMediaCard title={cardTitle}>
+        <YouTube id={videoUrl} />
       </ShowcaseMediaCard>
     )
   }

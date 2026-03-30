@@ -31,4 +31,9 @@ const { slug, label, locale } = Astro.props;
   a:hover {
     background: var(--sl-color-gray-5);
   }
+
+  a:focus-visible {
+    outline: 2px solid var(--sl-color-accent);
+    outline-offset: 2px;
+  }
 </style>
