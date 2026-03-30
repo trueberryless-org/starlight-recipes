@@ -55,9 +55,25 @@ const cardTitle = video?.name ?? entry.data.title;
 
   @media print {
     :global(html),
-    :global(body) {
-      margin: 0;
-      padding: 0;
+    :global(body),
+    :global(.main-frame),
+    :global(main),
+    :global(.content-panel),
+    :global(.sl-container) {
+      min-height: 0 !important;
+      height: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    :global(.content-panel) {
+      max-width: none !important;
+    }
+    :global(*) {
+      break-after: auto !important;
+      page-break-after: auto !important;
+    }
+    :global(.sl-markdown-content > *:last-child) {
+      margin-bottom: 0 !important;
     }
     :global(header) {
       display: none !important;
@@ -73,18 +89,6 @@ const cardTitle = video?.name ?? entry.data.title;
     }
     :global(.right-sidebar) {
       display: none !important;
-    }
-    :global(.content-panel) {
-      margin: 0 !important;
-      padding: 0 !important;
-      max-width: none !important;
-    }
-    :global(main) {
-      margin: 0 !important;
-      padding: 0 !important;
-    }
-    :global(.main-frame) {
-      margin: 0 !important;
     }
     :global(h1) {
       font-size: 1.25rem !important;
