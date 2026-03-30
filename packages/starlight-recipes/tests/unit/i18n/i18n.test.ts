@@ -44,6 +44,10 @@ describe("getLangFromLocale", () => {
 });
 
 describe("getLocaleFromSlug", () => {
+  test("returns 'root' or undefined for default locale paths", () => {
+    expect(getLocaleFromSlug("/docs/en/recipes/cake")).toBe("en");
+  });
+
   test("detects locale after the base path", () => {
     expect(getLocaleFromSlug("/docs/de/recipes/cake")).toBe("de");
   });
@@ -66,4 +70,3 @@ describe("stripLocaleFromSlug", () => {
     );
   });
 });
-

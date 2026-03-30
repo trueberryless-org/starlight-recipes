@@ -52,28 +52,34 @@ describe("getTotalTime", () => {
     expect(getTotalTime(createEntry({}))).toBeUndefined();
   });
 
-  test("adds preparation and cooking times when both are present", () => {
+  test("returns undefined when only preparation and cooking times are present", () => {
     const entry = createEntry({ preparation: 15, cooking: 45 });
 
     expect(getTotalTime(entry)).toBeUndefined();
   });
 
-  test("falls back to preparation time when cooking is missing", () => {
+  test("returns undefined when only preparation is present", () => {
     const entry = createEntry({ preparation: 20 });
 
     expect(getTotalTime(entry)).toBeUndefined();
   });
 
-  test("falls back to cooking time when preparation is missing", () => {
+  test("returns undefined when only cooking is present", () => {
     const entry = createEntry({ cooking: 50 });
 
     expect(getTotalTime(entry)).toBeUndefined();
   });
 
-  test("uses total time when overridden", () => {
+  test("uses total time when set alongside other values", () => {
     const entry = createEntry({ preparation: 15, cooking: 20, total: 50 });
 
     expect(getTotalTime(entry)).toBe("PT50M");
+  });
+
+  test("works when only total time is set", () => {
+    const entry = createEntry({ total: 40 });
+
+    expect(getTotalTime(entry)).toBe("PT40M");
   });
 });
 

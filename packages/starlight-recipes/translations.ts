@@ -43,7 +43,7 @@ export const Translations = {
     "starlightRecipes.sidebar.exploreAll": "Explore all recipes",
     "starlightRecipes.sidebar.featured": "Featured recipes",
     "starlightRecipes.sidebar.popular": "Popular recipes",
-    "starlightRecipes.sidebar.tags": "Tag",
+    "starlightRecipes.sidebar.tags": "Tags",
     "starlightRecipes.tags.count_one":
       "{{count}} recipe with the tag “{{tag}}”",
     "starlightRecipes.tags.count_other":

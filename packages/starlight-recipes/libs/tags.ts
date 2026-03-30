@@ -56,11 +56,12 @@ export async function getTagsStaticPaths() {
 export function getEntryTags(
   entry: StarlightRecipeEntry
 ): StarlightRecipeEntryTag[] {
-  return (entry.data.tags ?? []).map((tag) => {
-    return {
-      label: tag,
-      slug: githubSlugger(tag),
-    };
+  const seen = new Set<string>();
+  return (entry.data.tags ?? []).flatMap((tag) => {
+    const tagSlug = githubSlugger(tag);
+    if (seen.has(tagSlug)) return [];
+    seen.add(tagSlug);
+    return [{ label: tag, slug: tagSlug }];
   });
 }
 

@@ -53,9 +53,11 @@ export function stripLocaleFromSlug(slug: string): string {
 }
 
 function getLocaleIndex(slug: string, base: string): number {
-  const normalizedSlug = stripLeadingSlash(slug);
-  const baseSegments = base.split("/").filter(Boolean);
-  return normalizedSlug.startsWith(stripLeadingSlash(stripTrailingSlash(base)))
+  const slugSegments = stripLeadingSlash(slug).split("/");
+  const baseSegments = stripLeadingSlash(stripTrailingSlash(base))
+    .split("/")
+    .filter(Boolean);
+  return baseSegments.every((segment, index) => slugSegments[index] === segment)
     ? baseSegments.length
     : 0;
 }
