@@ -18,14 +18,10 @@ export const processedVideoSchema = z.object({
 
 export type ProcessedVideo = z.infer<typeof processedVideoSchema>;
 
-// This is how we store it in frontmatter after preprocessing
 export interface VideoFrontmatterProcessed extends ProcessedVideo {
-  url: string; // original YouTube URL
+  url: string;
 }
 
-// Public frontmatter shape after preprocessing. Raw string URLs are
-// handled internally during preprocessing and are not part of the
-// public type surface.
 export type VideoFrontmatter = VideoFrontmatterProcessed | undefined;
 
 export async function fetchYouTubeVideoMetadata(
@@ -73,7 +69,6 @@ export async function fetchYouTubeVideoMetadata(
         : undefined,
     };
 
-    // Validate against our schema to ensure required fields are present
     processedVideoSchema.parse(processed);
 
     return processed;
@@ -94,14 +89,12 @@ export function rewriteVideoFieldInFrontmatter(
   const data = parsed.data ?? {};
 
   if (!Object.prototype.hasOwnProperty.call(data, "video")) {
-    // If there is no top-level `video` key, bail out and leave file as-is
     return raw;
   }
 
   const frontmatterRegex = /^---\s*\r?\n([\s\S]*?)\r?\n(---|\.\.\.)\s*\r?\n?/;
   const fmMatch = raw.match(frontmatterRegex);
   if (!fmMatch) {
-    // no recognizable frontmatter block
     return raw;
   }
 
@@ -111,7 +104,6 @@ export function rewriteVideoFieldInFrontmatter(
   const videoLineRegex = /^(?<indent>\s*)video\s*:\s*.*$/m;
   const match = fmBody.match(videoLineRegex);
   if (!match || !match.groups) {
-    // No simple top-level `video:` line; avoid mangling complex structures
     return raw;
   }
 
@@ -163,14 +155,11 @@ export async function normalizeVideoInFile(filePath: string): Promise<void> {
     return;
   }
 
-  // Already in processed form and satisfies schema? Leave as-is.
   if (typeof current === "object" && current !== null) {
     try {
       processedVideoSchema.parse(current);
       return;
-    } catch {
-      // falls through to re-process based on current.url if present
-    }
+    } catch {}
   }
 
   const url = typeof current === "string" ? current : current.url;

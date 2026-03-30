@@ -80,7 +80,6 @@ describe("fetchYouTubeVideoMetadata", () => {
 describe("video frontmatter schema", () => {
   test("accepts legacy string URL form", () => {
     const schema = recipesSchema({
-      // image function shape is provided by Astro at runtime; only type is important here
       image: (() => ({})) as any,
     });
 
@@ -93,7 +92,6 @@ describe("video frontmatter schema", () => {
 
   test("accepts processed flattened object form", () => {
     const schema = recipesSchema({
-      // image function shape is provided by Astro at runtime; only type is important here
       image: (() => ({})) as any,
     });
 
