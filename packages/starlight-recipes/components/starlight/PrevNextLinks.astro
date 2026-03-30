@@ -77,4 +77,10 @@ const { next, prev } = Astro.props;
       grid-column: 2;
     }
   }
+
+  @media print {
+    .pagination {
+      display: none;
+    }
+  }
 </style>

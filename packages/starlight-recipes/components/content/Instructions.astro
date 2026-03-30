@@ -862,4 +862,58 @@ const instructionsTitle = Astro.locals.t(
     height: auto;
     object-fit: cover;
   }
+
+  @media print {
+    .instructions-header {
+      margin-bottom: 0.5rem;
+    }
+    .instructions-header h2 {
+      font-size: 1rem;
+      margin: 0;
+    }
+    reset-controller {
+      display: none;
+    }
+    .sl-steps {
+      margin-top: 0.5rem;
+      padding-left: 1.5rem;
+    }
+    .sl-steps > li {
+      padding-inline-start: 0;
+      padding-bottom: 0.4rem;
+      min-height: auto;
+      font-size: 0.85rem;
+      page-break-inside: avoid;
+    }
+    .sl-steps > li::after {
+      display: none;
+    }
+    step-timer {
+      display: contents;
+    }
+    step-checkbox {
+      display: contents;
+    }
+    .timer-pill {
+      display: none;
+    }
+    .step-marker {
+      display: none;
+    }
+    .step-input {
+      display: none;
+    }
+    .marker-check {
+      display: none;
+    }
+    .step-content {
+      display: block;
+    }
+    .step-content img {
+      max-height: 120px;
+      width: auto;
+      border-radius: 6px;
+      margin-top: 0.25rem;
+    }
+  }
 </style>

@@ -106,4 +106,46 @@ const hasStats =
       padding-top: 1rem;
     }
   }
+
+  @media print {
+    .recipe-stats-container {
+      display: inline-flex;
+      flex-wrap: wrap;
+      padding: 0;
+      gap: 1rem;
+      justify-content: flex-start;
+      border: none;
+      background: none;
+      margin-bottom: 0.5rem;
+      font-size: 0.8rem;
+    }
+    .stat-item {
+      flex-direction: row;
+      gap: 0.25rem;
+      flex: none;
+      padding: 0;
+      border: none;
+      background: none;
+    }
+    .stat-item + .stat-item {
+      border: none;
+      border-left: none;
+      border-top: none;
+      padding-top: 0;
+      width: auto;
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      margin-bottom: 0;
+      font-weight: normal;
+      text-transform: none;
+    }
+    .stat-value {
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .stat-label::after {
+      content: ":";
+    }
+  }
 </style>

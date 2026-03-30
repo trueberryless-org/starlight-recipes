@@ -71,4 +71,30 @@ const { tagName: Element, isLink, picture } = resolveAuthorData(author);
     width: 2.5rem;
     object-fit: cover;
   }
+
+  @media print {
+    .author {
+      gap: 0.25rem;
+      text-decoration: none;
+    }
+    .author[href] {
+      color: #000;
+      text-decoration: none;
+    }
+    .author[href] .name {
+      color: #000 !important;
+    }
+    img {
+      height: 1.25rem;
+      width: 1.25rem;
+    }
+    .name {
+      font-size: 0.75rem;
+      color: #000;
+    }
+    .title {
+      font-size: 0.65rem;
+      color: #666;
+    }
+  }
 </style>

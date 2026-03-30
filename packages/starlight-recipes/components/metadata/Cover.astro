@@ -124,4 +124,21 @@ const imageProps: ComponentProps<typeof Image> =
     box-shadow: 0.5rem -0.5rem 0 0.5rem var(--sl-color-bg);
     border-top-right-radius: 1rem;
   }
+
+  @media print {
+    figure {
+      float: right;
+      max-width: 220px;
+      margin: 0 0 1rem 1rem;
+      border-radius: 8px;
+    }
+    .sl-recipes-cover-image {
+      border-radius: 8px;
+      max-height: 180px;
+      width: auto;
+    }
+    .featured-badge {
+      display: none;
+    }
+  }
 </style>

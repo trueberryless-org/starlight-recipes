@@ -47,49 +47,63 @@ const cardTitle = video?.name ?? entry.data.title;
   <Footer {entry} {locale} {nextLink} {prevLink} />
 </Default>
 
-<style is:global>
+<style>
+  @page {
+    margin: 1cm;
+    size: auto;
+  }
+
   @media print {
-    /* Hide interactive/web-only components */
-    .yield-controls,
-        reset-controller,
-        .marker-check,
-        .step-input,
-        .timer-pill,
-        .icon-play,
-        .icon-pause,
-        .icon-check,
-        .starlight-recipes-video-card, /* Or whatever ShowcaseMediaCard renders */
-        .prev-next-links,
-        footer,
-        nav {
+    :global(html),
+    :global(body) {
+      margin: 0;
+      padding: 0;
+    }
+    :global(header) {
       display: none !important;
     }
-
-    /* Ensure the ingredient list doesn't look like a web app */
-    .yield-pill {
-      background: none !important;
-      border: none !important;
+    :global(nav) {
+      display: none !important;
+    }
+    :global(.sidebar) {
+      display: none !important;
+    }
+    :global(aside) {
+      display: none !important;
+    }
+    :global(.right-sidebar) {
+      display: none !important;
+    }
+    :global(.content-panel) {
+      margin: 0 !important;
+      padding: 0 !important;
+      max-width: none !important;
+    }
+    :global(main) {
+      margin: 0 !important;
       padding: 0 !important;
     }
-
-    /* Show the step numbers clearly since the custom markers are hidden */
-    .sl-steps > li {
-      padding-inline-start: 3rem !important;
+    :global(.main-frame) {
+      margin: 0 !important;
     }
-
-    .sl-steps > li::before {
-      display: block !important; /* Force standard list numbering for print */
+    :global(h1) {
+      font-size: 1.25rem !important;
+      margin-bottom: 0.5rem !important;
     }
-
-    /* Hide connector lines for print since interactive markers are hidden */
-    .sl-steps > li::after {
-      display: none !important;
+    :global(h2) {
+      font-size: 1rem !important;
+      margin-top: 0.75rem !important;
+      margin-bottom: 0.25rem !important;
     }
-
-    /* Keep the images but make sure they don't break across pages */
-    img {
-      break-inside: avoid;
-      max-height: 300px;
+    :global(h3) {
+      font-size: 0.9rem !important;
+    }
+    :global(a) {
+      color: #000 !important;
+      text-decoration: none !important;
+    }
+    :global(a[href^="http"]::after) {
+      content: none !important;
     }
   }
 </style>

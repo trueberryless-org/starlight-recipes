@@ -206,9 +206,7 @@ const serverErrorText = Astro.locals.t(
       }
       if (countEl) countEl.textContent = `(${count})`;
 
-      if (localStorage.getItem(this.votedKey) || !this.isInteractive) {
-        this.highlightStars(avg);
-      }
+      this.highlightStars(avg);
     }
 
     async refreshStats() {
@@ -385,9 +383,12 @@ const serverErrorText = Astro.locals.t(
   }
 
   .star-btn:hover,
-  .star-btn:hover ~ .star-btn,
-  .star-btn.selected,
-  .star-btn.selected ~ .star-btn {
+  .star-btn:hover ~ .star-btn {
+    color: #facc15;
+  }
+
+  .is-voted .star-btn.selected,
+  .is-voted .star-btn.selected ~ .star-btn {
     color: #facc15;
   }
 
@@ -412,5 +413,49 @@ const serverErrorText = Astro.locals.t(
 
   .count-value {
     color: var(--sl-color-gray-3);
+  }
+
+  @media print {
+    .rating-wrapper {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .rating-container {
+      padding: 0;
+      background: none;
+      border: none;
+      gap: 0.25rem;
+      flex-direction: row;
+      align-items: center;
+    }
+    .stars-wrapper {
+      display: flex;
+      flex-direction: row-reverse;
+      gap: 0.1rem;
+    }
+    .star-btn {
+      color: #ccc;
+    }
+    .star-btn.selected,
+    .star-btn.selected ~ .star-btn {
+      color: #facc15 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .star-icon {
+      width: 0.9rem;
+      height: 0.9rem;
+    }
+    .loading-spinner {
+      display: none !important;
+    }
+    .rating-stats {
+      font-size: 0.75rem;
+      color: #000;
+    }
+    .error-msg {
+      display: none;
+    }
   }
 </style>

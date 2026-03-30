@@ -15,26 +15,28 @@ const Element = href ? "a" : "div";
 const videoTitle = Astro.locals.t("starlightRecipes.recipe.video.heading");
 ---
 
-<AnchorHeading level="2" id={githubSlugger(videoTitle)}>
-  {videoTitle}
-</AnchorHeading>
+<div class="video-section">
+  <AnchorHeading level="2" id={githubSlugger(videoTitle)}>
+    {videoTitle}
+  </AnchorHeading>
 
-<div class="not-content sl-flex">
-  <Element {href} class="starlight-showcases-media-card">
-    <div class="starlight-showcases-media-asset">
-      <slot />
-    </div>
-    {
-      (title || description) && (
-        <div class="starlight-showcases-media-infos sl-flex">
-          {title && <p class="starlight-showcases-media-title">{title}</p>}
-          {description && (
-            <p class="starlight-showcases-media-description">{description}</p>
-          )}
-        </div>
-      )
-    }
-  </Element>
+  <div class="not-content sl-flex">
+    <Element {href} class="starlight-showcases-media-card">
+      <div class="starlight-showcases-media-asset">
+        <slot />
+      </div>
+      {
+        (title || description) && (
+          <div class="starlight-showcases-media-infos sl-flex">
+            {title && <p class="starlight-showcases-media-title">{title}</p>}
+            {description && (
+              <p class="starlight-showcases-media-description">{description}</p>
+            )}
+          </div>
+        )
+      }
+    </Element>
+  </div>
 </div>
 
 <style>
@@ -77,5 +79,11 @@ const videoTitle = Astro.locals.t("starlightRecipes.recipe.video.heading");
   .starlight-showcases-media-description {
     color: var(--sl-color-gray-3);
     line-height: 1.5;
+  }
+
+  @media print {
+    .video-section {
+      display: none;
+    }
   }
 </style>

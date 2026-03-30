@@ -60,4 +60,28 @@ const tags = getEntryTags(entry);
     display: flex;
     align-items: center;
   }
+
+  @media print {
+    .container {
+      display: inline;
+      margin-left: auto;
+    }
+    b {
+      display: none;
+    }
+    ul {
+      display: inline;
+      padding: 0;
+      margin: 0;
+    }
+    li {
+      display: inline;
+    }
+    li::after {
+      content: ", ";
+    }
+    li:last-child::after {
+      content: "";
+    }
+  }
 </style>
