@@ -1,4 +1,4 @@
-import { describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import { recipesSchema } from "../../../schema";
 import { fetchYouTubeVideoMetadata } from "../../../libs/video";
@@ -10,6 +10,10 @@ vi.mock("@distube/ytdl-core", () => ({
     getBasicInfo: mockGetBasicInfo,
   },
 }));
+
+beforeEach(() => {
+  mockGetBasicInfo.mockReset();
+});
 
 describe("fetchYouTubeVideoMetadata", () => {
   test("returns mapped metadata when the video is found", async () => {

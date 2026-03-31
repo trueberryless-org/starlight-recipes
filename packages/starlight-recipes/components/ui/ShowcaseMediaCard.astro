@@ -12,6 +12,7 @@ interface Props {
 const { description, href, title } = Astro.props;
 
 const Element = href ? "a" : "div";
+const elementAttrs = href ? { href } : {};
 const videoTitle = Astro.locals.t("starlightRecipes.recipe.video.heading");
 ---
 
@@ -21,7 +22,7 @@ const videoTitle = Astro.locals.t("starlightRecipes.recipe.video.heading");
   </AnchorHeading>
 
   <div class="not-content sl-flex">
-    <Element {href} class="starlight-showcases-media-card">
+    <Element {...elementAttrs} class="starlight-showcases-media-card">
       <div class="starlight-showcases-media-asset">
         <slot />
       </div>

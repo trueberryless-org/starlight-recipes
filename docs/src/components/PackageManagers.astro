@@ -135,10 +135,9 @@ const DEFAULT_MANAGER = "npm";
       });
 
       this.querySelectorAll<HTMLElement>(".pill").forEach((btn) => {
-        btn.classList.toggle(
-          "active",
-          btn.getAttribute("data-value") === active
-        );
+        const isActive = btn.getAttribute("data-value") === active;
+        btn.classList.toggle("active", isActive);
+        btn.setAttribute("aria-pressed", String(isActive));
         btn.style.display = "block";
       });
     }

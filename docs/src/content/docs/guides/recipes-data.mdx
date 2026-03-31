@@ -5,6 +5,11 @@ tableOfContents:
   maxHeadingLevel: 5
 ---
 
+import Preview from '@/components/Preview.astro'
+import RecipesDataExample from '@/components/RecipesDataExample.astro'
+import RecipesDataAuthorsExample from '@/components/RecipesDataAuthorsExample.astro'
+import DocField from '@/components/DocField.astro';
+
 Starlight Recipes exposes information about the recipes and authors in your project.
 This guide explains how to use Starlight Recipes' data.
 
@@ -30,9 +35,6 @@ const { recipes, authors } = Astro.locals.starlightRecipes
 ### Example: Recipes
 
 This can be useful for example to create a widget that lists popular recipes with their average rating on your homepage:
-
-import Preview from '@/components/Preview.astro'
-import RecipesDataExample from '@/components/RecipesDataExample.astro'
 
 <Preview>
 
@@ -73,8 +75,6 @@ You need to [set up the rating system](/interactive/rating-system#setup-rating-s
 ### Example: Authors
 
 Another example is to create a list of all the known authors of your recipes:
-
-import RecipesDataAuthorsExample from '@/components/RecipesDataAuthorsExample.astro'
 
 <Preview>
 
@@ -178,8 +178,6 @@ Here is a summary of the whole type of the object:
 ```
 
 Below are the details for each Recipes Data property and its associated frontmatter field:
-
-import DocField from '@/components/DocField.astro';
 
 ### `recipes`
 

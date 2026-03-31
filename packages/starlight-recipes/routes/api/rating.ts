@@ -51,8 +51,8 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
           }
         );
       case "rate_limited":
-        return new Response(JSON.stringify({ error: "Forbidden" }), {
-          status: 403,
+        return new Response(JSON.stringify({ error: "Too Many Requests" }), {
+          status: 429,
           headers: { "Content-Type": "application/json" },
         });
       case "success": {

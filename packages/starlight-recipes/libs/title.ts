@@ -8,7 +8,7 @@ export function getSiteTitle(locale: Locale): string {
   let title: string;
   const lang = getLangFromLocale(locale);
 
-  if (starlightConfig.title[lang]) {
+  if (lang && starlightConfig.title[lang]) {
     title = starlightConfig.title[lang];
   } else {
     const defaultLang =

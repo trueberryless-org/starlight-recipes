@@ -14,10 +14,10 @@ export class RecipesPage extends BasePage {
   }
 
   get nextLink() {
-    return this.page.getByRole("link", { name: "Further recipes" });
+    return this.content.locator('[rel="next"]');
   }
 
   get prevLink() {
-    return this.page.getByRole("link", { name: "Prior recipes" });
+    return this.content.locator('[rel="prev"]');
   }
 }

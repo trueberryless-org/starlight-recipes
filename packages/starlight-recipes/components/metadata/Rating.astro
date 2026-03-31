@@ -13,6 +13,11 @@ const alreadyVotedText = Astro.locals.t(
 const serverErrorText = Astro.locals.t(
   "starlightRecipes.recipe.rating.serverError"
 );
+const groupLabel = Astro.locals.t("starlightRecipes.recipe.rating.groupLabel");
+const starsGroupLabel = Astro.locals.t(
+  "starlightRecipes.recipe.rating.starsGroupLabel"
+);
+const loadingLabel = Astro.locals.t("starlightRecipes.recipe.rating.loading");
 ---
 
 <recipe-rating
@@ -23,16 +28,25 @@ const serverErrorText = Astro.locals.t(
   data-server-error-text={serverErrorText}
   class="not-content"
   style="margin: 0"
+  role="group"
+  aria-label={groupLabel}
 >
   <div class="rating-wrapper">
     <div class="rating-container" id="main-container">
-      <div class="stars-wrapper" id="stars-container">
+      <div
+        class="stars-wrapper"
+        id="stars-container"
+        role="radiogroup"
+        aria-label={starsGroupLabel}
+      >
         {
           [5, 4, 3, 2, 1].map((num) => (
             <button
               type="button"
               class="star-btn"
               data-value={num}
+              role="radio"
+              aria-checked="false"
               aria-label={Astro.locals.t(
                 "starlightRecipes.recipe.rating.starLabel",
                 { count: num }
@@ -43,6 +57,7 @@ const serverErrorText = Astro.locals.t(
                 viewBox="0 0 24 24"
                 fill="currentColor"
                 class="star-icon"
+                aria-hidden="true"
               >
                 <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
               </svg>
@@ -51,13 +66,20 @@ const serverErrorText = Astro.locals.t(
         }
       </div>
 
-      <div class="rating-stats">
-        <div class="loading-spinner" id="spinner"></div>
+      <div class="rating-stats" aria-live="polite">
+        <div
+          class="loading-spinner"
+          id="spinner"
+          role="status"
+          aria-label={loadingLabel}
+        >
+        </div>
         <span class="avg-value">...</span>
         <span class="count-value"></span>
       </div>
     </div>
-    <div class="error-msg" id="error-display"></div>
+    <div class="error-msg" id="error-display" role="alert" aria-live="assertive"
+    ></div>
   </div>
 </recipe-rating>
 
@@ -184,15 +206,17 @@ const serverErrorText = Astro.locals.t(
     }
 
     highlightStars(rating: number) {
-      this.querySelectorAll(".star-btn").forEach((btn) =>
-        btn.classList.remove("selected")
-      );
+      this.querySelectorAll(".star-btn").forEach((btn) => {
+        btn.classList.remove("selected");
+        btn.setAttribute("aria-checked", "false");
+      });
       const roundedRating = Math.round(rating);
       if (roundedRating > 0) {
         const starToSelect = this.querySelector(
           `.star-btn[data-value="${roundedRating}"]`
         );
         starToSelect?.classList.add("selected");
+        starToSelect?.setAttribute("aria-checked", "true");
       }
     }
 
@@ -413,6 +437,18 @@ const serverErrorText = Astro.locals.t(
 
   .count-value {
     color: var(--sl-color-gray-3);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shake-error {
+      animation: none;
+    }
+    .is-loading .star-icon {
+      animation: none;
+    }
+    .loading-spinner {
+      animation: none;
+    }
   }
 
   @media print {

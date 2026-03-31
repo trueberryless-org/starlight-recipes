@@ -3,13 +3,14 @@ title: Internationalization (i18n)
 description: Learn how to configure your recipe website to support multiple languages.
 ---
 
+import { FileTree, Steps } from '@astrojs/starlight/components'
+import I18n from '@/components/I18n.astro'
+
 Starlight Recipes relies on Starlight's built-in support for [internationalization](https://starlight.astro.build/guides/i18n/) to provide multilingual support for your recipes with features like routing or fallback content.
 
 See the [Starlight internationalization documentation](https://starlight.astro.build/guides/i18n/) for more information on how to configure i18n in your Starlight website.
 
 ## Configure i18n
-
-import { FileTree, Steps } from '@astrojs/starlight/components'
 
 <Steps>
 
@@ -49,7 +50,5 @@ Read more about fallback content in the Starlight [“Internationalization”](h
 ## Translate the recipes UI
 
 The Starlight Recipes plugin allows you to translate the default UI strings used on your recipe website so that your recipes can be fully localized and readers can enjoy a seamless experience in their preferred language.
-
-import I18n from '@/components/I18n.astro'
 
 <I18n label="Starlight Recipes" translations={import('../../../../../packages/starlight-recipes/translations')} />

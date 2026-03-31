@@ -4,9 +4,18 @@ import { resolveAuthorData } from "../../libs/authors";
 
 const { author } = Astro.props;
 const { tagName: Element, isLink, picture } = resolveAuthorData(author);
+const linkAriaLabel = isLink
+  ? Astro.locals.t("starlightRecipes.recipe.author.linkAriaLabel", {
+      name: author.name,
+    })
+  : undefined;
 ---
 
-<Element href={isLink ? author.url : undefined} class="author">
+<Element
+  href={isLink ? author.url : undefined}
+  aria-label={linkAriaLabel}
+  class="author"
+>
   {
     picture.src &&
       (typeof picture.src === "string" ? (

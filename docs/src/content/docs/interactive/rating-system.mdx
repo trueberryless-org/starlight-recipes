@@ -7,55 +7,48 @@ import { Steps } from '@astrojs/starlight/components';
 import GuidGenerator from '@/components/GuidGenerator.astro';
 import InstallAdapterCommands from '@/components/InstallAdapterCommands.astro';
 
-Starlight Recipes integrates a rating system based on [Countify](https://countify.xyz/).
-Every user can submit one vote from one to five stars and the average stars together with the count of votes will be shown on overview pages and recipe pages.
+Starlight Recipes integrates a rating system powered by [Countify](https://countify.xyz/). This allows users to submit a 1-to-5 star vote, displaying the average rating and total vote count on your recipe pages.
 
-In this guide you will learn what you need to do to enable this rating system.
+## Setup
 
-## Setup rating system
-
-The rating system requires additional configuration in order to be enabled.
+The rating system requires an on-demand rendering environment and a unique secret to function.
 
 <Steps>
 
-1. Install and setup any [Astro Server Adapter](https://docs.astro.build/en/guides/on-demand-rendering/#server-adapters).
+1.  **Install an Astro Server Adapter**<br />
+    You must use a [Server Adapter](https://docs.astro.build/en/guides/on-demand-rendering/#server-adapters) to handle live vote submissions.
 
     <InstallAdapterCommands />
 
-2. Additionally, you must generate a random GUID and set the environment variable `STARLIGHT_RECIPES_RATING_SECRET` to this string.
-   This GUID acts as a secret to prevent people from guessing the Countify ID so they could spam ratings.
+2.  **Configure your Rating Secret**<br />
+    Generate a random GUID and set it as the environment variable `STARLIGHT_RECIPES_RATING_SECRET`. This acts as a private namespace to prevent others from spamming your Countify counters.
 
-   Click on this button to generate a random variable for you:
+    <GuidGenerator />
 
-   <GuidGenerator />
-
-   :::danger
-   If you change this GUID, all your ratings will be reset as a different GUID represents another namespace.
-   :::
+    :::danger[Data Persistence]
+    The rating data is tied directly to two things:
+    - **Your Secret:** If you change the `STARLIGHT_RECIPES_RATING_SECRET`, all existing ratings will be "lost" as the system will look into a new, empty namespace.
+    - **File Names:** Ratings are linked to the recipe's filename without extension (e.g., `virgin-colada`). Renaming the file will reset the rating for that specific recipe.
+    :::
 
 </Steps>
 
-## How the rating system works
+## How it works
 
-When the [setup](#setup-rating-system) is completed, a hash of each recipe is generated based on the [id](https://docs.astro.build/en/reference/modules/astro-content/#id) of the recipe - aka the slugified file name.
+Once configured, the system generates a unique hash for each recipe based on its [`id`](https://starlight.astro.build/reference/route-data/#id). This hash tracks two metrics: `sum` (total stars) and `count` (total votes).
 
-Based on this hash and your secret GUID, two counters are initialized for each recipe:
+### Build-time vs. Real-time
 
-- `sum`: Increases by the amount of stars voted by the user
-- `count`: Increases by one with each vote
+It is important to understand when data is fetched to manage expectations around the "Popular Recipes" sidebar:
 
-The average rating value therefore calculates with:
+- **Popular Recipes Sidebar:** The sorting order for "popular" recipes is calculated **only at build time**. If users vote after your site is deployed, the sidebar order will not change until you **redeploy your site** to refetch the updated totals.
+- **Recipe Pages:** When a user visits a specific recipe, the current average rating is fetched live.
+- **Sidebar Configuration:** You can adjust the number of items shown in the sidebar using [`popularRecipeCount`](/configuration#popularrecipecount). If the rating system is not configured, this section is hidden automatically.
 
-```sh
-Average = sum / count
-```
+### Reliability & User Experience
 
-:::danger
-Because the filename is used to make the rating work, the rating will reset when you rename the recipe file.
-:::
+To keep your site fast and resilient against external API issues, the system follows these fallback behaviors:
 
-The calculated average rating is used to sort the most popular recipes at build time.
-If you want the sorting to be updated, redeploy your site to fetch the fresh data.
-
-You can configure how many recipes should be shown in the sidebar with [`popularRecipeCount`](/configuration#popularrecipecount).
-If the rating system is disabled, the popular sidebar group will not be shown.
+- **Service Downtime:** If Countify is unavailable or slow (timing out after 10 seconds during fetch), the UI gracefully falls back to showing **0 stars and 0 votes** rather than breaking the page.
+- **Submission Limits:** To prevent abuse, users are limited to **one vote per recipe every 24 hours**. If a submission fails due to network issues or rate limiting, the system returns an error state so your UI can prompt the user to try again later.
+- **Production Check:** If the "Popular Recipes" group is missing from your sidebar in production, verify that `STARLIGHT_RECIPES_RATING_SECRET` is correctly set in your hosting provider's environment variables and that the build server has outgoing network access.

@@ -12,13 +12,16 @@ interface Props {
 const { entry, locale } = Astro.props;
 
 const tags = getEntryTags(entry);
+const uniqueId = `tags-${entry.id.replace(/[^a-zA-Z0-9]/g, "-")}`;
 ---
 
 {
   tags.length > 0 ? (
     <div class="container">
-      <b>{Astro.locals.t("starlightRecipes.recipe.tags")}</b>
-      <ul>
+      <span class="tags-label" id={uniqueId}>
+        {Astro.locals.t("starlightRecipes.recipe.tags")}
+      </span>
+      <ul aria-labelledby={uniqueId}>
         {tags.map((tag) => (
           <li>
             <Pill slug={tag.slug} label={tag.label} {locale} />
@@ -37,7 +40,7 @@ const tags = getEntryTags(entry);
     gap: 0.75rem;
   }
 
-  b {
+  .tags-label {
     font-size: 0.9rem;
     font-weight: 700;
     color: var(--sl-color-white);
@@ -66,7 +69,7 @@ const tags = getEntryTags(entry);
       display: inline;
       margin-left: auto;
     }
-    b {
+    .tags-label {
       display: none;
     }
     ul {

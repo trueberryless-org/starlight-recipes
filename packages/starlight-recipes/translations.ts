@@ -58,6 +58,18 @@ export const Translations = {
       "$t(starlightRecipes.time.hours, {'count': {{hours}} })",
     "starlightRecipes.time.total_minutes":
       "$t(starlightRecipes.time.minutes, {'count': {{minutes}} })",
+    "starlightRecipes.recipe.instructions.startTimerAriaLabel":
+      "Start {{minutes}} minute timer",
+    "starlightRecipes.recipe.instructions.resetTimerAriaLabel": "Reset timer",
+    "starlightRecipes.recipe.instructions.markStepDoneAriaLabel":
+      "Mark step {{step}} as done",
+    "starlightRecipes.recipe.instructions.stepAriaLabel": "Step {{step}}",
+    "starlightRecipes.recipe.rating.groupLabel": "Recipe rating",
+    "starlightRecipes.recipe.rating.starsGroupLabel": "Rate this recipe",
+    "starlightRecipes.recipe.rating.loading": "Loading ratings",
+    "starlightRecipes.recipe.ingredients.servingsUpdated":
+      "Servings updated to {count}",
+    "starlightRecipes.recipe.author.linkAriaLabel": "View more by {{name}}",
   },
   de: {
     "starlightRecipes.authors.count_one": "{{count}} Rezept von {{author}}",
@@ -121,5 +133,19 @@ export const Translations = {
       "$t(starlightRecipes.time.hours, {'count': {{hours}} })",
     "starlightRecipes.time.total_minutes":
       "$t(starlightRecipes.time.minutes, {'count': {{minutes}} })",
+    "starlightRecipes.recipe.instructions.startTimerAriaLabel":
+      "{{minutes}}-Minuten-Timer starten",
+    "starlightRecipes.recipe.instructions.resetTimerAriaLabel":
+      "Timer zurücksetzen",
+    "starlightRecipes.recipe.instructions.markStepDoneAriaLabel":
+      "Schritt {{step}} als erledigt markieren",
+    "starlightRecipes.recipe.instructions.stepAriaLabel": "Schritt {{step}}",
+    "starlightRecipes.recipe.rating.groupLabel": "Rezeptbewertung",
+    "starlightRecipes.recipe.rating.starsGroupLabel": "Dieses Rezept bewerten",
+    "starlightRecipes.recipe.rating.loading": "Bewertungen werden geladen",
+    "starlightRecipes.recipe.ingredients.servingsUpdated":
+      "Portionen auf {count} aktualisiert",
+    "starlightRecipes.recipe.author.linkAriaLabel":
+      "Mehr von {{name}} anzeigen",
   },
 } as const;

@@ -144,11 +144,17 @@ const DEFAULT_ID = `${DEFAULT_PKG}-${DEFAULT_ADAPTER}`;
     save(key: string, value: string) {
       this._safeSet(key, value);
       this.updateUI();
+
+      let storageArea = null;
+      try {
+        storageArea = localStorage;
+      } catch {}
+
       window.dispatchEvent(
         new StorageEvent("storage", {
           key,
           newValue: value,
-          storageArea: localStorage,
+          storageArea,
         })
       );
     }

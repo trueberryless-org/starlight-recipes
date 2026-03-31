@@ -2,7 +2,7 @@
 
 ---
 
-<button class="print-button not-content" onclick="window.print()">
+<button type="button" class="print-button not-content" onclick="window.print()">
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="16"
@@ -13,6 +13,7 @@
     stroke-width="2"
     stroke-linecap="round"
     stroke-linejoin="round"
+    aria-hidden="true"
   >
     <polyline points="6 9 6 2 18 2 18 9"></polyline>
     <path
@@ -27,16 +28,18 @@
 
 <style>
   .print-button {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 0.75rem;
+    margin-top: 0;
     border-radius: 999px;
     background: var(--sl-color-gray-6);
     color: var(--sl-color-white);
     border: 1px solid var(--sl-color-gray-5);
-    font-size: var(--sl-text-xs);
+    font-size: 0.9rem;
     font-weight: 600;
+    line-height: 1;
     cursor: pointer;
     transition: all 0.2s ease;
   }

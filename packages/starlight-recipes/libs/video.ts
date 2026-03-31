@@ -1,7 +1,7 @@
 import ytdl from "@distube/ytdl-core";
 import { z } from "astro/zod";
 import matter from "gray-matter";
-import { readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import { secondsToIsoDuration } from "./time";
@@ -101,7 +101,7 @@ export function rewriteVideoFieldInFrontmatter(
   const fmBody = fmMatch[1] ?? "";
   const closingDelimiter = fmMatch[2] ?? "---";
 
-  const videoLineRegex = /^(?<indent>\s*)video\s*:\s*.*$/m;
+  const videoLineRegex = /^(?<indent>\s*)video\s*:.*(?:\r?\n\k<indent>  .+)*/m;
   const match = fmBody.match(videoLineRegex);
   if (!match || !match.groups) {
     return raw;
@@ -143,7 +143,8 @@ export function rewriteVideoFieldInFrontmatter(
 }
 
 export async function normalizeVideoInFile(filePath: string): Promise<void> {
-  const raw = readFileSync(filePath, "utf-8");
+  const buffer = await readFile(filePath);
+  const raw = buffer.toString("utf-8");
   const parsed = matter(raw);
 
   const current = parsed.data.video as
@@ -175,7 +176,7 @@ export async function normalizeVideoInFile(filePath: string): Promise<void> {
     return;
   }
 
-  writeFileSync(filePath, updated, "utf-8");
+  await writeFile(filePath, updated, "utf-8");
 }
 
 export async function preprocessRecipeVideos(options: {
@@ -195,7 +196,7 @@ export async function preprocessRecipeVideos(options: {
 
     let stats;
     try {
-      stats = statSync(docsDir);
+      stats = await stat(docsDir);
     } catch {
       continue;
     }
@@ -204,22 +205,24 @@ export async function preprocessRecipeVideos(options: {
       continue;
     }
 
-    const files = collectMarkdownFiles(docsDir);
+    const files = await collectMarkdownFiles(docsDir);
 
-    for (const filePath of files) {
-      await normalizeVideoInFile(filePath);
+    const CONCURRENCY = 5;
+    for (let i = 0; i < files.length; i += CONCURRENCY) {
+      const batch = files.slice(i, i + CONCURRENCY);
+      await Promise.all(batch.map(normalizeVideoInFile));
     }
   }
 }
 
-function collectMarkdownFiles(dir: string): string[] {
-  const entries = readdirSync(dir, { withFileTypes: true });
+async function collectMarkdownFiles(dir: string): Promise<string[]> {
+  const entries = await readdir(dir, { withFileTypes: true });
   const result: string[] = [];
 
   for (const entry of entries) {
     const fullPath = join(dir, entry.name);
     if (entry.isDirectory()) {
-      result.push(...collectMarkdownFiles(fullPath));
+      result.push(...(await collectMarkdownFiles(fullPath)));
     } else if (
       entry.isFile() &&
       (entry.name.endsWith(".md") || entry.name.endsWith(".mdx"))

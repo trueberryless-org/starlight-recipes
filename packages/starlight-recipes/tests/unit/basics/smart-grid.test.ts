@@ -46,7 +46,7 @@ describe("getSmartGridData", () => {
     ]);
   });
 
-  test("avoids leaving a single regular item alone before a featured item", () => {
+  test("moves featured item to end when placing it would leave an incomplete row of regulars", () => {
     const entries = [
       createEntry("a", false),
       createEntry("b", false),

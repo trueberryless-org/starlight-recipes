@@ -27,12 +27,24 @@ export const recipesAuthorSchema = z.object({
   url: z.string().url().optional(),
 });
 
+/**
+ * Defines an ingredient, either as a simple string or a structured object.
+ */
 export const ingredientSchema = z.union([
   z.string(),
   z
     .object({
+      /**
+       * The name of the ingredient.
+       */
       name: z.string(),
+      /**
+       * The numeric amount of the ingredient.
+       */
       quantity: z.number().optional(),
+      /**
+       * The unit of measurement (e.g., "grams", "cups").
+       */
       unit: z.string().optional(),
     })
     .superRefine((val, ctx) => {
@@ -46,21 +58,44 @@ export const ingredientSchema = z.union([
     }),
 ]);
 
+/**
+ * Defines a single step in the recipe instructions.
+ */
 export const instructionStepSchema = (image: ImageFunction) =>
   z.union([
     z.string(),
     z.object({
+      /**
+       * An optional short name or heading for the step.
+       */
       name: z.string().optional(),
+      /**
+       * The full text description of the instruction.
+       */
       text: z.string(),
+      /**
+       * An optional image showing the progress of this step.
+       */
       image: z.union([image(), z.string()]).optional(),
+      /**
+       * Accessible alternative text for the step image.
+       */
       alt: z.string().optional(),
+      /**
+       * An optional URL for more details regarding this specific step.
+       */
       url: z.string().url().optional(),
+      /**
+       * The estimated time required for this specific step in minutes.
+       */
       time: z.number().nonnegative().optional(),
     }),
   ]);
 
 export const videoMetadataSchema = z.object({
-  /** The title of the video. */
+  /**
+   * The title of the video.
+   */
   name: z.string(),
   /**
    * A list of thumbnail image URLs for this video.
@@ -71,7 +106,9 @@ export const videoMetadataSchema = z.object({
    * The date and time the video was first published, in ISO 8601 format.
    */
   uploadDate: z.string(),
-  /** A description of the video. */
+  /**
+   * A description of the video.
+   */
   description: z.string().optional(),
   /**
    * The duration of the video in ISO 8601 format (for example, PT30M5S).
@@ -81,10 +118,15 @@ export const videoMetadataSchema = z.object({
    * A URL pointing to a player for the video (for example, a YouTube embed URL).
    */
   embedUrl: z.string().url().optional(),
-  /** The number of times the video has been watched. */
+  /**
+   * The number of times the video has been watched.
+   */
   userInteractionCount: z.number().nonnegative().optional(),
 });
 
+/**
+ * Extended video metadata including the original source URL.
+ */
 const videoProcessedFrontmatterSchema = videoMetadataSchema.extend({
   /**
    * The original source URL of the video (for example, a YouTube watch URL).
@@ -92,10 +134,48 @@ const videoProcessedFrontmatterSchema = videoMetadataSchema.extend({
   url: z.string().url(),
 });
 
+/**
+ * Validates that a string is a legitimate YouTube video, Short, or Embed URL.
+ */
+const youtubeUrlSchema = z
+  .string()
+  .url()
+  .refine(
+    (value) => {
+      try {
+        const url = new URL(value);
+        const host = url.hostname.replace("www.", "");
+
+        if (host === "youtu.be") {
+          return url.pathname.length > 1;
+        }
+
+        if (host === "youtube.com") {
+          return (
+            url.searchParams.has("v") ||
+            url.pathname.startsWith("/shorts/") ||
+            url.pathname.startsWith("/live/") ||
+            url.pathname.startsWith("/embed/")
+          );
+        }
+
+        return false;
+      } catch {
+        return false;
+      }
+    },
+    {
+      message: "Video must be a YouTube URL.",
+    }
+  );
+
+/**
+ * The video schema as used in frontmatter, allowing either a raw URL or processed metadata.
+ */
 const videoFrontmatterSchema = z
   .union([
     // Author-facing raw form: just a URL string.
-    z.string().url(),
+    youtubeUrlSchema,
     // Plugin-processed form: flattened VideoObject-like metadata.
     videoProcessedFrontmatterSchema,
   ])
@@ -240,16 +320,6 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
           )
           .default([]),
       })
-      .superRefine((val, ctx) => {
-        if (val?.calories !== undefined && val.servings === undefined) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message:
-              "If yield.calories are set, yield.servings must also be set.",
-            path: ["yield", "servings"],
-          });
-        }
-      })
       .optional(),
     /**
      * List of ingredients used in the recipe.
@@ -275,6 +345,9 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
     video: videoFrontmatterSchema,
   });
 
+/**
+ * Returns the Zod schema for a recipe entry, with all top-level fields made optional.
+ */
 export function recipesSchema(context: SchemaContext) {
   // Checking for `context` to provide a better migration error message.
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition

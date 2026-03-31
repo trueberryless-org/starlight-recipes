@@ -51,8 +51,10 @@ describe("resolveCuisine", () => {
     const cuisine = resolveCuisine("US", "en");
 
     expect(cuisine?.isCountry).toBe(true);
-    expect(cuisine?.name).toBeTruthy();
-    expect(cuisine?.label).toContain(cuisine?.name ?? "");
+    expect(cuisine?.name).toBe("United States");
+    expect(cuisine?.slug).toBe("united-states");
+    expect(cuisine?.flag).toBeTruthy();
+    expect(cuisine?.label).toContain("United States");
   });
 
   test("falls back to raw input for non-country strings", () => {
@@ -75,4 +77,3 @@ describe("getAllCuisines", () => {
     expect(italianCuisine?.entries).toHaveLength(1);
   });
 });
-

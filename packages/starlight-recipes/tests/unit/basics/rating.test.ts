@@ -21,7 +21,7 @@ describe("generateRatingHash", () => {
     expect(sumHash).not.toBe(countHash);
   });
 
-  test("cuts the hash to 20 characters", () => {
+  test("cuts the hash to 40 characters", () => {
     const hash = generateRatingHash("recipe-1", "ns", "sum");
 
     expect(hash).toHaveLength(40);

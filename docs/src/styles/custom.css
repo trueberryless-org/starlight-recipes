@@ -1,5 +1,6 @@
 .expressive-code .frame {
   --ec-brdRad: 12px;
+
   border-radius: var(--ec-brdRad);
   overflow: hidden;
 }

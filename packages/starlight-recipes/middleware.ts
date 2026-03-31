@@ -76,56 +76,65 @@ export async function getRecipesData({
   return recipeData;
 }
 
-async function getRecipeEntriesData(
-  locale: Locale
-): Promise<StarlightRecipesData["recipes"]> {
+async function getRecipeEntriesData(locale: Locale) {
   const entries = await getRecipeEntries(locale);
+  const CONCURRENCY_LIMIT = 10;
+  const results = [];
 
-  return Promise.all(
-    entries.map(async (entry) => {
-      const authors = getEntryAuthors(entry);
-      const tags = getEntryTags(entry);
+  // Process in chunks to avoid scaling issues with collection size
+  for (let i = 0; i < entries.length; i += CONCURRENCY_LIMIT) {
+    const chunk = entries.slice(i, i + CONCURRENCY_LIMIT);
 
-      const averageRating = await getRecipeRating(entry.id);
-      const time = entry.data.time;
-      const cuisine = resolveCuisine(entry.data.cuisine, locale);
+    const chunkResults = await Promise.all(
+      chunk.map(async (entry) => {
+        const authors = getEntryAuthors(entry);
+        const tags = getEntryTags(entry);
 
-      const recipesData: StarlightRecipesData["recipes"][number] = {
-        authors: authors.map(({ name, title, url }) => ({
-          name,
-          title,
-          url,
-        })),
-        cover: entry.data.cover,
-        createdAt: entry.data.date,
-        draft: entry.data.draft,
-        entry: entry,
-        featured: entry.data.featured === true,
-        href: getRelativeUrl(`/${getPathWithLocale(entry.id, locale)}`),
-        tags: tags.map(({ label, slug }) => ({
-          label,
-          href: getRelativeRecipeUrl(`/tags/${slug}`, locale),
-        })),
-        averageRating,
-        time,
-        category: entry.data.category,
-        cuisine,
-        ingredients: entry.data.ingredients,
-        instructions: entry.data.instructions,
-        yield: entry.data.yield,
-        title: entry.data.title,
-      };
+        const averageRating = await getRecipeRating(entry.id);
+        const time = entry.data.time;
+        const cuisine = resolveCuisine(entry.data.cuisine, locale);
 
-      if (
-        entry.data.lastUpdated &&
-        typeof entry.data.lastUpdated !== "boolean"
-      ) {
-        recipesData.updatedAt = entry.data.lastUpdated;
-      }
+        const recipesData = {
+          authors: authors.map(({ name, title, url }) => ({
+            name,
+            title,
+            url,
+          })),
+          cover: entry.data.cover,
+          createdAt: entry.data.date,
+          draft: entry.data.draft,
+          entry: entry,
+          featured: entry.data.featured === true,
+          href: getRelativeUrl(`/${getPathWithLocale(entry.id, locale)}`),
+          tags: tags.map(({ label, slug }) => ({
+            label,
+            href: getRelativeRecipeUrl(`/tags/${slug}`, locale),
+          })),
+          averageRating,
+          time,
+          category: entry.data.category,
+          cuisine,
+          ingredients: entry.data.ingredients,
+          instructions: entry.data.instructions,
+          yield: entry.data.yield,
+          title: entry.data.title,
+        };
 
-      return recipesData;
-    })
-  );
+        if (
+          entry.data.lastUpdated &&
+          typeof entry.data.lastUpdated !== "boolean"
+        ) {
+          recipesData.updatedAt = entry.data.lastUpdated;
+        }
+
+        return recipesData;
+      })
+    );
+
+    results.push(...chunkResults);
+  }
+
+  return results;
 }
 
 async function getRecipeSidebar(

@@ -19,6 +19,9 @@ const { steps, recipeId } = hasInstructions
 const globalConfig = config.cookingMode;
 const showReset = globalConfig.stepCheckbox || globalConfig.stepTimer;
 const doneText = Astro.locals.t("starlightRecipes.recipe.instructions.done");
+const resetTimerAriaLabel = Astro.locals.t(
+  "starlightRecipes.recipe.instructions.resetTimerAriaLabel"
+);
 const instructionsTitle = Astro.locals.t(
   "starlightRecipes.recipe.instructions.heading"
 );
@@ -58,6 +61,7 @@ const instructionsTitle = Astro.locals.t(
                 stroke="currentColor"
                 stroke-width="2"
                 class="icon-reset"
+                aria-hidden="true"
               >
                 <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                 <path d="M3 3v5h5" />
@@ -80,6 +84,10 @@ const instructionsTitle = Astro.locals.t(
                   "is-static": config.isStatic,
                 },
               ]}
+              aria-label={config.isStatic ? Astro.locals.t(
+                "starlightRecipes.recipe.instructions.stepAriaLabel",
+                { step: step.stepNum }
+              ) : undefined}
             >
               {config.useTimer && (
                 <step-timer
@@ -87,14 +95,19 @@ const instructionsTitle = Astro.locals.t(
                   data-step={step.stepNum}
                   data-recipe={recipeId}
                   data-done-text={doneText}
+                  data-reset-aria-label={resetTimerAriaLabel}
                   data-initial-label={formatNaturalTime(
                     step.time!,
                     Astro.locals.t
                   )}
                 >
                   <button
+                    type="button"
                     class="timer-pill"
-                    aria-label={`Start ${step.time} minute timer`}
+                    aria-label={Astro.locals.t(
+                      "starlightRecipes.recipe.instructions.startTimerAriaLabel",
+                      { minutes: step.time }
+                    )}
                   >
                     <span class="pill-left">
                       <span class="step-index">{step.stepNum}</span>
@@ -104,6 +117,7 @@ const instructionsTitle = Astro.locals.t(
                           fill="currentColor"
                           height="1rem"
                           width="1rem"
+                          aria-hidden="true"
                         >
                           <path d="M8 5v14l11-7z" />
                         </svg>
@@ -114,6 +128,7 @@ const instructionsTitle = Astro.locals.t(
                           fill="currentColor"
                           height="1rem"
                           width="1rem"
+                          aria-hidden="true"
                         >
                           <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
                         </svg>
@@ -126,13 +141,14 @@ const instructionsTitle = Astro.locals.t(
                           stroke-width="3"
                           height="1rem"
                           width="1rem"
+                          aria-hidden="true"
                         >
                           <polyline points="20 6 9 17 4 12" />
                         </svg>
                       </span>
                     </span>
                     <span class="pill-right">
-                      <span class="time-display">
+                      <span class="time-display" aria-live="polite">
                         {formatNaturalTime(step.time!, Astro.locals.t)}
                       </span>
                     </span>
@@ -169,6 +185,7 @@ const instructionsTitle = Astro.locals.t(
                         stroke-width="3"
                         width="14"
                         height="14"
+                        aria-hidden="true"
                       >
                         <polyline points="20 6 9 17 4 12" />
                       </svg>
@@ -176,7 +193,10 @@ const instructionsTitle = Astro.locals.t(
                     <input
                       type="checkbox"
                       class="step-input"
-                      aria-label={`Mark step ${step.stepNum} as done`}
+                      aria-label={Astro.locals.t(
+                        "starlightRecipes.recipe.instructions.markStepDoneAriaLabel",
+                        { step: step.stepNum }
+                      )}
                     />
                   </div>
                   <div class="step-content">
@@ -200,23 +220,28 @@ const instructionsTitle = Astro.locals.t(
               )}
 
               {config.isStatic && (
-                <div class="step-content">
-                  {step.name && <strong class="step-title">{step.name}</strong>}
-                  <div class="text-content" set:html={step.text} />
-                  {step.image &&
-                    (step.isRemoteImage ? (
-                      <img
-                        src={step.image as string}
-                        alt={step.alt || ""}
-                        loading="lazy"
-                      />
-                    ) : (
-                      <Image
-                        src={step.image as ImageMetadata}
-                        alt={step.alt || ""}
-                      />
-                    ))}
-                </div>
+                <>
+                  <div class="step-marker static-marker" aria-hidden="true">
+                    <span class="marker-number">{step.stepNum}</span>
+                  </div>
+                  <div class="step-content">
+                    {step.name && <strong class="step-title">{step.name}</strong>}
+                    <div class="text-content" set:html={step.text} />
+                    {step.image &&
+                      (step.isRemoteImage ? (
+                        <img
+                          src={step.image as string}
+                          alt={step.alt || ""}
+                          loading="lazy"
+                        />
+                      ) : (
+                        <Image
+                          src={step.image as ImageMetadata}
+                          alt={step.alt || ""}
+                        />
+                      ))}
+                  </div>
+                </>
               )}
             </li>
           );
@@ -379,9 +404,12 @@ const instructionsTitle = Astro.locals.t(
     private recipeId: string;
     private doneLabel: string;
     private initialLabel: string;
+    private initialAriaLabel: string;
+    private resetAriaLabel: string;
     private stepNum: number;
 
     private boundToggleTimer = this.toggleTimer.bind(this);
+    private boundHandleKeydown = this.handleKeydown.bind(this);
     private boundOnReset = (e: CustomEvent) => {
       if (e.detail.recipeId === this.recipeId) this.reset();
     };
@@ -400,17 +428,20 @@ const instructionsTitle = Astro.locals.t(
       this.recipeId = this.dataset.recipe || "";
       this.doneLabel = this.dataset.doneText || "Done!";
       this.initialLabel = this.dataset.initialLabel || "";
+      this.resetAriaLabel = this.dataset.resetAriaLabel || "Reset timer";
       this.stepNum = parseInt(this.dataset.step || "0");
       this.storageKey = `recipe-${this.recipeId}-step-${this.stepNum}-timer`;
       this.button = this.querySelector(".timer-pill");
       this.display = this.querySelector(".time-display");
       this.durationMinutes = parseFloat(this.dataset.time || "0");
       this.remainingSeconds = this.durationMinutes * 60;
+      this.initialAriaLabel = this.button?.getAttribute("aria-label") || "";
     }
 
     connectedCallback() {
       this.loadState();
       this.button?.addEventListener("click", this.boundToggleTimer);
+      this.button?.addEventListener("keydown", this.boundHandleKeydown);
       window.addEventListener(
         "recipe-reset",
         this.boundOnReset as EventListener
@@ -424,6 +455,7 @@ const instructionsTitle = Astro.locals.t(
     disconnectedCallback() {
       if (this.interval) clearInterval(this.interval);
       this.button?.removeEventListener("click", this.boundToggleTimer);
+      this.button?.removeEventListener("keydown", this.boundHandleKeydown);
       window.removeEventListener(
         "recipe-reset",
         this.boundOnReset as EventListener
@@ -472,12 +504,29 @@ const instructionsTitle = Astro.locals.t(
         this.display.textContent = this.initialLabel;
       }
       this.classList.remove("completed");
-      this.button?.removeAttribute("disabled");
+      this.button?.setAttribute("aria-label", this.initialAriaLabel);
+    }
+
+    handleKeydown(e: KeyboardEvent) {
+      if (e.code !== "Space") return;
+      if (!this.classList.contains("completed")) return;
+
+      e.preventDefault();
+      this.resetFromDone();
     }
 
     toggleTimer() {
+      if (this.classList.contains("completed")) {
+        this.resetFromDone();
+        return;
+      }
       this.isRunning ? this.pause() : this.start();
       this.saveState();
+    }
+
+    resetFromDone() {
+      this.reset();
+      this.dispatchUpdate(false);
     }
 
     start() {
@@ -535,7 +584,7 @@ const instructionsTitle = Astro.locals.t(
     setVisualsFinished() {
       if (this.display) this.display.textContent = this.doneLabel;
       this.classList.add("completed");
-      this.button?.setAttribute("disabled", "true");
+      this.button?.setAttribute("aria-label", this.resetAriaLabel);
     }
 
     updateDisplay() {
@@ -590,6 +639,11 @@ const instructionsTitle = Astro.locals.t(
   .reset-btn:hover {
     border-color: var(--sl-color-gray-3);
     color: var(--sl-color-gray-2);
+  }
+
+  .reset-btn:focus-visible {
+    outline: 2px solid var(--sl-color-accent);
+    outline-offset: 2px;
   }
 
   .reset-confirm {
@@ -672,6 +726,10 @@ const instructionsTitle = Astro.locals.t(
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  .step-marker.static-marker {
+    cursor: default;
+  }
+
   .marker-number {
     font-size: var(--sl-text-xs);
     font-weight: 600;
@@ -703,6 +761,11 @@ const instructionsTitle = Astro.locals.t(
   step-checkbox .step-marker:hover {
     background-color: var(--sl-color-accent);
     border: 1px solid var(--sl-color-accent);
+  }
+
+  .step-marker:has(.step-input:focus-visible) {
+    outline: 2px solid var(--sl-color-accent);
+    outline-offset: 2px;
   }
 
   :global([data-theme="light"]) step-checkbox .step-marker:hover {
@@ -788,6 +851,11 @@ const instructionsTitle = Astro.locals.t(
     border-color: var(--sl-color-accent);
   }
 
+  .timer-pill:focus-visible {
+    outline: 2px solid var(--sl-color-accent);
+    outline-offset: 2px;
+  }
+
   :global([data-theme="light"]) .timer-pill:is(:hover, .active) {
     color: var(--sl-color-text-invert);
   }
@@ -824,8 +892,12 @@ const instructionsTitle = Astro.locals.t(
     background-color: var(--sl-color-accent);
     border-color: var(--sl-color-accent);
     box-shadow: 0 0 0 2px var(--sl-color-accent-low);
-    cursor: default;
+    cursor: pointer;
     opacity: 1;
+  }
+
+  step-timer.completed .timer-pill:hover {
+    filter: brightness(1.1);
   }
 
   :global([data-theme="light"]) step-timer.completed .timer-pill {

@@ -40,8 +40,8 @@ const codeSnippet = `STARLIGHT_RECIPES_RATING_SECRET=${placeholder}`;
     }
 
     connectedCallback() {
-      this.btn = this.querySelector("[data-gen-btn]");
-      this.container = this.querySelector("[data-code-container]");
+      this.btn = this.querySelector<HTMLButtonElement>("[data-gen-btn]");
+      this.container = this.querySelector<HTMLElement>("[data-code-container]");
 
       if (this.btn) {
         this.btn.addEventListener("click", this.handleClick);
