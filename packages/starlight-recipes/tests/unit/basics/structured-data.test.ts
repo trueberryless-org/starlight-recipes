@@ -10,13 +10,13 @@ vi.mock("astro:assets", () => ({
   getImage: vi.fn().mockResolvedValue({ src: "/images/cover-1000.webp" }),
 }));
 
-vi.mock("virtual:starlight-recipes-config", () => ({
+vi.mock("virtual:starlight-recipes/config", () => ({
   default: {
     prefix: "recipes",
   },
 }));
 
-vi.mock("virtual:starlight-recipes-context", () => ({
+vi.mock("virtual:starlight-recipes/context", () => ({
   default: {
     site: "https://example.com",
     trailingSlash: "ignore",

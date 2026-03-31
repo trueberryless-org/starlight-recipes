@@ -5,13 +5,13 @@ import {
   prepareInstructionsProps,
 } from "../../../libs/instructions";
 
-vi.mock("virtual:starlight-recipes-config", () => ({
+vi.mock("virtual:starlight-recipes/config", () => ({
   default: {
     prefix: "recipes",
   },
 }));
 
-vi.mock("virtual:starlight-recipes-context", () => ({
+vi.mock("virtual:starlight-recipes/context", () => ({
   default: {
     trailingSlash: "ignore",
   },
@@ -138,4 +138,3 @@ describe("getStepDisplayConfig", () => {
     });
   });
 });
-

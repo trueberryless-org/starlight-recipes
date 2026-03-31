@@ -24,7 +24,7 @@ export const recipesAuthorSchema = z.object({
   /**
    * The URL to the author's website.
    */
-  url: z.string().url().optional(),
+  url: z.url().optional(),
 });
 
 /**
@@ -50,7 +50,7 @@ export const ingredientSchema = z.union([
     .superRefine((val, ctx) => {
       if (val.quantity === undefined && val.unit !== undefined) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "If unit is set, quantity must also be set.",
           path: ["quantity"],
         });
@@ -84,7 +84,7 @@ export const instructionStepSchema = (image: ImageFunction) =>
       /**
        * An optional URL for more details regarding this specific step.
        */
-      url: z.string().url().optional(),
+      url: z.url().optional(),
       /**
        * The estimated time required for this specific step in minutes.
        */
@@ -117,7 +117,7 @@ export const videoMetadataSchema = z.object({
   /**
    * A URL pointing to a player for the video (for example, a YouTube embed URL).
    */
-  embedUrl: z.string().url().optional(),
+  embedUrl: z.url().optional(),
   /**
    * The number of times the video has been watched.
    */
@@ -131,43 +131,40 @@ const videoProcessedFrontmatterSchema = videoMetadataSchema.extend({
   /**
    * The original source URL of the video (for example, a YouTube watch URL).
    */
-  url: z.string().url(),
+  url: z.url(),
 });
 
 /**
  * Validates that a string is a legitimate YouTube video, Short, or Embed URL.
  */
-const youtubeUrlSchema = z
-  .string()
-  .url()
-  .refine(
-    (value) => {
-      try {
-        const url = new URL(value);
-        const host = url.hostname.replace("www.", "");
+const youtubeUrlSchema = z.url().refine(
+  (value) => {
+    try {
+      const url = new URL(value);
+      const host = url.hostname.replace("www.", "");
 
-        if (host === "youtu.be") {
-          return url.pathname.length > 1;
-        }
-
-        if (host === "youtube.com") {
-          return (
-            url.searchParams.has("v") ||
-            url.pathname.startsWith("/shorts/") ||
-            url.pathname.startsWith("/live/") ||
-            url.pathname.startsWith("/embed/")
-          );
-        }
-
-        return false;
-      } catch {
-        return false;
+      if (host === "youtu.be") {
+        return url.pathname.length > 1;
       }
-    },
-    {
-      message: "Video must be a YouTube URL.",
+
+      if (host === "youtube.com") {
+        return (
+          url.searchParams.has("v") ||
+          url.pathname.startsWith("/shorts/") ||
+          url.pathname.startsWith("/live/") ||
+          url.pathname.startsWith("/embed/")
+        );
+      }
+
+      return false;
+    } catch {
+      return false;
     }
-  );
+  },
+  {
+    message: "Video must be a YouTube URL.",
+  }
+);
 
 /**
  * The video schema as used in frontmatter, allowing either a raw URL or processed metadata.
@@ -257,14 +254,14 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
       .superRefine((val, ctx) => {
         if (val?.preparation !== undefined && val.cooking === undefined) {
           ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: "custom",
             message: "Cooking time must be provided if preparation time is set",
             path: ["cooking"],
           });
         }
         if (val?.cooking !== undefined && val.preparation === undefined) {
           ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: "custom",
             message: "Preparation time must be provided if cooking time is set",
             path: ["preparation"],
           });
@@ -302,7 +299,7 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
               .superRefine((val, ctx) => {
                 if (val.amount !== undefined && val.unit === undefined) {
                   ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
+                    code: "custom",
                     message:
                       "If yield.additional.amount is set, yield.additional.unit must also be set.",
                     path: ["yield", "additional", "unit"],
@@ -310,7 +307,7 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
                 }
                 if (val.amount === undefined && val.unit !== undefined) {
                   ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
+                    code: "custom",
                     message:
                       "If yield.additional.unit is set, yield.additional.amount must also be set.",
                     path: ["yield", "additional", "amount"],

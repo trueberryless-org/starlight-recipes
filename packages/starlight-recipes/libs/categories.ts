@@ -1,6 +1,6 @@
 import type { GetStaticPathsResult } from "astro";
 import { slug as githubSlugger } from "github-slugger";
-import config from "virtual:starlight-recipes-config";
+import config from "virtual:starlight-recipes/config";
 import starlightConfig from "virtual:starlight/user-config";
 
 import { type StarlightRecipeEntry, getRecipeEntries } from "./content";

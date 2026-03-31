@@ -1,8 +1,8 @@
 import type { GetStaticPathsResult } from "astro";
 import type { ImageMetadata } from "astro";
 import { slug as githubSlugger } from "github-slugger";
-import config from "virtual:starlight-recipes-config";
-import { authors } from "virtual:starlight-recipes-images";
+import config from "virtual:starlight-recipes/config";
+import { authors } from "virtual:starlight-recipes/images";
 import starlightConfig from "virtual:starlight/user-config";
 
 import type { StarlightRecipesAuthor } from "../schema";

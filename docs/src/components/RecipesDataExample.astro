@@ -1,7 +1,7 @@
 <ul>
   {
     [...Astro.locals.starlightRecipes.recipes]
-      .sort((a, b) => {
+      .toSorted((a, b) => {
         const ratingA = a.averageRating?.ratingValue ?? 0;
         const ratingB = b.averageRating?.ratingValue ?? 0;
         return ratingB - ratingA;

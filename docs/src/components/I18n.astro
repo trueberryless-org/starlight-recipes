@@ -33,7 +33,7 @@ const supportedLangNames = supportedLangs
       );
     return langName;
   })
-  .sort((a, b) => a.localeCompare(b, pageLang));
+  .toSorted((a, b) => a.localeCompare(b, pageLang));
 
 // The list of language names for all supported languages formatted according to the current page's language.
 const langList = new Intl.ListFormat(pageLang, {

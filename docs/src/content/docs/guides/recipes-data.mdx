@@ -42,7 +42,7 @@ This can be useful for example to create a widget that lists popular recipes wit
 <ul>
   {
     [...Astro.locals.starlightRecipes.recipes]
-      .sort((a, b) => {
+      .toSorted((a, b) => {
         const ratingA = a.averageRating?.ratingValue ?? 0;
         const ratingB = b.averageRating?.ratingValue ?? 0;
         return ratingB - ratingA;
@@ -82,7 +82,7 @@ Another example is to create a list of all the known authors of your recipes:
 ---
 const authorNames = Astro.locals.starlightRecipes.authors
   .map((author) => author.name)
-  .sort((a, b) => a.localeCompare(b, Astro.currentLocale))
+  .toSorted((a, b) => a.localeCompare(b, Astro.currentLocale))
 
 const authorList = new Intl.ListFormat(Astro.currentLocale, {
   style: 'long',

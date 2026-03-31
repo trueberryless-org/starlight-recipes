@@ -7,7 +7,7 @@ import type {
   Recipe,
   WithContext,
 } from "schema-dts";
-import context from "virtual:starlight-recipes-context";
+import context from "virtual:starlight-recipes/context";
 
 import type { StarlightRecipesFrontmatter } from "../schema";
 import { getAllAuthors, getEntryAuthors } from "./authors";

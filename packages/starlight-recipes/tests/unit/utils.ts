@@ -26,25 +26,27 @@ function mockRecipe(
   return {
     id: `recipes/${slug(docsFilePath.replace(/\.[^.]+$/, "").replace(/\/index$/, ""))}`,
     collection: "docs",
-    data: recipeEntrySchema({
-      image: () =>
-        z.object({
-          src: z.string(),
-          width: z.number(),
-          height: z.number(),
-          format: z.union([
-            z.literal("png"),
-            z.literal("jpg"),
-            z.literal("jpeg"),
-            z.literal("tiff"),
-            z.literal("webp"),
-            z.literal("gif"),
-            z.literal("svg"),
-            z.literal("avif"),
-          ]),
-        }),
-    })
-      .passthrough()
+    data: z
+      .looseObject(
+        recipeEntrySchema({
+          image: () =>
+            z.object({
+              src: z.string(),
+              width: z.number(),
+              height: z.number(),
+              format: z.union([
+                z.literal("png"),
+                z.literal("jpg"),
+                z.literal("jpeg"),
+                z.literal("tiff"),
+                z.literal("webp"),
+                z.literal("gif"),
+                z.literal("svg"),
+                z.literal("avif"),
+              ]),
+            }),
+        }).shape
+      )
       .parse(entry) as StarlightRecipeEntry["data"],
     filePath: `src/content/docs/recipes/${docsFilePath}`,
     body: "",

@@ -12,7 +12,7 @@ const configSchema = z
      * Global authors are keyed by a unique identifier that can also be referenced in a recipe `authors` frontmatter
      * field.
      */
-    authors: z.record(recipesAuthorSchema).default({}),
+    authors: z.record(z.string(), recipesAuthorSchema).prefault({}),
     /**
      * The base prefix for all recipe routes.
      *
@@ -57,26 +57,19 @@ const configSchema = z
         stepCheckbox: z.boolean().default(true),
       })
       .strict()
-      .default({}),
+      .prefault({}),
   })
-  .default({});
+  .prefault({});
 
 export function validateConfig(userConfig: unknown): StarlightRecipesConfig {
   const config = configSchema.safeParse(userConfig);
 
   if (!config.success) {
-    const errors = config.error.flatten();
-
     throw new AstroError(
       `Invalid starlight-recipes configuration:
 
-${errors.formErrors.map((formError) => ` - ${formError}`).join("\n")}
-${Object.entries(errors.fieldErrors)
-  .map(
-    ([fieldName, fieldErrors]) => ` - ${fieldName}: ${fieldErrors.join(" - ")}`
-  )
-  .join("\n")}
-  `,
+${z.prettifyError(config.error)}
+`,
       `See the error report above for more information.\n\nIf you believe this is a bug, please file an issue at https://github.com/trueberryless-org/starlight-recipes/issues/new/choose`
     );
   }

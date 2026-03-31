@@ -1,4 +1,4 @@
-import astroConfig from "virtual:starlight-recipes-context";
+import astroConfig from "virtual:starlight-recipes/context";
 import starlightConfig from "virtual:starlight/user-config";
 
 import { stripLeadingSlash, stripTrailingSlash } from "./path";
