@@ -94,7 +94,7 @@ async function getRecipeEntriesData(locale: Locale) {
         const time = entry.data.time;
         const cuisine = resolveCuisine(entry.data.cuisine, locale);
 
-        const recipesData = {
+        const recipesData: StarlightRecipesData["recipes"][number] = {
           authors: authors.map(({ name, title, url }) => ({
             name,
             title,

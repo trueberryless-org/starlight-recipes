@@ -22,7 +22,7 @@ export function defineVitestConfig(
   const srcDir = new URL("src/", rootDir);
 
   const isAdapterMissing = context?.adapter === undefined;
-  const ratingSecret = import.meta.env.STARLIGHT_RECIPES_RATING_SECRET;
+  const ratingSecret = process.env.STARLIGHT_RECIPES_RATING_SECRET;
 
   return getViteConfig({
     plugins: [

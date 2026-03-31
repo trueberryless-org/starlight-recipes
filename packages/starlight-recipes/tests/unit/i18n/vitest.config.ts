@@ -3,7 +3,7 @@ import { defineVitestConfig } from "../test";
 export default defineVitestConfig(
   {},
   {
-    title: "Starlight Recipes Basics",
+    title: "Starlight Recipes i18n",
     locales: {
       root: { label: "English", lang: "en", dir: "ltr" },
       de: { label: "Deutsch", lang: "de", dir: "ltr" },

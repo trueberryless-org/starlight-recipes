@@ -6,9 +6,10 @@ interface Props {
   cover: NonNullable<StarlightRecipeEntry["data"]["cover"]>;
   aspectRatio?: string;
   featured?: boolean;
+  loading?: "eager" | "lazy";
 }
 
-const { cover, aspectRatio, featured = false } = Astro.props;
+const { cover, aspectRatio, featured = false, loading = "lazy" } = Astro.props;
 
 const image = cover.image;
 const isImageMetadata = typeof image !== "string";
@@ -21,7 +22,7 @@ const isImageMetadata = typeof image !== "string";
         class="sl-recipes-cover-image"
         alt={cover.alt}
         src={image}
-        loading="eager"
+        loading={loading}
         style={{ aspectRatio: aspectRatio }}
       />
     ) : (
@@ -29,7 +30,7 @@ const isImageMetadata = typeof image !== "string";
         class="sl-recipes-cover-image"
         alt={cover.alt}
         src={image}
-        loading="eager"
+        loading={loading}
         style={{ aspectRatio: aspectRatio }}
       />
     )

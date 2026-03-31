@@ -14,15 +14,23 @@ export const GET: APIRoute = async ({ url }) => {
     });
   }
 
-  const result = await getRecipeRating(recipeId);
+  try {
+    const result = await getRecipeRating(recipeId);
 
-  return new Response(JSON.stringify(result), {
-    status: 200,
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",
-    },
-  });
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Cache-Control":
+          "public, s-maxage=86400, stale-while-revalidate=604800",
+      },
+    });
+  } catch {
+    return new Response(JSON.stringify({ error: "Failed to load rating" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 };
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {

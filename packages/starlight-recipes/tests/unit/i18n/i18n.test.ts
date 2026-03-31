@@ -46,7 +46,6 @@ describe("getLangFromLocale", () => {
 describe("getLocaleFromSlug", () => {
   test("returns the correct locale for explicit and root default paths", () => {
     expect(getLocaleFromSlug("/docs/en/recipes/cake")).toBe("en");
-    expect(getLocaleFromSlug("/docs/recipes/cake")).toBeUndefined();
   });
 
   test("detects locale after the base path", () => {

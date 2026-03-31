@@ -29,7 +29,7 @@ const cardTitle = video?.name ?? entry.data.title;
 ---
 
 <Default>
-  {entry.data.cover && <Cover cover={entry.data.cover} />}
+  {entry.data.cover && <Cover cover={entry.data.cover} loading={"eager"} />}
   <Metadata {entry} />
   <RecipeStats {entry} />
   <Ingredients {entry} />

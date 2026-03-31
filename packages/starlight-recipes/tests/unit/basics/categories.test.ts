@@ -72,6 +72,6 @@ describe("getAllCategories", () => {
 
     expect(dessert?.entries).toHaveLength(2);
     expect(main?.entries).toHaveLength(1);
+    expect(categories.has("undefined")).toBe(false);
   });
 });
-
