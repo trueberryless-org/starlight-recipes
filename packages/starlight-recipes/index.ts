@@ -171,14 +171,13 @@ async function loadEnvironmentVariables(): Promise<Record<string, string>> {
 
   for (const file of files) {
     const path = join(root, file);
-    const exists = await access(path)
-      .then(() => true)
-      .catch(() => false);
-
-    if (exists) {
-      const envContent = await readFile(path);
-      const parsed = parseEnv(envContent.toString("utf-8"));
+    try {
+      const envContent = await readFile(path, "utf-8");
+      const parsed = parseEnv(envContent);
       envConfig = { ...envConfig, ...(parsed as Record<string, string>) };
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    }
     }
   }
 
