@@ -1,12 +1,5 @@
 import { AstroError } from "astro/errors";
-import {
-  type ZodLiteral,
-  type ZodNumber,
-  type ZodObject,
-  type ZodString,
-  type ZodUnion,
-  z,
-} from "astro/zod";
+import { z } from "astro/zod";
 
 export const recipesAuthorSchema = z.object({
   /**
@@ -390,21 +383,21 @@ interface SchemaContext {
   image: ImageFunction;
 }
 
-// https://github.com/withastro/astro/blob/39ee41fa56b362942162dc17b0b4252d2f881e7e/packages/astro/src/assets/types.ts#L38-L47
-type ImageFunction = () => ZodObject<{
-  src: ZodString;
-  width: ZodNumber;
-  height: ZodNumber;
-  format: ZodUnion<
+// https://github.com/withastro/astro/blob/a9138ab11ac02cd0d7f1738eea3070c826585e7e/packages/astro/src/content/config.ts#L28-L44
+type ImageFunction = () => z.ZodObject<{
+  src: z.core.$ZodString;
+  width: z.core.$ZodNumber;
+  height: z.core.$ZodNumber;
+  format: z.core.$ZodUnion<
     [
-      ZodLiteral<"png">,
-      ZodLiteral<"jpg">,
-      ZodLiteral<"jpeg">,
-      ZodLiteral<"tiff">,
-      ZodLiteral<"webp">,
-      ZodLiteral<"gif">,
-      ZodLiteral<"svg">,
-      ZodLiteral<"avif">,
+      z.core.$ZodLiteral<"png">,
+      z.core.$ZodLiteral<"jpg">,
+      z.core.$ZodLiteral<"jpeg">,
+      z.core.$ZodLiteral<"tiff">,
+      z.core.$ZodLiteral<"webp">,
+      z.core.$ZodLiteral<"gif">,
+      z.core.$ZodLiteral<"svg">,
+      z.core.$ZodLiteral<"avif">,
     ]
   >;
 }>;
