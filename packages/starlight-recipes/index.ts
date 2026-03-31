@@ -178,7 +178,6 @@ async function loadEnvironmentVariables(): Promise<Record<string, string>> {
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
     }
-    }
   }
 
   return { ...envConfig, ...process.env } as Record<string, string>;
