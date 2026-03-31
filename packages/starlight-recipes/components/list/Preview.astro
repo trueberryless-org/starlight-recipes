@@ -23,7 +23,11 @@ const url = getRelativeUrl(`/${getPathWithLocale(entry.id, locale)}`);
 const headingId = `recipe-title-${entry.id.replace(/[^a-zA-Z0-9]/g, "-")}`;
 ---
 
-<a href={url} class={`card-link ${bigPreview ? "big" : "small"}`} aria-labelledby={headingId}>
+<a
+  href={url}
+  class={`card-link ${bigPreview ? "big" : "small"}`}
+  aria-labelledby={headingId}
+>
   <article class="preview-card">
     {
       entry.data.cover && (

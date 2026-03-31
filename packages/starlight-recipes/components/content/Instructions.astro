@@ -84,10 +84,14 @@ const instructionsTitle = Astro.locals.t(
                   "is-static": config.isStatic,
                 },
               ]}
-              aria-label={config.isStatic ? Astro.locals.t(
-                "starlightRecipes.recipe.instructions.stepAriaLabel",
-                { step: step.stepNum }
-              ) : undefined}
+              aria-label={
+                config.isStatic
+                  ? Astro.locals.t(
+                      "starlightRecipes.recipe.instructions.stepAriaLabel",
+                      { step: step.stepNum }
+                    )
+                  : undefined
+              }
             >
               {config.useTimer && (
                 <step-timer
@@ -225,7 +229,9 @@ const instructionsTitle = Astro.locals.t(
                     <span class="marker-number">{step.stepNum}</span>
                   </div>
                   <div class="step-content">
-                    {step.name && <strong class="step-title">{step.name}</strong>}
+                    {step.name && (
+                      <strong class="step-title">{step.name}</strong>
+                    )}
                     <div class="text-content" set:html={step.text} />
                     {step.image &&
                       (step.isRemoteImage ? (

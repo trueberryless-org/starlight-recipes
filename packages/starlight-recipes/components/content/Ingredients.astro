@@ -88,7 +88,13 @@ const servingsUpdatedText = Astro.locals.t(
         )}
       </div>
 
-      <ul class:list={["ingredient-list", "not-content", { "few-ingredients": ingredients.length < 6 }]}>
+      <ul
+        class:list={[
+          "ingredient-list",
+          "not-content",
+          { "few-ingredients": ingredients.length < 6 },
+        ]}
+      >
         {ingredients.map((ing) => {
           if (typeof ing === "string") {
             return <li class="ingredient-row static">{ing}</li>;
