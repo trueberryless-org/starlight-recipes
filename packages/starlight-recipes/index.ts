@@ -3,9 +3,9 @@ import type {
   StarlightUserConfig,
 } from "@astrojs/starlight/types";
 import type { AstroIntegrationLogger } from "astro";
-import { parse } from "dotenv";
-import { existsSync, readFileSync } from "node:fs";
+import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { parseEnv } from "node:util";
 
 import {
   type StarlightRecipesConfig,
@@ -29,7 +29,7 @@ export default function starlightRecipes(
       "i18n:setup"({ injectTranslations }) {
         injectTranslations(Translations);
       },
-      "config:setup"({
+      async "config:setup"({
         addIntegration,
         addRouteMiddleware,
         logger,
@@ -52,7 +52,7 @@ export default function starlightRecipes(
           );
         }
 
-        const env = loadEnvironmentVariables();
+        const env = await loadEnvironmentVariables();
         const ratingSecret = env.STARLIGHT_RECIPES_RATING_SECRET;
         const ratingEnabled = !isAdapterMissing && !!ratingSecret;
         const shouldWarnAboutMissingSecret = !isAdapterMissing && !ratingSecret;
@@ -161,7 +161,7 @@ export default function starlightRecipes(
   };
 }
 
-function loadEnvironmentVariables(): Record<string, string> {
+async function loadEnvironmentVariables(): Promise<Record<string, string>> {
   const root = process.cwd();
   const mode = process.env.MODE ?? process.env.NODE_ENV ?? "production";
 
@@ -171,9 +171,12 @@ function loadEnvironmentVariables(): Record<string, string> {
 
   for (const file of files) {
     const path = join(root, file);
-    if (existsSync(path)) {
-      const parsed = parse(readFileSync(path));
-      envConfig = { ...envConfig, ...parsed };
+    try {
+      const envContent = await readFile(path, "utf-8");
+      const parsed = parseEnv(envContent);
+      envConfig = { ...envConfig, ...(parsed as Record<string, string>) };
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
     }
   }
 
