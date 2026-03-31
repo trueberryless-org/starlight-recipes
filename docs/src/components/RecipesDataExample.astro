@@ -1,6 +1,6 @@
 <ul>
   {
-    [...Astro.locals.starlightRecipes.recipes]
+    Astro.locals.starlightRecipes.recipes
       .toSorted((a, b) => {
         const ratingA = a.averageRating?.ratingValue ?? 0;
         const ratingB = b.averageRating?.ratingValue ?? 0;
