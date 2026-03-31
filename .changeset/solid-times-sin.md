@@ -2,4 +2,17 @@
 "starlight-recipes": minor
 ---
 
-Initial public release
+Initial public release.
+
+### Features
+
+- **Recipe schema** with cover images, dates, categories, cuisines (with country emoji flags), tags, and multi-author support
+- **Time & yield tracking** for preparation, cooking, servings, and calories
+- **Flexible ingredients & instructions** with optional images, step names, and per-step timing
+- **YouTube video integration** with automatic metadata fetching (thumbnails, duration, view count)
+- **Auto-generated taxonomy pages** for categories, cuisines, tags, and authors
+- **Interactive cooking mode** with step timers and progress checkboxes
+- **Rating system** API endpoint (requires server adapter)
+- **i18n support** with built-in translations
+- **SEO-optimized structured data** for Google Recipe rich results
+- **Configurable sidebar** with featured and popular recipes
