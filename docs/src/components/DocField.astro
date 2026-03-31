@@ -1,0 +1,50 @@
+---
+interface LinkItem {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  description: string;
+  links: LinkItem[];
+  direction?: "upstream" | "downstream";
+}
+
+const { description, links, direction = "downstream" } = Astro.props;
+
+const formatter = new Intl.ListFormat(Astro.currentLocale, {
+  style: "long",
+  type: "conjunction",
+});
+
+const prefix =
+  direction === "upstream" ? "Generated from " : "Used to generate ";
+
+const formattedLinks = links.map(
+  (link) => `<code><a href="${link.href}">${link.label}</a></code>`
+);
+
+const linksSentence = formatter.format(formattedLinks);
+const generatedContent = `${prefix}${linksSentence}.`;
+---
+
+<p class="doc-item">
+  <span>{description}</span>
+  <span class="divider">—</span>
+  <small set:html={generatedContent} />
+</p>
+
+<style>
+  .doc-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .divider {
+    color: var(--sl-color-gray-4);
+  }
+  small {
+    color: var(--sl-color-gray-3);
+  }
+</style>

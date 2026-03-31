@@ -1,0 +1,40 @@
+---
+import { getEntryAuthors } from "../../libs/authors";
+import type { StarlightRecipeEntry } from "../../libs/content";
+import Author from "./Author.astro";
+
+interface Props {
+  entry: StarlightRecipeEntry;
+}
+
+const { entry } = Astro.props;
+const authors = getEntryAuthors(entry);
+
+const hasAuthors = authors.length > 0;
+---
+
+{
+  hasAuthors ? (
+    <div class="not-content">
+      <div class="authors">
+        {authors.map((author) => (
+          <Author {author} />
+        ))}
+      </div>
+    </div>
+  ) : null
+}
+
+<style>
+  .authors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+  }
+
+  @media print {
+    .authors {
+      gap: 0.75rem;
+    }
+  }
+</style>

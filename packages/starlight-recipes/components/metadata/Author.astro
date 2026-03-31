@@ -1,0 +1,109 @@
+---
+import { Image } from "astro:assets";
+import { resolveAuthorData } from "../../libs/authors";
+
+const { author } = Astro.props;
+const { tagName: Element, isLink, picture } = resolveAuthorData(author);
+const linkAriaLabel = isLink
+  ? Astro.locals.t("starlightRecipes.recipe.author.linkAriaLabel", {
+      name: author.name,
+    })
+  : undefined;
+---
+
+<Element
+  href={isLink ? author.url : undefined}
+  aria-label={linkAriaLabel}
+  class="author"
+>
+  {
+    picture.src &&
+      (typeof picture.src === "string" ? (
+        <img
+          src={picture.src}
+          alt={author.name}
+          loading={picture.isRemote ? "lazy" : "eager"}
+        />
+      ) : (
+        <Image
+          alt={author.name}
+          loading="eager"
+          src={picture.src}
+          height={40}
+          width={40}
+        />
+      ))
+  }
+
+  <div class="text">
+    <div class="name">{author.name}</div>
+    {author.title && <div class="title">{author.title}</div>}
+  </div>
+</Element>
+
+<style>
+  .author {
+    align-items: center;
+    display: flex;
+    gap: 0.5rem;
+    line-height: var(--sl-line-height-headings);
+    text-decoration: none;
+  }
+
+  .text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .name {
+    font-size: var(--sl-text-base);
+    font-weight: 600;
+  }
+
+  .author[href] .name {
+    color: var(--sl-color-text-accent);
+  }
+
+  .title {
+    font-size: var(--sl-text-xs);
+    color: var(--sl-color-text);
+  }
+
+  .author[href]:hover .name {
+    color: var(--sl-color-text);
+  }
+
+  img {
+    border: 1px solid var(--sl-color-gray-2);
+    border-radius: 9999px;
+    height: 2.5rem;
+    width: 2.5rem;
+    object-fit: cover;
+  }
+
+  @media print {
+    .author {
+      gap: 0.25rem;
+      text-decoration: none;
+    }
+    .author[href] {
+      color: #000;
+      text-decoration: none;
+    }
+    .author[href] .name {
+      color: #000 !important;
+    }
+    img {
+      height: 1.25rem;
+      width: 1.25rem;
+    }
+    .name {
+      font-size: 0.75rem;
+      color: #000;
+    }
+    .title {
+      font-size: 0.65rem;
+      color: #666;
+    }
+  }
+</style>

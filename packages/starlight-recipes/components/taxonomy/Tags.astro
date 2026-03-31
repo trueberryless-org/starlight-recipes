@@ -1,0 +1,90 @@
+---
+import type { StarlightRecipeEntry } from "../../libs/content";
+import type { Locale } from "../../libs/i18n";
+import { getEntryTags } from "../../libs/tags";
+import Pill from "../ui/Pill.astro";
+
+interface Props {
+  entry: StarlightRecipeEntry;
+  locale: Locale;
+}
+
+const { entry, locale } = Astro.props;
+
+const tags = getEntryTags(entry);
+const uniqueId = `tags-${entry.id.replace(/[^a-zA-Z0-9]/g, "-")}`;
+---
+
+{
+  tags.length > 0 ? (
+    <div class="container">
+      <span class="tags-label" id={uniqueId}>
+        {Astro.locals.t("starlightRecipes.recipe.tags")}
+      </span>
+      <ul aria-labelledby={uniqueId}>
+        {tags.map((tag) => (
+          <li>
+            <Pill slug={tag.slug} label={tag.label} {locale} />
+          </li>
+        ))}
+      </ul>
+    </div>
+  ) : null
+}
+
+<style>
+  .container {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .tags-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--sl-color-white);
+    line-height: 1;
+    align-self: start;
+    padding: 0.5rem;
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    margin: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  @media print {
+    .container {
+      display: inline;
+      margin-left: auto;
+    }
+    .tags-label {
+      display: none;
+    }
+    ul {
+      display: inline;
+      padding: 0;
+      margin: 0;
+    }
+    li {
+      display: inline;
+    }
+    li::after {
+      content: ", ";
+    }
+    li:last-child::after {
+      content: "";
+    }
+  }
+</style>

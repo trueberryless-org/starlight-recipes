@@ -1,0 +1,447 @@
+---
+title: Frontmatter
+description: Learn which fields you can add to your recipe.
+---
+
+import DocField from '@/components/DocField.astro';
+
+You can customize individual recipes by setting values in their frontmatter which is set at the top of your files between `---` separators:
+
+```md
+---
+// src/content/docs/recipes/virgin-colada.md
+title: Non-Alcoholic Piña Colada
+cover:
+  alt: A beautiful Virgin Colada
+  image: ../../../assets/virgin-colada.png
+---
+```
+
+## Extend your frontmatter schema
+
+Starlight Recipes extends [Starlight's frontmatter schema](https://starlight.astro.build/reference/frontmatter/) with information about the recipe.
+You need to update the content config file in order for the additional recipe-specific fields to be available:
+
+```diff lang="ts"
+// src/content.config.ts
+import { defineCollection } from 'astro:content';
+import { docsLoader } from '@astrojs/starlight/loaders';
+import { docsSchema } from '@astrojs/starlight/schema';
++import { recipesSchema } from 'starlight-recipes/schema'
+
+export const collections = {
+  docs: defineCollection({
+    loader: docsLoader(),
+    schema: docsSchema({
++      extend: (context) => recipesSchema(context)
+    })
+  }),
+};
+```
+
+## Frontmatter fields
+
+All frontmatter fields of each recipe are not only used to create visual content on the overview pages and recipe pages, but also to generate [Structured Data](/guides/structured-data) and [Recipes Data](/guides/recipes-data).
+Each field specifies whether it is used for one or both of these data structures, and maps it to its corresponding properties.
+
+The more schema fields you complete for a recipe, the better its visibility in search results.
+
+### `cover`
+
+**Required**<br />
+**Type:** [`CoverConfig`](#coverconfig)
+
+<DocField
+  description="Image of the completed dish."
+  links={[{ label: "image", href: "/guides/structured-data#image" }, { label: "cover", href: "/guides/recipes-data#cover" }]}
+/>
+
+Add high-quality image of the completed dish at the top of the recipe:
+
+```md
+---
+cover:
+  alt: "A beautiful Virgin Colada"
+  image: "../../../assets/virgin-colada.png"
+---
+```
+
+#### `CoverConfig`
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `image` | `string` | **Required**. Relative path to a local image (e.g., `../../assets/cover.png`) or a remote URL. |
+| `alt` | `string` | **Required**. Alternative text describing the cover image for assistive technologies. |
+
+### `date`
+
+**Type:** `Date`
+
+<DocField
+  description="The date the recipe was published."
+  links={[{ label: "datePublished", href: "/guides/structured-data#datepublished" }, { label: "createdAt", href: "/guides/recipes-data#createdat" }]}
+/>
+
+Must be a valid [YAML timestamp](https://yaml.org/type/timestamp.html).
+
+```md
+---
+date: 2024-03-11
+---
+```
+
+### `category`
+
+**Type:** `string`
+
+<DocField
+  description="The type of meal or course your recipe is about."
+  links={[{ label: "recipeCategory", href: "/guides/structured-data#recipecategory" }]}
+/>
+
+```md
+---
+category: "Main Course"
+---
+```
+
+Here are some recommended values for categories:
+
+- `'Breakfast'`
+- `'Lunch'`
+- `'Dinner'`
+- `'Main Course'`
+- `'Side Dish'`
+- `'Appetizer'`
+- `'Snack'`
+- `'Dessert'`
+- `'Beverage'`
+- `'Salad'`
+- `'Soup'`
+- `'Marinade'`
+- `'Sauce'`
+
+### `cuisine`
+
+**Type:** `string`
+
+<DocField
+  description="The region associated with your recipe."
+  links={[{ label: "recipeCuisine", href: "/guides/structured-data#recipecuisine" }]}
+/>
+
+```md
+---
+cuisine: "Mediterranean"
+---
+```
+
+If a valid [ISO 3166-1 two-letter country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements) is provided (e.g., "AT" or "JP"), the localized country name will be displayed with the corresponding country emoji flag appended.
+
+```md
+---
+cuisine: "FR"
+---
+```
+
+### `tags`
+
+**Type:** `string[]`
+
+<DocField
+  description="A list of tags associated with the recipe."
+  links={[{ label: "keywords", href: "/guides/structured-data#keywords" }, { label: "tags", href: "/guides/recipes-data#tags" }]}
+/>
+
+Other terms for your recipe such as the season (`"Summer"`), the holiday (`"Halloween"`), or other descriptors (`"Quick"`, `"Easy"`, `"Authentic"`).
+Displayed at the bottom of a recipe and in the recipe list.
+
+Don't use a tag that's actually a [`category`](#category) or [`cuisine`](#cuisine).
+
+```md
+---
+tags:
+  - Spring
+  - Easter
+---
+```
+
+### `featured`
+
+**Type:** `boolean`<br />
+**Default:** `false`
+
+<DocField
+  description="Whether the recipe is featured."
+  links={[{ label: "featured", href: "/guides/recipes-data#featured" }]}
+/>
+
+Featured recipes are listed at the top of the sidebar in a dedicated group.
+
+The featured group is displayed only if at least one recipe is marked as featured.
+If a recipe is featured and also popular, it will be displayed only in the featured group.
+
+```md
+---
+featured: true
+---
+```
+
+### `authors`
+
+**Type:** [`StarlightRecipesAuthorsConfig`](/configuration#author-configuration)
+
+<DocField
+  description="The author(s) of the recipe."
+  links={[{ label: "author", href: "/guides/structured-data#author" }, { label: "authors", href: "/guides/recipes-data#authors" }]}
+/>
+
+```md
+---
+authors:
+  - Bob
+---
+```
+
+Check the ["Authors" guide](/guides/authors) for more information.
+
+### `time`
+
+**Type:** [`TimeConfig`](#timeconfig)
+
+<DocField
+  description="Duration-related data about the recipe."
+  links={[{ label: "prepTime", href: "/guides/structured-data#preptime" }, { label: "cookTime", href: "/guides/structured-data#cooktime" }, { label: "totalTime", href: "/guides/structured-data#totaltime" }, { label: "time", href: "/guides/recipes-data#time" }]}
+/>
+
+Specify the time required to prepare and cook the dish.
+
+```md
+---
+time:
+  preparation: 15
+  cooking: 30
+  total: 45
+---
+```
+
+:::note
+If you provide `preparation` time, you must also provide `cooking` time, and vice versa.
+:::
+
+#### `TimeConfig`
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `preparation` | `number` | Time to prepare ingredients (in minutes). |
+| `cooking` | `number` | Time to cook the dish (in minutes). |
+| `total` | `number` | Total time until the dish is finished (in minutes). |
+
+### `yield`
+
+**Type:** [`YieldConfig`](#yieldconfig)
+
+<DocField
+  description="Details regarding the final output or portion size."
+  links={[{ label: "recipeYield", href: "/guides/structured-data#recipeyield" }, { label: "nutrition", href: "/guides/structured-data#nutrition" }, { label: "yield", href: "/guides/recipes-data#yield" }]}
+/>
+
+Defines how many servings, calories, or items the recipe produces.
+
+```md
+---
+yield:
+  servings: 4
+  calories: 180
+  additional:
+    - amount: 12
+      unit: "cookies"
+---
+```
+
+#### `YieldConfig`
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `servings` | `number` | **Required**. The numeric quantity produced. |
+| `calories` | `number` | Optional number of calories in each serving. |
+| `additional` | `object[]` | Optional array of alternative yields (requires both `amount` and `unit`). |
+
+### `ingredients`
+
+**Type:** <code>(string | <a href="#ingredientobject">IngredientObject</a>)[]</code>
+
+<DocField
+  description="List of ingredients used in the recipe."
+  links={[{ label: "recipeIngredient", href: "/guides/structured-data#recipeingredient" }, { label: "ingredients", href: "/guides/recipes-data#ingredients" }]}
+/>
+
+Ingredients can be provided as simple strings or structured objects for better data parsing.
+
+```md
+---
+ingredients:
+  - 2 eggs
+  - quantity: 500
+    unit: "g"
+    name: "Flour"
+---
+```
+
+:::note
+It is recommended to specify all measurable ingredients with the `IngredientObject` to allow users to adjust the serving amount dynamically.
+Only ingredients with a non-numerous amount (like `Pinch of salt`) should be specified as a `string`.
+:::
+
+:::note
+If you provide a `unit` for one ingredient, you must also provide the `quantity` for this ingredient.
+:::
+
+#### `IngredientObject`
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `name` | `string` | **Required**. The name of the ingredient (e.g., "All-purpose flour"). |
+| `quantity` | `number` | Optional numeric amount (e.g., `2`, `1.5`, `500`). |
+| `unit` | `string` | Optional unit of measurement (e.g., "cups", "g", "tbsp"). |
+
+### `instructions`
+
+**Type:** <code>(string | <a href="#instructionstep">InstructionStep</a>)[]</code>
+
+<DocField
+  description="The steps to make the dish."
+  links={[{ label: "recipeInstructions", href: "/guides/structured-data#recipeinstructions" }, { label: "instructions", href: "/guides/recipes-data#instructions" }]}
+/>
+
+Instructions can be simple strings or detailed objects including images (`image` and `alt`), titles (`name`) and specific timing (`time`) for that step.
+
+```md
+---
+instructions:
+  - Preheat the oven to 180°C.
+  - name: "Mix ingredients"
+    text: "Combine flour and eggs in a large bowl."
+    time: 5
+    image: "../../../assets/mixing.png"
+    alt: "Mixing flour and eggs"
+---
+```
+
+#### `InstructionStep`
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `text` | `string` | **Required**. The instruction text. |
+| `name` | `string` | Optional title for the step. |
+| `image` | `string` | Path to an image for this specific step. |
+| `alt` | `string` | Alt text for the step image. |
+| `time` | `number` | Time required for this specific step (in minutes). |
+
+### `video`
+
+**Type:** `string`
+
+<DocField
+  description="A YouTube URL of a video depicting the recipe steps."
+  links={[{ label: "video", href: "/guides/structured-data#video" }]}
+/>
+
+```md
+---
+video: https://youtube.com/shorts/jYf3nheLZfE
+---
+```
+
+When you start `astro dev` or run `astro build`, this YouTube URL is resolved once into the full metadata needed to render the video on the recipe page and to generate the [Structured Data for the video](/guides/structured-data#video).
+
+In practice, you normally only set `video` to a plain YouTube URL string as shown above. The following object shows the shape of the resolved data that the plugin produces; you do not need to copy or maintain this manually. The actual values (title, thumbnails, interaction count, etc.) will depend on your video and may change over time:
+
+```md
+---
+video:
+  url: "https://youtube.com/shorts/jYf3nheLZfE"
+  name: "The Perfect Pina Colada 🌴🥥 #pinacolada #bar #bartender #cocktails #pineapple #cocktail art"
+  thumbnailUrl:
+    - "https://i.ytimg.com/vi/jYf3nheLZfE/maxresdefault.jpg?sqp=-oaymwEoCIAKENAF8quKqQMcGADwAQH4AbYIgAKAD4oCDAgAEAEYZSBgKFYwDw==&rs=AOn4CLB-7d9Wh2MOnwzfdr4BEnj4FX5e1w"
+    - "https://i.ytimg.com/vi/jYf3nheLZfE/hqdefault.jpg?sqp=-oaymwE2CNACELwBSFXyq4qpAygIARUAAIhCGABwAcABBvABAfgBtgiAAoAPigIMCAAQARhlIGAoVjAP&rs=AOn4CLA3LQSFQ9OvLlFFx6DQ_tIK34p7Yg"
+    - "https://i.ytimg.com/vi/jYf3nheLZfE/hqdefault.jpg?sqp=-oaymwE2CPYBEIoBSFXyq4qpAygIARUAAIhCGABwAcABBvABAfgBtgiAAoAPigIMCAAQARhlIGAoVjAP&rs=AOn4CLBAMQ3AQvVzR9rGNrdv4iCSWDq1bA"
+  uploadDate: "2024-05-28T13:06:43-07:00"
+  duration: "PT11S"
+  embedUrl: "https://www.youtube.com/embed/jYf3nheLZfE"
+  userInteractionCount: 1623035
+---
+```
+
+:::note
+How video URL resolution works:
+
+- Resolution runs once when `astro dev` starts or `astro build` runs, not on every hot reload.
+- Only YouTube URLs are supported.
+- Metadata is fetched from YouTube at resolution time and is not kept continuously in sync with later changes on YouTube. To pick up updated metadata from YouTube, replace all metadata with the URL again, and run `astro dev` or `astro build`.
+:::
+
+## Starlight's frontmatter fields
+
+This section describes how frontmatter fields that are integrated in Starlight itself are used across the recipe website.
+
+### `title`
+
+**Required**<br />
+**Type:** `string`
+
+<DocField
+  description="The name of the dish."
+  links={[{ label: "name", href: "/guides/structured-data#name" }, { label: "title", href: "/guides/recipes-data#title" }]}
+/>
+
+The title gets used in the recipe list, on author and tags pages, besides the top of each recipe, in browser tabs, and in [recipe metadata](/guides/structured-data).
+
+### `description`
+
+**Type:** `string`
+
+<DocField
+  description="A short summary describing the dish."
+  links={[{ label: "description", href: "/guides/structured-data#description" }]}
+/>
+
+The recipe description is displayed in recipe lists when the recipe is [featured](#featured) and used for [recipe metadata](/guides/structured-data) and will be picked up by search engines and in social media previews.
+
+### `lastUpdated`
+
+**Type:** `Date | boolean`
+
+<DocField
+  description="The date the recipe was last updated."
+  links={[{ label: "updatedAt", href: "/guides/recipes-data#updatedat" }]}
+/>
+
+If a date is specified in a recipe for this [Starlight frontmatter field](https://starlight.astro.build/reference/frontmatter/#lastupdated), such date will also be displayed next to the recipe date.
+
+Displayed only if different from the [`date`](#date) frontmatter field and must be a valid [YAML timestamp](https://yaml.org/type/timestamp.html).
+
+```md
+---
+lastUpdated: 2024-07-01
+---
+```
+
+### `draft`
+
+**Type:** `boolean`<br />
+**Default:** `false`
+
+<DocField
+  description="Whether the recipe is a draft."
+  links={[{ label: "draft", href: "/guides/recipes-data#draft" }]}
+/>
+
+Draft recipes are not included in [production builds](https://docs.astro.build/en/reference/cli-reference/#astro-build).
+Set to `true` to mark a recipe as a draft and make it only visible during development.
+
+```md
+---
+draft: true
+---
+```

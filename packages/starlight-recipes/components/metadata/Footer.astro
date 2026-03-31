@@ -1,0 +1,71 @@
+---
+import type {
+  StarlightRecipeEntry,
+  StarlightRecipeEntryPaginated,
+} from "../../libs/content";
+import type { Locale } from "../../libs/i18n";
+import PrevNextLinks from "../starlight/PrevNextLinks.astro";
+import Categories from "../taxonomy/Categories.astro";
+import Cuisines from "../taxonomy/Cuisines.astro";
+import Tags from "../taxonomy/Tags.astro";
+import Flexbox from "../ui/Flexbox.astro";
+import PrintButton from "../ui/PrintButton.astro";
+
+interface Props {
+  entry: StarlightRecipeEntry;
+  locale: Locale;
+  nextLink: StarlightRecipeEntryPaginated["nextLink"];
+  prevLink: StarlightRecipeEntryPaginated["prevLink"];
+}
+
+const { entry, locale, nextLink, prevLink } = Astro.props;
+---
+
+<div class="recipe-footer">
+  <div class="footer-top-row">
+    <Flexbox>
+      <Cuisines {entry} {locale} />
+      <Categories {entry} {locale} />
+    </Flexbox>
+    <PrintButton />
+  </div>
+  <Tags {entry} {locale} />
+  <PrevNextLinks next={nextLink} prev={prevLink} />
+</div>
+
+<style>
+  .recipe-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-block-start: 2rem;
+  }
+
+  .footer-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  @media print {
+    .recipe-footer {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin-block-start: 0.75rem;
+      gap: 0.5rem;
+      border: none;
+      padding-top: 0;
+      clear: both;
+    }
+    .footer-top-row {
+      display: inline-flex;
+      gap: 0.5rem;
+      flex: none;
+    }
+  }
+</style>

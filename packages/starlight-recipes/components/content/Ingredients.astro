@@ -1,0 +1,438 @@
+---
+import AnchorHeading from "@astrojs/starlight/components/AnchorHeading.astro";
+import type { StarlightRecipeEntry } from "../../libs/content";
+import { slug as githubSlugger } from "github-slugger";
+
+interface Props {
+  entry: StarlightRecipeEntry;
+}
+
+const { entry } = Astro.props;
+const { yield: recipeYield, ingredients } = entry.data;
+
+const hasIngredients = ingredients && ingredients.length > 0;
+const initialServings = recipeYield?.servings;
+const servingsUpdatedText = Astro.locals.t(
+  "starlightRecipes.recipe.ingredients.servingsUpdated"
+);
+---
+
+{
+  hasIngredients && (
+    <recipe-ingredients
+      data-base-servings={initialServings}
+      data-servings-updated-text={servingsUpdatedText}
+    >
+      <div class="sr-only" aria-live="polite" id="servings-announcement" />
+      <div class="ingredients-header">
+        <div class="heading-wrapper">
+          <AnchorHeading
+            level="2"
+            id={githubSlugger(
+              Astro.locals.t("starlightRecipes.recipe.ingredients.heading")
+            )}
+          >
+            {Astro.locals.t("starlightRecipes.recipe.ingredients.heading")}
+          </AnchorHeading>
+        </div>
+
+        {initialServings && (
+          <div class="yield-pill">
+            <label class="yield-label" for="servings-input">
+              {Astro.locals.t("starlightRecipes.recipe.ingredients.servings")}
+            </label>
+            <div class="yield-controls">
+              <button
+                type="button"
+                data-action="minus"
+                aria-label={Astro.locals.t(
+                  "starlightRecipes.recipe.ingredients.decreaseYield"
+                )}
+              >
+                <span aria-hidden="true">−</span>
+              </button>
+              <input
+                type="number"
+                id="servings-input"
+                value={initialServings}
+                min="1"
+                step="1"
+                inputmode="numeric"
+              />
+              <button
+                type="button"
+                data-action="plus"
+                aria-label={Astro.locals.t(
+                  "starlightRecipes.recipe.ingredients.increaseYield"
+                )}
+              >
+                <span aria-hidden="true">+</span>
+              </button>
+            </div>
+
+            {recipeYield?.additional && recipeYield.additional.length > 0 && (
+              <span class="additional-yields-display">
+                {recipeYield.additional.map((y, i) => (
+                  <span
+                    class="extra-yield"
+                    data-base-amount={y.amount}
+                    data-unit={y.unit}
+                  >
+                    {y.amount + " " + y.unit}
+                    {i < recipeYield.additional!.length - 1 ? ", " : ""}
+                  </span>
+                ))}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+
+      <ul
+        class:list={[
+          "ingredient-list",
+          "not-content",
+          { "few-ingredients": ingredients.length < 6 },
+        ]}
+      >
+        {ingredients.map((ing) => {
+          if (typeof ing === "string") {
+            return <li class="ingredient-row static">{ing}</li>;
+          }
+
+          const perServing =
+            initialServings &&
+            ing.quantity !== undefined &&
+            ing.quantity !== null
+              ? ing.quantity / initialServings
+              : null;
+
+          return (
+            <li class="ingredient-row">
+              <div class="ing-meta">
+                <span class="amount" data-per-serving={perServing}>
+                  {ing.quantity}
+                </span>
+                <span class="unit">{ing.unit}</span>
+              </div>
+              <span class="name">{ing.name}</span>
+            </li>
+          );
+        })}
+      </ul>
+    </recipe-ingredients>
+  )
+}
+
+<script>
+  class RecipeIngredients extends HTMLElement {
+    constructor() {
+      super();
+      const input = this.querySelector("input") as HTMLInputElement;
+      if (!input) return;
+
+      const buttons = this.querySelectorAll("button");
+      const baseServings = parseInt(this.dataset.baseServings || "");
+      const servingsUpdatedText =
+        this.dataset.servingsUpdatedText || "Servings updated to {count}";
+      const announcement = this.querySelector(
+        "#servings-announcement"
+      ) as HTMLElement;
+
+      const announceChange = (newServings: number) => {
+        if (!announcement) return;
+        announcement.textContent = servingsUpdatedText.replace(
+          "{count}",
+          newServings.toString()
+        );
+      };
+
+      const updateValues = (newServings: number) => {
+        const amounts = this.querySelectorAll(".amount[data-per-serving]");
+        amounts.forEach((el) => {
+          const ds = (el as HTMLElement).dataset;
+          if (!ds.perServing || ds.perServing === "null") return;
+
+          const perServing = parseFloat(ds.perServing);
+          el.textContent = Number(
+            (perServing * newServings).toFixed(2)
+          ).toString();
+        });
+
+        const extraYields = this.querySelectorAll(".extra-yield");
+        extraYields.forEach((el) => {
+          const ds = (el as HTMLElement).dataset;
+          const baseAmount = parseFloat(ds.baseAmount || "0");
+          const unit = ds.unit;
+          const scaled = Number(
+            ((baseAmount / baseServings) * newServings).toFixed(2)
+          );
+          el.textContent = `${scaled} ${unit}${el.nextElementSibling ? ", " : ""}`;
+        });
+
+        window.dispatchEvent(
+          new CustomEvent("recipe:yieldChange", {
+            detail: { servings: newServings },
+          })
+        );
+
+        announceChange(newServings);
+      };
+
+      input.addEventListener("input", () => {
+        let val = parseInt(input.value);
+        if (isNaN(val) || val < 1) return;
+        updateValues(val);
+      });
+
+      input.addEventListener("blur", () => {
+        if (input.value === "" || parseInt(input.value) < 1) {
+          input.value = baseServings.toString();
+          updateValues(baseServings);
+        }
+      });
+
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const current = parseInt(input.value || baseServings.toString());
+          const next =
+            btn.getAttribute("data-action") === "plus"
+              ? current + 1
+              : Math.max(1, current - 1);
+          input.value = next.toString();
+          updateValues(next);
+        });
+      });
+    }
+  }
+
+  customElements.define("recipe-ingredients", RecipeIngredients);
+</script>
+
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .ingredients-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-block: 1.5rem;
+  }
+
+  .heading-wrapper :global(h2) {
+    margin: 0;
+  }
+
+  .yield-pill {
+    height: 38px;
+    min-height: 38px;
+    padding: 0.25rem 1rem;
+    gap: 0.5rem;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 2rem;
+    border: 1px solid var(--sl-color-gray-5);
+    box-sizing: border-box;
+    margin-top: 0;
+  }
+
+  .additional-yields-display {
+    font-size: 0.85rem;
+    color: var(--sl-color-gray-3);
+    white-space: nowrap;
+  }
+
+  .additional-yields-display::before {
+    content: "(";
+  }
+
+  .additional-yields-display::after {
+    content: ")";
+  }
+
+  label.yield-label {
+    font-size: 0.85rem;
+    color: var(--sl-color-gray-3);
+    text-transform: capitalize;
+    cursor: pointer;
+  }
+
+  .yield-controls {
+    display: flex;
+    align-items: center;
+    border-radius: 1.5rem;
+    margin-top: 0;
+  }
+
+  button {
+    background: none;
+    border: none;
+    color: var(--sl-color-accent-high);
+    font-size: 1.1rem;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: filter 0.2s;
+    padding: 0;
+  }
+
+  button:hover {
+    filter: brightness(1.2);
+  }
+
+  input {
+    width: 1.8rem;
+    text-align: center;
+    background: transparent;
+    border: none;
+    color: var(--sl-color-white);
+    font-weight: 600;
+    font-size: 0.95rem;
+    appearance: textfield;
+    outline: none;
+    padding: 0;
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .ingredient-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .ingredient-row {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.85rem 0;
+  }
+
+  .ingredient-row + .ingredient-row {
+    border-top: 1px solid var(--sl-color-gray-6);
+  }
+
+  .ing-meta {
+    min-width: 85px;
+    display: flex;
+    gap: 0.3rem;
+    font-weight: 700;
+  }
+
+  .amount {
+    color: var(--sl-color-white);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .unit {
+    color: var(--sl-color-gray-3);
+    font-weight: 400;
+  }
+
+  .name {
+    color: var(--sl-color-gray-2);
+  }
+
+  .static {
+    font-style: italic;
+    color: var(--sl-color-gray-3);
+  }
+
+  @media (max-width: 600px) {
+    .ingredients-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .yield-pill {
+      width: 100%;
+      flex-wrap: wrap;
+      justify-content: center;
+      border-radius: 1rem;
+    }
+    .additional-yields-display {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  @media print {
+    .ingredients-header {
+      display: flex;
+      justify-content: flex-start;
+      margin-block: 0.5rem;
+      gap: 0.5rem;
+      flex-direction: row;
+      align-items: baseline;
+    }
+    .heading-wrapper {
+      display: inline;
+    }
+    .ingredients-header h2 {
+      display: inline;
+      font-size: 1rem;
+      margin: 0;
+    }
+    .yield-controls {
+      display: none;
+    }
+    .yield-pill {
+      display: inline-flex;
+      background: none;
+      border: none;
+      padding: 0;
+      height: auto;
+      min-height: auto;
+      font-size: 0.8rem;
+      gap: 0;
+    }
+    .yield-label {
+      font-size: 0.8rem;
+    }
+    .additional-yields-display {
+      font-size: 0.75rem;
+      margin-left: 0.25rem;
+    }
+    .ingredient-list {
+      columns: 2;
+      column-gap: 2rem;
+      margin: 0;
+      padding: 0;
+    }
+    .ingredient-list.few-ingredients {
+      columns: 1;
+    }
+    .ingredient-row {
+      padding: 0.25rem 0;
+      gap: 0.5rem;
+      break-inside: avoid;
+      font-size: 0.8rem;
+      border: none;
+    }
+    .ingredient-row + .ingredient-row {
+      border-top: none;
+    }
+    .ing-meta {
+      min-width: auto;
+    }
+  }
+</style>

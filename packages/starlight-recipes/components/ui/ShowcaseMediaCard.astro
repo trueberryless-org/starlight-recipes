@@ -1,0 +1,90 @@
+---
+import AnchorHeading from "@astrojs/starlight/components/AnchorHeading.astro";
+import { slug as githubSlugger } from "github-slugger";
+
+// https://github.com/HiDeoo/starlight-showcases/blob/9d796cfb4e79aff094e95cefcbfddd0b66750081/packages/starlight-showcases/components/ShowcaseMediaCard.astro
+interface Props {
+  description?: string | undefined;
+  href?: string | undefined;
+  title?: string | undefined;
+}
+
+const { description, href, title } = Astro.props;
+
+const Element = href ? "a" : "div";
+const elementAttrs = href ? { href } : {};
+const videoTitle = Astro.locals.t("starlightRecipes.recipe.video.heading");
+---
+
+<div class="video-section">
+  <AnchorHeading level="2" id={githubSlugger(videoTitle)}>
+    {videoTitle}
+  </AnchorHeading>
+
+  <div class="not-content sl-flex">
+    <Element {...elementAttrs} class="starlight-showcases-media-card">
+      <div class="starlight-showcases-media-asset">
+        <slot />
+      </div>
+      {
+        (title || description) && (
+          <div class="starlight-showcases-media-infos sl-flex">
+            {title && <p class="starlight-showcases-media-title">{title}</p>}
+            {description && (
+              <p class="starlight-showcases-media-description">{description}</p>
+            )}
+          </div>
+        )
+      }
+    </Element>
+  </div>
+</div>
+
+<style>
+  .starlight-showcases-media-card {
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 20px;
+    box-shadow: var(--sl-shadow-sm);
+    overflow: hidden;
+    text-decoration: none;
+    width: 100%;
+  }
+
+  a.starlight-showcases-media-card:hover {
+    background-color: var(--sl-color-gray-7, var(--sl-color-gray-6));
+    border-color: var(--sl-color-gray-2);
+  }
+
+  .starlight-showcases-media-asset :global(img) {
+    aspect-ratio: 16 / 9;
+    display: block;
+    height: auto;
+    max-width: 100%;
+    object-fit: cover;
+  }
+
+  .starlight-showcases-media-infos {
+    border-top: 1px solid var(--sl-color-gray-5);
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .starlight-showcases-media-title {
+    color: var(--sl-color-white);
+    font-size: var(--sl-text-base);
+    font-weight: 600;
+    line-height: var(--sl-line-height-headings);
+  }
+
+  .starlight-showcases-media-description {
+    color: var(--sl-color-gray-3);
+    line-height: 1.5;
+  }
+
+  @media print {
+    .video-section {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,9 @@
+---
+import StarlightPage, {
+  type StarlightPageProps as Props,
+} from "@astrojs/starlight/components/StarlightPage.astro";
+---
+
+<StarlightPage {...Astro.props}>
+  <slot />
+</StarlightPage>

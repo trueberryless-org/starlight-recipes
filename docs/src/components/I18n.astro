@@ -1,0 +1,59 @@
+---
+// https://github.com/withastro/starlight/blob/main/docs/src/components/languages-list.astro
+
+import { Code } from "@astrojs/starlight/components";
+import { getEntry } from "astro:content";
+
+interface Props {
+  label: string;
+  translations: Promise<{ Translations: Record<string, unknown> }>;
+}
+
+const { label, translations } = Astro.props;
+const { Translations } = await translations;
+
+// The current page's slug.
+const slug = Astro.url.pathname.replace(/^\//, "").replace(/\/$/, "");
+// The docs entry for the current page, or `undefined` if the page is using fallback content.
+const entry = await getEntry("docs", slug);
+// The BCP-47 tag for the current page.
+const pageLang = entry && Astro.currentLocale ? Astro.currentLocale : "en";
+// The BCP-47 tags for all supported languages in Starlight.
+const supportedLangs = Object.keys(Translations);
+// An i18n helper that returns the language name for a given BCP-47 tag configured for the current page's language.
+const langNames = new Intl.DisplayNames([pageLang], { type: "language" });
+
+// A list of the language names for all supported languages sorted alphabetically.
+const supportedLangNames = supportedLangs
+  .map((supportedLang) => {
+    const langName = langNames.of(supportedLang);
+    if (!langName)
+      throw new Error(
+        `Failed to get the language name for '${supportedLang}'.`
+      );
+    return langName;
+  })
+  .sort((a, b) => a.localeCompare(b, pageLang));
+
+// The list of language names for all supported languages formatted according to the current page's language.
+const langList = new Intl.ListFormat(pageLang, {
+  style: "long",
+  type: "conjunction",
+}).format(supportedLangNames);
+---
+
+<p>
+  {langList[0]?.toLocaleUpperCase(pageLang) + langList.slice(1)} translated UI strings
+  are provided out of the box.
+</p>
+<p>
+  To provide translations for additional languages you support — or override the
+  default ones — check the <a
+    href="https://starlight.astro.build/guides/i18n/#translate-starlights-ui"
+    >“Translate Starlight’s UI”</a
+  > guide in the Starlight documentation.
+</p>
+<p>
+  These are the English defaults of the existing strings {label} ships with:
+</p>
+<Code code={JSON.stringify(Translations["en"], null, 2)} lang="json" />

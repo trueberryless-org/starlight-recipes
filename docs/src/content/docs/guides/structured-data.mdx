@@ -1,0 +1,429 @@
+---
+title: Structured Data
+description: Learn how Starlight Recipes uses the frontmatter data from each recipe to generate informative JSON content for Google.
+---
+
+import DocField from '@/components/DocField.astro';
+
+Starlight Recipes automatically generates [structured data](https://schema.org/Recipe) for each recipe route to enhance discoverability on [Google](https://developers.google.com/search/docs/appearance/structured-data/recipe) and other supported services.
+Specifying the [`site` property](https://docs.astro.build/en/reference/configuration-reference/#site) in your Astro config is required for this feature to generate canonical URLs for your assets, making them accessible to web crawlers.
+
+This guide explains the benefits of this convention and which properties will be generated from your frontmatter.
+
+## What is structured data?
+
+[Structured data for recipes](https://schema.org/Recipe) enables machines to better understand your content and display it in various ways.
+Here is an example of how a recipe could look with this convention:
+
+```json collapse={23-79}
+{
+  "@context": "https://schema.org/",
+  "@type": "Recipe",
+  "name": "Non-Alcoholic Piña Colada",
+  "image": [
+    "https://example.com/photos/1x1/photo.jpg",
+    "https://example.com/photos/4x3/photo.jpg",
+    "https://example.com/photos/16x9/photo.jpg"
+  ],
+  "author": {
+    "@type": "Person",
+    "name": "Mary Stone"
+  },
+  "datePublished": "2024-03-10",
+  "description": "This non-alcoholic piña colada is everyone's favorite!",
+  "recipeCuisine": "American",
+  "prepTime": "PT1M",
+  "cookTime": "PT2M",
+  "totalTime": "PT3M",
+  "keywords": "non-alcoholic",
+  "recipeYield": "4 servings",
+  "recipeCategory": "Drink",
+  "nutrition": {
+    "@type": "NutritionInformation",
+    "calories": "120 calories"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": 5,
+    "ratingCount": 18
+  },
+  "recipeIngredient": [
+    "400ml of pineapple juice",
+    "100ml cream of coconut",
+    "ice"
+  ],
+  "recipeInstructions": [
+    {
+      "@type": "HowToStep",
+      "name": "Blend",
+      "text": "Blend 400ml of pineapple juice and 100ml cream of coconut until smooth.",
+      "url": "https://example.com/non-alcoholic-pina-colada#step1",
+      "image": "https://example.com/photos/non-alcoholic-pina-colada/step1.jpg"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Fill",
+      "text": "Fill a glass with ice.",
+      "url": "https://example.com/non-alcoholic-pina-colada#step2",
+      "image": "https://example.com/photos/non-alcoholic-pina-colada/step2.jpg"
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Pour",
+      "text": "Pour the pineapple juice and coconut mixture over ice.",
+      "url": "https://example.com/non-alcoholic-pina-colada#step3",
+      "image": "https://example.com/photos/non-alcoholic-pina-colada/step3.jpg"
+    }
+  ],
+  "video": {
+    "@type": "VideoObject",
+    "name": "How to Make a Non-Alcoholic Piña Colada",
+    "description": "This is how you make a non-alcoholic piña colada.",
+    "thumbnailUrl": [
+      "https://example.com/photos/1x1/photo.jpg",
+      "https://example.com/photos/4x3/photo.jpg",
+      "https://example.com/photos/16x9/photo.jpg"
+    ],
+    "contentUrl": "https://www.example.com/video123.mp4",
+    "embedUrl": "https://www.example.com/videoplayer?video=123",
+    "uploadDate": "2024-02-05T08:00:00+08:00",
+    "duration": "PT1M33S",
+    "interactionStatistic": {
+      "@type": "InteractionCounter",
+      "interactionType": { "@type": "WatchAction" },
+      "userInteractionCount": 2347
+    },
+    "expires": "2024-02-05T08:00:00+08:00"
+  }
+}
+```
+
+For example, Google can use such JSON to feature your recipes on Google Search results and Google Images.
+Find out more technical details about `Recipe` structured data on [Recipe Schema Markup](https://developers.google.com/search/docs/appearance/structured-data/recipe).
+
+Structured data is widely used among different services. Some further examples include [Apple](https://developer.apple.com/library/archive/documentation/General/Conceptual/AppSearch/WebContent.html), [Bing](https://www.bing.com/webmasters/help/?topicid=da2b3faa) and [Pinterest](https://help.pinterest.com/en/business/article/rich-pins).
+
+## Supported properties
+
+Starlight Recipes focuses on [Google-supported and -recommended properties](https://developers.google.com/search/docs/appearance/structured-data/recipe#structured-data-type-definitions) as Google's convention is the most influential -- though this is likely a mix of market dominance, [citogenesis](https://xkcd.com/978/) and a "[Reiteration](https://en.wikipedia.org/wiki/Illusory_truth_effect) Loop".
+
+Each supported structured data property maps back to a specific frontmatter field in your Markdown or MDX files.
+Here are all the properties that can get generated with examples:
+
+### `name`
+
+<DocField
+  description="The name of the dish."
+  links={[{ label: "title", href: "https://starlight.astro.build/reference/frontmatter/#title-required" }]}
+  direction="upstream"
+/>
+
+```json
+{
+  "name": "Virgin Colada"
+}
+```
+
+### `image`
+
+<DocField
+  description="Image of the completed dish."
+  links={[{ label: "cover", href: "/guides/frontmatter#cover" }]}
+  direction="upstream"
+/>
+
+Starlight Recipes will use the cover image to generate three images with the following aspect ratios for [best results](https://developers.google.com/search/docs/appearance/structured-data/recipe/#:~:text=aspect%20ratios): 16x9, 4x3, and 1x1.
+
+```json
+{
+  "image": [
+    "https://starlight-recipes.trueberryless.org/.netlify/images?url=%40fs%2FUsers%2Ftrueberryless%2Frepos%2Ftrueberryless-org%2Fstarlight-recipes%2Fdocs%2Fsrc%2Fassets%2Frecipes%2Fvirgin-colada.jpg%3ForigWidth%3D4494%26origHeight%3D3000%26origFormat%3Djpg&fm=webp&w=1000&h=1000",
+    "https://starlight-recipes.trueberryless.org/.netlify/images?url=%40fs%2FUsers%2Ftrueberryless%2Frepos%2Ftrueberryless-org%2Fstarlight-recipes%2Fdocs%2Fsrc%2Fassets%2Frecipes%2Fvirgin-colada.jpg%3ForigWidth%3D4494%26origHeight%3D3000%26origFormat%3Djpg&fm=webp&w=1152&h=864",
+    "https://starlight-recipes.trueberryless.org/.netlify/images?url=%40fs%2FUsers%2Ftrueberryless%2Frepos%2Ftrueberryless-org%2Fstarlight-recipes%2Fdocs%2Fsrc%2Fassets%2Frecipes%2Fvirgin-colada.jpg%3ForigWidth%3D4494%26origHeight%3D3000%26origFormat%3Djpg&fm=webp&w=1328&h=747"
+  ]
+}
+```
+
+### `datePublished`
+
+<DocField
+  description="The date the recipe was published."
+  links={[{ label: "date", href: "/guides/frontmatter#date" }]}
+  direction="upstream"
+/>
+
+This will be converted to an [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601).
+
+```json
+{
+  "datePublished": "2026-01-11"
+}
+```
+
+### `description`
+
+<DocField
+  description="A short summary describing the dish."
+  links={[{ label: "description", href: "https://starlight.astro.build/reference/frontmatter/#description" }]}
+  direction="upstream"
+/>
+
+```json
+{
+  "description": "This non-alcoholic piña colada is everyone's favorite summer refresher!"
+}
+```
+
+### `author`
+
+<DocField
+  description="The name of the person or organization that wrote the recipe."
+  links={[{ label: "authors", href: "/guides/frontmatter#authors" }]}
+  direction="upstream"
+/>
+
+Supports single or multiple authors (though too many may spoil the broth).
+
+```json
+{
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Felix Schneider",
+      "url": "https://trueberryless.org"
+    },
+    {
+      "@type": "Person",
+      "name": "Chef Hiro"
+    }
+  ]
+}
+```
+
+### `recipeCategory`
+
+<DocField
+  description="The type of meal or course your recipe is about."
+  links={[{ label: "category", href: "/guides/frontmatter#category" }]}
+  direction="upstream"
+/>
+
+```json
+{
+  "recipeCategory": "Drink"
+}
+```
+
+### `recipeCuisine`
+
+<DocField
+  description="The region associated with your recipe."
+  links={[{ label: "cuisine", href: "/guides/frontmatter#cuisine" }]}
+  direction="upstream"
+/>
+
+```json
+{
+  "recipeCuisine": "Puerto Rico"
+}
+```
+
+### `keywords`
+
+<DocField
+  description='Other terms for your recipe.'
+  links={[{ label: "tags", href: "/guides/frontmatter#tags" }]}
+  direction="upstream"
+/>
+
+For example: the season (`"Summer"`), the holiday (`"Halloween"`), or other descriptors (`"Quick"`, `"Easy"`, `"Authentic"`).
+
+Don't use a tag that's actually a [`recipeCategory`](#recipecategory) or [`recipeCuisine`](#recipecuisine).
+
+```json
+{
+  "keywords": "Sweet"
+}
+```
+
+### `averageRating`
+
+The average user rating and total number of ratings for the recipe.
+
+This is automatically calculated if the [rating system](/interactive/rating-system) is enabled.
+
+```json
+{
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": 4.7,
+    "ratingCount": 3
+  }
+}
+```
+
+### `prepTime`
+
+<DocField
+  description="The length of time it takes to prepare the recipe."
+  links={[{ label: "time.preparation", href: "/guides/frontmatter#time" }]}
+  direction="upstream"
+/>
+
+Minutes will be converted into the [ISO 8601 duration format](https://en.wikipedia.org/wiki/ISO_8601#Durations).
+
+```json
+{
+  "prepTime": "PT5M"
+}
+```
+
+### `cookTime`
+
+<DocField
+  description="The length of time it takes to cook the recipe."
+  links={[{ label: "time.cooking", href: "/guides/frontmatter#time" }]}
+  direction="upstream"
+/>
+
+Minutes will be converted into the [ISO 8601 duration format](https://en.wikipedia.org/wiki/ISO_8601#Durations).
+
+```json
+{
+  "cookTime": "PT0S"
+}
+```
+
+### `totalTime`
+
+<DocField
+  description="The total time it takes to finish making the dish."
+  links={[{ label: "time.total", href: "/guides/frontmatter#time" }]}
+  direction="upstream"
+/>
+
+Minutes will be converted into the [ISO 8601 duration format](https://en.wikipedia.org/wiki/ISO_8601#Durations).
+
+```json
+{
+  "totalTime": "PT5M"
+}
+```
+
+### `recipeIngredient`
+
+<DocField
+  description="A list of ingredients required for the recipe."
+  links={[{ label: "ingredients", href: "/guides/frontmatter#ingredients" }]}
+  direction="upstream"
+/>
+
+Structured [`IngredientObject`](/guides/frontmatter#ingredientobject) entries are flattened into a single string following the format: `"{quantity} {unit} {name}"`.
+
+```json
+{
+  "recipeIngredient": [
+    "400 ml Pineapple juice",
+    "100 ml Cream of coconut",
+    "2 cups Crushed ice",
+    "Pineapple wedges for garnish"
+  ]
+}
+```
+
+### `recipeInstructions`
+
+<DocField
+  description="A step-by-step guide to making the recipe."
+  links={[{ label: "instructions", href: "/guides/frontmatter#instructions" }]}
+  direction="upstream"
+/>
+
+Maps to an array of `HowToStep` objects.
+`name`, `text`, and `image` from [`InstructionStep`](/guides/frontmatter#instructionstep) are included in the structured step.
+
+```json
+{
+  "recipeInstructions": [
+    {
+      "@type": "HowToStep",
+      "text": "Combine pineapple juice, cream of coconut, and ice in a blender.",
+      "name": "Blend",
+      "image": "https://starlight-recipes.trueberryless.org/.netlify/images?url=%40fs%2FUsers%2Ftrueberryless%2Frepos%2Ftrueberryless-org%2Fstarlight-recipes%2Fdocs%2Fsrc%2Fassets%2Frecipes%2Fsteps%2Fvirgin-colada-blend.webp%3ForigWidth%3D1024%26origHeight%3D1024%26origFormat%3Dwebp&fm=webp&w=1024&h=1024"
+    },
+    {
+      "@type": "HowToStep",
+      "text": "Pulse until the mixture is smooth and frothy.",
+      "name": "Smooth"
+    },
+    {
+      "@type": "HowToStep",
+      "text": "Pour into chilled glasses and serve immediately.",
+      "name": "Pour"
+    }
+  ]
+}
+```
+
+### `recipeYield`
+
+<DocField
+  description="The quantity or number of servings produced by the recipe."
+  links={[{ label: "yield", href: "/guides/frontmatter#yield" }]}
+  direction="upstream"
+/>
+
+This property includes both the primary `servings` count and any strings generated from the `additional` yields array.
+
+```json
+{
+  "recipeYield": ["2", "2 glasses"]
+}
+```
+
+### `nutrition`
+
+<DocField
+  description="Nutritional information about the recipe, specifically calories."
+  links={[{ label: "yield", href: "/guides/frontmatter#yield" }]}
+  direction="upstream"
+/>
+
+Maps to the `nutrition.calories` property.
+
+```json
+{
+  "nutrition": {
+    "@type": "NutritionInformation",
+    "calories": "120 calories"
+  }
+}
+```
+
+### `video`
+
+<DocField
+  description="A video object representing the recipe's video content."
+  links={[{ label: "video", href: "/guides/frontmatter#video" }]}
+  direction="upstream"
+/>
+
+```json
+"video": {
+  "@type": "VideoObject",
+  "name": "The Perfect Pina Colada 🌴🥥 #pinacolada #bar #bartender #cocktails #pineapple #cocktail art",
+  "thumbnailUrl": [
+    "https://i.ytimg.com/vi/jYf3nheLZfE/maxresdefault.jpg?sqp=-oaymwEoCIAKENAF8quKqQMcGADwAQH4AbYIgAKAD4oCDAgAEAEYZSBgKFYwDw==&rs=AOn4CLB-7d9Wh2MOnwzfdr4BEnj4FX5e1w",
+    "https://i.ytimg.com/vi/jYf3nheLZfE/hqdefault.jpg?sqp=-oaymwE2CNACELwBSFXyq4qpAygIARUAAIhCGABwAcABBvABAfgBtgiAAoAPigIMCAAQARhlIGAoVjAP&rs=AOn4CLA3LQSFQ9OvLlFFx6DQ_tIK34p7Yg",
+    "https://i.ytimg.com/vi/jYf3nheLZfE/hqdefault.jpg?sqp=-oaymwE2CPYBEIoBSFXyq4qpAygIARUAAIhCGABwAcABBvABAfgBtgiAAoAPigIMCAAQARhlIGAoVjAP&rs=AOn4CLBAMQ3AQvVzR9rGNrdv4iCSWDq1bA"
+  ],
+  "embedUrl": "https://www.youtube.com/embed/jYf3nheLZfE",
+  "uploadDate": "2024-05-28T13:06:43-07:00",
+  "duration": "PT11S",
+  "interactionStatistic": {
+    "@type": "InteractionCounter",
+    "interactionType": { "@type": "WatchAction" },
+    "userInteractionCount": 1623035
+  }
+}
+```

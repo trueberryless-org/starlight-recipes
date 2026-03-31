@@ -1,0 +1,269 @@
+---
+import { Code } from "@astrojs/starlight/components";
+
+const managers = [
+  { id: "npm", base: "npx astro add" },
+  { id: "pnpm", base: "pnpm astro add" },
+  { id: "yarn", base: "yarn astro add" },
+];
+
+const adapters = ["Cloudflare", "Netlify", "Node", "Vercel"];
+
+const allCommands = managers.flatMap((m) =>
+  adapters.map((a) => ({
+    id: `${m.id}-${a.toLowerCase()}`,
+    cmd: `${m.base} ${a.toLowerCase()}`,
+  }))
+);
+
+const DEFAULT_PKG = "npm";
+const DEFAULT_ADAPTER = "netlify";
+const DEFAULT_ID = `${DEFAULT_PKG}-${DEFAULT_ADAPTER}`;
+---
+
+<adapter-installer class="installer-wrapper not-prose not-content">
+  <div class="controls">
+    <div class="selector">
+      {
+        managers.map((m) => (
+          <button
+            class="pill pkg-btn"
+            type="button"
+            data-value={m.id}
+            data-default={m.id === DEFAULT_PKG}
+          >
+            {m.id}
+          </button>
+        ))
+      }
+    </div>
+    <div class="divider"></div>
+    <div class="selector">
+      {
+        adapters.map((a) => (
+          <button
+            class="pill adapter-btn"
+            type="button"
+            data-value={a.toLowerCase()}
+            data-default={a.toLowerCase() === DEFAULT_ADAPTER}
+          >
+            {a}
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="code-stack">
+    {
+      allCommands.map((c) => (
+        <div
+          class="command-variant"
+          data-id={c.id}
+          data-default={c.id === DEFAULT_ID}
+        >
+          <Code code={c.cmd} lang="sh" />
+        </div>
+      ))
+    }
+  </div>
+</adapter-installer>
+
+<script>
+  class AdapterInstaller extends HTMLElement {
+    static PKG_KEY = "starlight-synced-tabs__pkg";
+    static ADAPTER_KEY = "starlight-synced-tabs__adapter";
+    static _memoryStore = new Map<string, string>();
+
+    _bound = false;
+
+    _onStorage = (e: StorageEvent) => {
+      const isRelevantKey =
+        e.key === AdapterInstaller.PKG_KEY ||
+        e.key === AdapterInstaller.ADAPTER_KEY;
+      if (isRelevantKey) {
+        if (e.newValue) AdapterInstaller._memoryStore.set(e.key!, e.newValue);
+        this.updateUI();
+      }
+    };
+
+    connectedCallback() {
+      this.setAttribute("hydrated", "");
+      this.updateUI();
+
+      if (!this._bound) {
+        this._bindEvents();
+        this._bound = true;
+      }
+      window.addEventListener("storage", this._onStorage);
+    }
+
+    disconnectedCallback() {
+      window.removeEventListener("storage", this._onStorage);
+    }
+
+    _bindEvents() {
+      const pkgButtons = this.querySelectorAll(".pkg-btn");
+      const adapterButtons = this.querySelectorAll(".adapter-btn");
+
+      pkgButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const val = btn.getAttribute("data-value");
+          if (val) this.save(AdapterInstaller.PKG_KEY, val);
+        });
+      });
+
+      adapterButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const val = btn.getAttribute("data-value");
+          if (val) this.save(AdapterInstaller.ADAPTER_KEY, val);
+        });
+      });
+    }
+
+    _safeGet(key: string) {
+      try {
+        return (
+          localStorage.getItem(key) ?? AdapterInstaller._memoryStore.get(key)
+        );
+      } catch {
+        return AdapterInstaller._memoryStore.get(key);
+      }
+    }
+
+    _safeSet(key: string, value: string) {
+      AdapterInstaller._memoryStore.set(key, value);
+      try {
+        localStorage.setItem(key, value);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    save(key: string, value: string) {
+      this._safeSet(key, value);
+      this.updateUI();
+
+      let storageArea = null;
+      try {
+        storageArea = localStorage;
+      } catch {}
+
+      window.dispatchEvent(
+        new StorageEvent("storage", {
+          key,
+          newValue: value,
+          storageArea,
+        })
+      );
+    }
+
+    updateUI() {
+      const defaultPkg =
+        this.querySelector<HTMLElement>(
+          '.pkg-btn[data-default="true"]'
+        )?.getAttribute("data-value") ?? "npm";
+      const defaultAdapter =
+        this.querySelector<HTMLElement>(
+          '.adapter-btn[data-default="true"]'
+        )?.getAttribute("data-value") ?? "netlify";
+      const storedPkg = this._safeGet(AdapterInstaller.PKG_KEY);
+      const storedAdapter = this._safeGet(AdapterInstaller.ADAPTER_KEY);
+      const pkg =
+        storedPkg &&
+        this.querySelector(`.pkg-btn[data-value="${CSS.escape(storedPkg)}"]`)
+          ? storedPkg
+          : defaultPkg;
+      const adapter =
+        storedAdapter &&
+        this.querySelector(
+          `.adapter-btn[data-value="${CSS.escape(storedAdapter)}"]`
+        )
+          ? storedAdapter
+          : defaultAdapter;
+      const targetId = `${pkg}-${adapter}`;
+
+      this.querySelectorAll(".command-variant").forEach((v) => {
+        const el = v as HTMLElement;
+        el.style.display = el.dataset.id === targetId ? "block" : "none";
+      });
+
+      this.querySelectorAll(".pkg-btn").forEach((btn) => {
+        const el = btn as HTMLElement;
+        const isActive = el.getAttribute("data-value") === pkg;
+        el.classList.toggle("active", isActive);
+        el.setAttribute("aria-pressed", String(isActive));
+        el.style.display = "block";
+      });
+
+      this.querySelectorAll(".adapter-btn").forEach((btn) => {
+        const el = btn as HTMLElement;
+        const isActive = el.getAttribute("data-value") === adapter;
+        el.classList.toggle("active", isActive);
+        el.setAttribute("aria-pressed", String(isActive));
+        el.style.display = "block";
+      });
+    }
+  }
+
+  customElements.define("adapter-installer", AdapterInstaller);
+</script>
+
+<style>
+  adapter-installer:not([hydrated]) .pkg-btn:not([data-default="true"]),
+  adapter-installer:not([hydrated]) .adapter-btn:not([data-default="true"]),
+  adapter-installer:not([hydrated])
+    .command-variant:not([data-default="true"]) {
+    display: none;
+  }
+
+  .installer-wrapper {
+    margin: 1.5rem 0;
+    border: 1px solid var(--sl-color-gray-6);
+    border-radius: 0.75rem;
+    background-color: var(--sl-color-gray-7);
+    padding: 1rem;
+    display: block;
+  }
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  .selector {
+    display: flex;
+    gap: 0.25rem;
+    background: var(--sl-color-gray-6);
+    padding: 0.2rem;
+    border-radius: 0.5rem;
+  }
+  .pill {
+    background: transparent;
+    border: none;
+    color: var(--sl-color-gray-3);
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .pill:hover {
+    color: var(--sl-color-white);
+  }
+  .pill.active {
+    background: var(--sl-color-accent-high);
+    color: var(--sl-color-black);
+  }
+  :global([data-theme="light"]) .pill.active {
+    background: var(--sl-color-accent);
+  }
+  .divider {
+    width: 1px;
+    height: 1.5rem;
+    background: var(--sl-color-gray-5);
+  }
+</style>
