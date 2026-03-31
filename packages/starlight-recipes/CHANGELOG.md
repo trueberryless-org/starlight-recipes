@@ -1,5 +1,11 @@
 # starlight-recipes
 
+## 0.2.0
+
+### Minor Changes
+
+- [#12](https://github.com/trueberryless-org/starlight-recipes/pull/12) [`77256da`](https://github.com/trueberryless-org/starlight-recipes/commit/77256da2c9e0c3a459e0c5972e6373a130b04a90) Thanks [@trueberryless](https://github.com/trueberryless)! - Replace package dotenv with Node natives.
+
 ## 0.1.0
 
 ### Minor Changes
