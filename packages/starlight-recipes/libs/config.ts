@@ -28,6 +28,7 @@ const configSchema = z
     recipeCount: z
       .number()
       .min(1)
+      .or(z.literal(Infinity))
       .default(5)
       .transform(infinityToMax)
       .pipe(z.number().int()),
@@ -37,6 +38,7 @@ const configSchema = z
     popularRecipeCount: z
       .number()
       .min(0)
+      .or(z.literal(Infinity))
       .default(3)
       .transform(infinityToMax)
       .pipe(z.number().int()),

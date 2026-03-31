@@ -76,7 +76,7 @@ export const instructionStepSchema = (image: ImageFunction) =>
       /**
        * An optional image showing the progress of this step.
        */
-      image: z.union([image(), z.string()]).optional(),
+      image: z.string().or(image()).optional(),
       /**
        * Accessible alternative text for the step image.
        */
@@ -191,7 +191,7 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
       /**
        * Relative path to an image file in your project, e.g. `../../assets/cover.png`, or a URL to a remote image.
        */
-      image: z.union([image(), z.string()]),
+      image: z.string().or(image()),
     }),
     /**
      * The publish date of the recipe which must be a valid YAML timestamp.
