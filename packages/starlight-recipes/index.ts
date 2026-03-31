@@ -3,7 +3,7 @@ import type {
   StarlightUserConfig,
 } from "@astrojs/starlight/types";
 import type { AstroIntegrationLogger } from "astro";
-import { access, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { parseEnv } from "node:util";
 
