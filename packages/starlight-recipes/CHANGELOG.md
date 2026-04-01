@@ -1,5 +1,17 @@
 # starlight-recipes
 
+## 0.2.0
+
+### Minor Changes
+
+- [#11](https://github.com/trueberryless-org/starlight-recipes/pull/11) [`b7a1ae3`](https://github.com/trueberryless-org/starlight-recipes/commit/b7a1ae338202198928c77a3dd989ceebb376a450) Thanks [@trueberryless](https://github.com/trueberryless)! - Adds support for Astro v6, drops support for Astro v5.
+
+  ⚠️ **BREAKING CHANGE:** The minimum supported version of Starlight is now `0.38.0`.
+
+  Please follow the [upgrade guide](https://github.com/withastro/starlight/releases/tag/%40astrojs%2Fstarlight%400.38.0) to update your project.
+
+- [#14](https://github.com/trueberryless-org/starlight-recipes/pull/14) [`a0c155b`](https://github.com/trueberryless-org/starlight-recipes/commit/a0c155b709c564c18f25d4848506f83cfdaef648) Thanks [@trueberryless](https://github.com/trueberryless)! - Replace package dotenv with Node natives.
+
 ## 0.1.1
 
 ### Patch Changes
