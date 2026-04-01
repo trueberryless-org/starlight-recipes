@@ -1,6 +1,6 @@
 {
   "name": "starlight-recipes",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Starlight plugin to create a recipe website.",
   "homepage": "https://starlight-recipes.trueberryless.org",
   "bugs": {
