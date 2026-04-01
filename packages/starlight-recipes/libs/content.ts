@@ -1,7 +1,7 @@
 import type { GetStaticPathsResult } from "astro";
 import { getCollection, getEntry } from "astro:content";
-import config from "virtual:starlight-recipes-config";
-import context from "virtual:starlight-recipes-context";
+import config from "virtual:starlight-recipes/config";
+import context from "virtual:starlight-recipes/context";
 import starlightConfig from "virtual:starlight/user-config";
 
 import { getRatingSecret } from "./env.server";
@@ -215,7 +215,7 @@ function getRecipesStaticPath(
 
   return {
     params: {
-      page: index === 0 ? undefined : index + 1,
+      page: index === 0 ? undefined : `${index + 1}`,
       prefix: getPathWithLocale(config.prefix, locale),
     },
     props: {

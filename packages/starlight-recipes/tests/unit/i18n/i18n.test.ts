@@ -7,7 +7,7 @@ import {
   stripLocaleFromSlug,
 } from "../../../libs/i18n";
 
-vi.mock("virtual:starlight-recipes-context", () => ({
+vi.mock("virtual:starlight-recipes/context", () => ({
   default: {
     base: "/docs",
   },

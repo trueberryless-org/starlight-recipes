@@ -16,7 +16,7 @@ const configMock = {
   },
 };
 
-vi.mock("virtual:starlight-recipes-context", () => ({
+vi.mock("virtual:starlight-recipes/context", () => ({
   default: {
     trailingSlash: "ignore",
   },

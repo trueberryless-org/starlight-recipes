@@ -9,9 +9,9 @@ export function vitePluginStarlightRecipesConfig(
   context: StarlightRecipesContext
 ): VitePlugin {
   const modules = {
-    "virtual:starlight-recipes-config": `export default ${JSON.stringify(starlightRecipesConfig)}`,
-    "virtual:starlight-recipes-context": `export default ${JSON.stringify(context)}`,
-    "virtual:starlight-recipes-images": getImagesVirtualModule(
+    "virtual:starlight-recipes/config": `export default ${JSON.stringify(starlightRecipesConfig)}`,
+    "virtual:starlight-recipes/context": `export default ${JSON.stringify(context)}`,
+    "virtual:starlight-recipes/images": getImagesVirtualModule(
       starlightRecipesConfig,
       context
     ),

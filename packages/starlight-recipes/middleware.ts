@@ -180,7 +180,7 @@ async function getRecipeSidebar(
       makeSidebarGroup(
         t("starlightRecipes.sidebar.tags"),
         [...tags]
-          .sort(([, a], [, b]) => {
+          .toSorted(([, a], [, b]) => {
             if (a.entries.length === b.entries.length) {
               return a.label.localeCompare(b.label);
             }
@@ -205,7 +205,7 @@ async function getRecipeSidebar(
       makeSidebarGroup(
         t("starlightRecipes.sidebar.authors"),
         [...authors]
-          .sort(([, a], [, b]) => {
+          .toSorted(([, a], [, b]) => {
             if (a.entries.length === b.entries.length) {
               return a.author.name.localeCompare(b.author.name);
             }

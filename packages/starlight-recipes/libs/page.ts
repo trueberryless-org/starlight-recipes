@@ -1,8 +1,8 @@
 import type { StarlightPageProps } from "@astrojs/starlight/props";
 import type { StarlightRouteData } from "@astrojs/starlight/route-data";
 import type { AstroConfig } from "astro";
-import config from "virtual:starlight-recipes-config";
-import context from "virtual:starlight-recipes-context";
+import config from "virtual:starlight-recipes/config";
+import context from "virtual:starlight-recipes/context";
 import starlightConfig from "virtual:starlight/user-config";
 
 import type { Locale } from "./i18n";

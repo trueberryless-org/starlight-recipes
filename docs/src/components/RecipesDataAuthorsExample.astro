@@ -2,7 +2,7 @@
 const authors = Astro.locals.starlightRecipes?.authors ?? [];
 const authorNames = authors
   .map((author) => author.name)
-  .sort((a, b) => a.localeCompare(b, Astro.currentLocale));
+  .toSorted((a, b) => a.localeCompare(b, Astro.currentLocale));
 
 const authorList = new Intl.ListFormat(Astro.currentLocale, {
   style: "long",

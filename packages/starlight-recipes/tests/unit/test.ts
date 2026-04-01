@@ -37,9 +37,9 @@ export function defineVitestConfig(
         ratingEnabled: !isAdapterMissing && !!ratingSecret,
       }),
       {
-        name: "virtual-modules",
+        name: "vite-plugin-starlight-recipes-test",
         load(id) {
-          if (id !== "virtual:starlight-recipes-test") return undefined;
+          if (id !== "virtual:starlight-recipes/test") return undefined;
 
           const config: Partial<StarlightConfig> = context?.locales
             ? {
@@ -66,7 +66,7 @@ export function defineVitestConfig(
         },
         resolveId(id) {
           return id === "virtual:starlight/user-config"
-            ? "virtual:starlight-recipes-test"
+            ? "virtual:starlight-recipes/test"
             : undefined;
         },
       },

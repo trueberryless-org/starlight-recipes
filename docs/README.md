@@ -16,4 +16,4 @@ Content can be found in the [`src/content/docs/`](./src/content/docs/) directory
 
 Licensed under the MIT License, Copyright © trueberryless-org.
 
-See [LICENSE](/LICENSE) for more information.
+See [LICENSE](https://github.com/trueberryless-org/starlight-recipes/blob/main/LICENSE) for more information.

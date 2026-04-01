@@ -1,7 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import AnchorHeading from "@astrojs/starlight/components/AnchorHeading.astro";
-import config from "virtual:starlight-recipes-config";
+import config from "virtual:starlight-recipes/config";
 import { slug as githubSlugger } from "github-slugger";
 import {
   prepareInstructionsProps,
@@ -161,17 +161,14 @@ const instructionsTitle = Astro.locals.t(
                     {step.name && <strong>{step.name}</strong>}
                     <div set:html={step.text} />
                     {step.image &&
-                      (step.isRemoteImage ? (
+                      (typeof step.image === "string" ? (
                         <img
-                          src={step.image as string}
+                          src={step.image}
                           alt={step.alt || ""}
                           loading="lazy"
                         />
                       ) : (
-                        <Image
-                          src={step.image as ImageMetadata}
-                          alt={step.alt || ""}
-                        />
+                        <Image src={step.image} alt={step.alt || ""} />
                       ))}
                   </div>
                 </step-timer>
@@ -207,17 +204,14 @@ const instructionsTitle = Astro.locals.t(
                     {step.name && <strong>{step.name}</strong>}
                     <div set:html={step.text} />
                     {step.image &&
-                      (step.isRemoteImage ? (
+                      (typeof step.image === "string" ? (
                         <img
-                          src={step.image as string}
+                          src={step.image}
                           alt={step.alt || ""}
                           loading="lazy"
                         />
                       ) : (
-                        <Image
-                          src={step.image as ImageMetadata}
-                          alt={step.alt || ""}
-                        />
+                        <Image src={step.image} alt={step.alt || ""} />
                       ))}
                   </div>
                 </step-checkbox>
@@ -234,17 +228,14 @@ const instructionsTitle = Astro.locals.t(
                     )}
                     <div class="text-content" set:html={step.text} />
                     {step.image &&
-                      (step.isRemoteImage ? (
+                      (typeof step.image === "string" ? (
                         <img
-                          src={step.image as string}
+                          src={step.image}
                           alt={step.alt || ""}
                           loading="lazy"
                         />
                       ) : (
-                        <Image
-                          src={step.image as ImageMetadata}
-                          alt={step.alt || ""}
-                        />
+                        <Image src={step.image} alt={step.alt || ""} />
                       ))}
                   </div>
                 </>

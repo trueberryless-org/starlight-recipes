@@ -1,6 +1,11 @@
 ---
 import { Image } from "astro:assets";
 import { resolveAuthorData } from "../../libs/authors";
+import type { StarlightRecipesAuthor } from "../../schema";
+
+interface Props {
+  author: StarlightRecipesAuthor;
+}
 
 const { author } = Astro.props;
 const { tagName: Element, isLink, picture } = resolveAuthorData(author);

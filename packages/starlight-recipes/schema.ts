@@ -1,12 +1,6 @@
 import { AstroError } from "astro/errors";
-import {
-  type ZodLiteral,
-  type ZodNumber,
-  type ZodObject,
-  type ZodString,
-  type ZodUnion,
-  z,
-} from "astro/zod";
+import { z } from "astro/zod";
+import type { SchemaContext } from "astro:content";
 
 export const recipesAuthorSchema = z.object({
   /**
@@ -24,7 +18,7 @@ export const recipesAuthorSchema = z.object({
   /**
    * The URL to the author's website.
    */
-  url: z.string().url().optional(),
+  url: z.url().optional(),
 });
 
 /**
@@ -50,7 +44,7 @@ export const ingredientSchema = z.union([
     .superRefine((val, ctx) => {
       if (val.quantity === undefined && val.unit !== undefined) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "If unit is set, quantity must also be set.",
           path: ["quantity"],
         });
@@ -61,7 +55,7 @@ export const ingredientSchema = z.union([
 /**
  * Defines a single step in the recipe instructions.
  */
-export const instructionStepSchema = (image: ImageFunction) =>
+export const instructionStepSchema = (image: SchemaContext["image"]) =>
   z.union([
     z.string(),
     z.object({
@@ -76,7 +70,7 @@ export const instructionStepSchema = (image: ImageFunction) =>
       /**
        * An optional image showing the progress of this step.
        */
-      image: z.union([image(), z.string()]).optional(),
+      image: z.url().or(image()).optional(),
       /**
        * Accessible alternative text for the step image.
        */
@@ -84,7 +78,7 @@ export const instructionStepSchema = (image: ImageFunction) =>
       /**
        * An optional URL for more details regarding this specific step.
        */
-      url: z.string().url().optional(),
+      url: z.url().optional(),
       /**
        * The estimated time required for this specific step in minutes.
        */
@@ -117,7 +111,7 @@ export const videoMetadataSchema = z.object({
   /**
    * A URL pointing to a player for the video (for example, a YouTube embed URL).
    */
-  embedUrl: z.string().url().optional(),
+  embedUrl: z.url().optional(),
   /**
    * The number of times the video has been watched.
    */
@@ -131,43 +125,40 @@ const videoProcessedFrontmatterSchema = videoMetadataSchema.extend({
   /**
    * The original source URL of the video (for example, a YouTube watch URL).
    */
-  url: z.string().url(),
+  url: z.url(),
 });
 
 /**
  * Validates that a string is a legitimate YouTube video, Short, or Embed URL.
  */
-const youtubeUrlSchema = z
-  .string()
-  .url()
-  .refine(
-    (value) => {
-      try {
-        const url = new URL(value);
-        const host = url.hostname.replace("www.", "");
+const youtubeUrlSchema = z.url().refine(
+  (value) => {
+    try {
+      const url = new URL(value);
+      const host = url.hostname.replace("www.", "");
 
-        if (host === "youtu.be") {
-          return url.pathname.length > 1;
-        }
-
-        if (host === "youtube.com") {
-          return (
-            url.searchParams.has("v") ||
-            url.pathname.startsWith("/shorts/") ||
-            url.pathname.startsWith("/live/") ||
-            url.pathname.startsWith("/embed/")
-          );
-        }
-
-        return false;
-      } catch {
-        return false;
+      if (host === "youtu.be") {
+        return url.pathname.length > 1;
       }
-    },
-    {
-      message: "Video must be a YouTube URL.",
+
+      if (host === "youtube.com") {
+        return (
+          url.searchParams.has("v") ||
+          url.pathname.startsWith("/shorts/") ||
+          url.pathname.startsWith("/live/") ||
+          url.pathname.startsWith("/embed/")
+        );
+      }
+
+      return false;
+    } catch {
+      return false;
     }
-  );
+  },
+  {
+    message: "Video must be a YouTube URL.",
+  }
+);
 
 /**
  * The video schema as used in frontmatter, allowing either a raw URL or processed metadata.
@@ -193,8 +184,11 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
       alt: z.string(),
       /**
        * Relative path to an image file in your project, e.g. `../../assets/cover.png`, or a URL to a remote image.
+       *
+       * Local image paths are resolved via Astro's `image()` helper and become
+       * `ImageMetadata` objects. Remote images remain URL strings.
        */
-      image: z.union([image(), z.string()]),
+      image: z.url().or(image()),
     }),
     /**
      * The publish date of the recipe which must be a valid YAML timestamp.
@@ -257,14 +251,14 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
       .superRefine((val, ctx) => {
         if (val?.preparation !== undefined && val.cooking === undefined) {
           ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: "custom",
             message: "Cooking time must be provided if preparation time is set",
             path: ["cooking"],
           });
         }
         if (val?.cooking !== undefined && val.preparation === undefined) {
           ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: "custom",
             message: "Preparation time must be provided if cooking time is set",
             path: ["preparation"],
           });
@@ -302,7 +296,7 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
               .superRefine((val, ctx) => {
                 if (val.amount !== undefined && val.unit === undefined) {
                   ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
+                    code: "custom",
                     message:
                       "If yield.additional.amount is set, yield.additional.unit must also be set.",
                     path: ["yield", "additional", "unit"],
@@ -310,7 +304,7 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
                 }
                 if (val.amount === undefined && val.unit !== undefined) {
                   ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
+                    code: "custom",
                     message:
                       "If yield.additional.unit is set, yield.additional.amount must also be set.",
                     path: ["yield", "additional", "amount"],
@@ -388,26 +382,3 @@ export type StarlightRecipesFrontmatter = Omit<
 > & {
   video?: StarlightRecipesVideoProcessed;
 };
-
-interface SchemaContext {
-  image: ImageFunction;
-}
-
-// https://github.com/withastro/astro/blob/39ee41fa56b362942162dc17b0b4252d2f881e7e/packages/astro/src/assets/types.ts#L38-L47
-type ImageFunction = () => ZodObject<{
-  src: ZodString;
-  width: ZodNumber;
-  height: ZodNumber;
-  format: ZodUnion<
-    [
-      ZodLiteral<"png">,
-      ZodLiteral<"jpg">,
-      ZodLiteral<"jpeg">,
-      ZodLiteral<"tiff">,
-      ZodLiteral<"webp">,
-      ZodLiteral<"gif">,
-      ZodLiteral<"svg">,
-      ZodLiteral<"avif">,
-    ]
-  >;
-}>;

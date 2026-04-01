@@ -10,7 +10,7 @@ vi.mock("astro:content", () => ({
   getEntry: vi.fn(),
 }));
 
-vi.mock("virtual:starlight-recipes-config", () => ({
+vi.mock("virtual:starlight-recipes/config", () => ({
   default: {
     prefix: "recipes",
     authors: {
@@ -25,11 +25,11 @@ vi.mock("virtual:starlight-recipes-config", () => ({
   },
 }));
 
-vi.mock("virtual:starlight-recipes-context", () => ({
+vi.mock("virtual:starlight-recipes/context", () => ({
   default: mockContext,
 }));
 
-vi.mock("virtual:starlight-recipes-images", () => ({
+vi.mock("virtual:starlight-recipes/images", () => ({
   authors: {
     Alice: "/images/alice.png",
   },
