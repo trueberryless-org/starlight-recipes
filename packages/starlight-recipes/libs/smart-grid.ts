@@ -1,4 +1,4 @@
-import type { StarlightRecipeEntry } from "./content";
+import type { StarlightRecipeEntry } from "./types";
 
 /**
  * Organizes recipe entries into a grid layout with a row size for regular items.

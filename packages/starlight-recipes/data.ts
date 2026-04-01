@@ -1,7 +1,7 @@
 import type { ImageMetadata } from "astro";
 
-import type { StarlightRecipeEntry } from "./libs/content";
 import type { StarlightRecipeEntryCuisine } from "./libs/cuisines";
+import type { StarlightRecipeEntry } from "./libs/types";
 import type {
   StarlightRecipesIngredientSchema,
   StarlightRecipesInstructionStepSchema,

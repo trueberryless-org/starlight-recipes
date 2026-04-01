@@ -6,9 +6,10 @@ import { authors } from "virtual:starlight-recipes/images";
 import starlightConfig from "virtual:starlight/user-config";
 
 import type { StarlightRecipesAuthor } from "../schema";
-import { type StarlightRecipeEntry, getRecipeEntries } from "./content";
+import { getRecipeEntries } from "./content";
 import { DefaultLocale, type Locale } from "./i18n";
 import { getPathWithLocale, getRelativeUrl } from "./page";
+import type { StarlightRecipeEntry } from "./types";
 
 export async function getAllAuthors(
   locale: Locale

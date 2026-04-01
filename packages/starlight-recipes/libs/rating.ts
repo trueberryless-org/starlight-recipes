@@ -47,9 +47,9 @@ async function fetchJson<T>(url: string, timeoutMs: number): Promise<T> {
 }
 
 export async function getRecipeRating(
-  recipeId: string
+  recipeId: string,
+  namespace?: string
 ): Promise<AggregateRating> {
-  const namespace = import.meta.env.STARLIGHT_RECIPES_RATING_SECRET;
   const fallbackResponse: AggregateRating = { ratingValue: 0, ratingCount: 0 };
 
   if (!namespace) {
@@ -113,8 +113,9 @@ export async function submitRating(params: {
   recipeId: string;
   stars: number;
   clientAddress: string | null | undefined;
+  namespace: string | undefined;
 }): Promise<SubmitRatingResult> {
-  const namespace = import.meta.env.STARLIGHT_RECIPES_RATING_SECRET;
+  const namespace = params.namespace;
 
   if (!namespace) {
     return { kind: "not_configured" };

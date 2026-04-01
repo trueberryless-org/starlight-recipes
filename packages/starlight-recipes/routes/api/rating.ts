@@ -1,11 +1,13 @@
 import type { APIRoute } from "astro";
 
+import { getRatingSecret } from "../../libs/env.server";
 import { getRecipeRating, submitRating } from "../../libs/rating";
 
 export const prerender = false;
 
 export const GET: APIRoute = async ({ url }) => {
   const recipeId = url.searchParams.get("id");
+  const namespace = getRatingSecret();
 
   if (!recipeId) {
     return new Response(JSON.stringify({ error: "Missing recipe ID" }), {
@@ -15,7 +17,7 @@ export const GET: APIRoute = async ({ url }) => {
   }
 
   try {
-    const result = await getRecipeRating(recipeId);
+    const result = await getRecipeRating(recipeId, namespace);
 
     return new Response(JSON.stringify(result), {
       status: 200,
@@ -37,11 +39,13 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   try {
     const body = await request.json();
     const { recipeId, stars } = body ?? {};
+    const namespace = getRatingSecret();
 
     const result = await submitRating({
       recipeId,
       stars,
       clientAddress,
+      namespace: namespace,
     });
 
     switch (result.kind) {

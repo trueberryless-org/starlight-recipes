@@ -11,12 +11,9 @@ import context from "virtual:starlight-recipes/context";
 
 import type { StarlightRecipesFrontmatter } from "../schema";
 import { getAllAuthors, getEntryAuthors } from "./authors";
-import {
-  type StarlightRecipeEntry,
-  getRecipeEntries,
-  getRecipeEntry,
-} from "./content";
+import { getRecipeEntries, getRecipeEntry } from "./content";
 import { getAllCuisines, resolveCuisine } from "./cuisines";
+import { getRatingSecret } from "./env.server";
 import type { Locale } from "./i18n";
 import {
   getPathWithLocale,
@@ -34,6 +31,7 @@ import {
 import { getRecipeRating } from "./rating";
 import { getAllTags } from "./tags";
 import { getCookTime, getPrepTime, getTotalTime } from "./time";
+import type { StarlightRecipeEntry } from "./types";
 import type { VideoFrontmatterProcessed } from "./video";
 
 export async function getHead(apiContext: APIContext): Promise<HeadConfig> {
@@ -139,7 +137,8 @@ export async function getRecipeHead(
     recipeStructuredData.image = images;
   }
 
-  const averageRating = await getRecipeRating(recipe.entry.id);
+  const ratingSecret = getRatingSecret();
+  const averageRating = await getRecipeRating(recipe.entry.id, ratingSecret);
   if (averageRating && averageRating.ratingCount > 0)
     recipeStructuredData.aggregateRating = {
       "@type": "AggregateRating",
