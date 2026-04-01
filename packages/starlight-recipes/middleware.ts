@@ -90,11 +90,9 @@ async function getRecipeEntriesData(locale: Locale) {
       chunk.map(async (entry) => {
         const authors = getEntryAuthors(entry);
         const tags = getEntryTags(entry);
+        const ratingSecret = getRatingSecret();
 
-        const averageRating = await getRecipeRating(
-          entry.id,
-          getRatingSecret()
-        );
+        const averageRating = await getRecipeRating(entry.id, ratingSecret);
         const time = entry.data.time;
         const cuisine = resolveCuisine(entry.data.cuisine, locale);
 
