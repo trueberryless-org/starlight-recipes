@@ -1,5 +1,13 @@
 # starlight-recipes
 
+## 0.1.1
+
+### Patch Changes
+
+- [#15](https://github.com/trueberryless-org/starlight-recipes/pull/15) [`ba4144a`](https://github.com/trueberryless-org/starlight-recipes/commit/ba4144a066325fe81962e2013b03c3bc8193e8c7) Thanks [@trueberryless](https://github.com/trueberryless)! - **⚠️ Security fix**: Do not expose `STARLIGHT_RECIPES_RATING_SECRET` secret to the client.
+
+  The previous release bundled the namespace secret into the build output and the `0.1.0` version is therefore locked from downloads.
+
 ## 0.1.0
 
 ### Minor Changes
