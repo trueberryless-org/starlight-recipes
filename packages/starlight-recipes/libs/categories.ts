@@ -3,7 +3,8 @@ import { slug as githubSlugger } from "github-slugger";
 import config from "virtual:starlight-recipes-config";
 import starlightConfig from "virtual:starlight/user-config";
 
-import { type StarlightRecipeEntry, getRecipeEntries } from "./content";
+import { getRecipeEntries } from "./content";
+import type { StarlightRecipeEntry } from "./types";
 import { DefaultLocale, type Locale } from "./i18n";
 import { getPathWithLocale } from "./page";
 

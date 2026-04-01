@@ -113,7 +113,7 @@ export async function submitRating(params: {
   recipeId: string;
   stars: number;
   clientAddress: string | null | undefined;
-  namespace?: string;
+  namespace: string | undefined;
 }): Promise<SubmitRatingResult> {
   const namespace = params.namespace;
 

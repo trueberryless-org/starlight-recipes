@@ -1,7 +1,7 @@
 import type { ImageMetadata } from "astro";
 
 import type { StarlightRecipesInstructionStepSchema } from "../schema";
-import type { StarlightRecipeEntry } from "./content";
+import type { StarlightRecipeEntry } from "./types";
 import { getRelativeUrl } from "./page";
 
 export interface NormalizedStep {

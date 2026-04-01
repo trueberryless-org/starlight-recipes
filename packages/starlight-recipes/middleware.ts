@@ -10,6 +10,7 @@ import type { StarlightRecipesData } from "./data";
 import { getAllAuthors, getEntryAuthors } from "./libs/authors";
 import { getRecipeEntries, getSidebarRecipeEntries } from "./libs/content";
 import { resolveCuisine } from "./libs/cuisines";
+import { getRatingSecret } from "./libs/env.server";
 import type { Locale } from "./libs/i18n";
 import {
   getPathWithLocale,
@@ -90,7 +91,10 @@ async function getRecipeEntriesData(locale: Locale) {
         const authors = getEntryAuthors(entry);
         const tags = getEntryTags(entry);
 
-        const averageRating = await getRecipeRating(entry.id);
+        const averageRating = await getRecipeRating(
+          entry.id,
+          getRatingSecret()
+        );
         const time = entry.data.time;
         const cuisine = resolveCuisine(entry.data.cuisine, locale);
 

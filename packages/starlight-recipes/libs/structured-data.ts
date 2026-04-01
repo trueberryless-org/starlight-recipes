@@ -13,6 +13,7 @@ import type { StarlightRecipesFrontmatter } from "../schema";
 import { getAllAuthors, getEntryAuthors } from "./authors";
 import { getRecipeEntries, getRecipeEntry } from "./content";
 import { getAllCuisines, resolveCuisine } from "./cuisines";
+import { getRatingSecret } from "./env.server";
 import type { Locale } from "./i18n";
 import {
   getPathWithLocale,
@@ -136,7 +137,8 @@ export async function getRecipeHead(
     recipeStructuredData.image = images;
   }
 
-  const averageRating = await getRecipeRating(recipe.entry.id);
+  const ratingSecret = getRatingSecret();
+  const averageRating = await getRecipeRating(recipe.entry.id, ratingSecret);
   if (averageRating && averageRating.ratingCount > 0)
     recipeStructuredData.aggregateRating = {
       "@type": "AggregateRating",
