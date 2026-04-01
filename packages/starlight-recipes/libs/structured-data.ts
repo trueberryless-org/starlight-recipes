@@ -11,11 +11,7 @@ import context from "virtual:starlight-recipes-context";
 
 import type { StarlightRecipesFrontmatter } from "../schema";
 import { getAllAuthors, getEntryAuthors } from "./authors";
-import {
-  type StarlightRecipeEntry,
-  getRecipeEntries,
-  getRecipeEntry,
-} from "./content";
+import { getRecipeEntries, getRecipeEntry } from "./content";
 import { getAllCuisines, resolveCuisine } from "./cuisines";
 import type { Locale } from "./i18n";
 import {
@@ -34,6 +30,7 @@ import {
 import { getRecipeRating } from "./rating";
 import { getAllTags } from "./tags";
 import { getCookTime, getPrepTime, getTotalTime } from "./time";
+import type { StarlightRecipeEntry } from "./types";
 import type { VideoFrontmatterProcessed } from "./video";
 
 export async function getHead(apiContext: APIContext): Promise<HeadConfig> {

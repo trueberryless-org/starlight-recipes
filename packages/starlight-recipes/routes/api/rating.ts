@@ -6,6 +6,7 @@ export const prerender = false;
 
 export const GET: APIRoute = async ({ url }) => {
   const recipeId = url.searchParams.get("id");
+  const namespace = import.meta.env.STARLIGHT_RECIPES_RATING_SECRET;
 
   if (!recipeId) {
     return new Response(JSON.stringify({ error: "Missing recipe ID" }), {
@@ -15,7 +16,7 @@ export const GET: APIRoute = async ({ url }) => {
   }
 
   try {
-    const result = await getRecipeRating(recipeId);
+    const result = await getRecipeRating(recipeId, namespace);
 
     return new Response(JSON.stringify(result), {
       status: 200,
@@ -37,11 +38,13 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   try {
     const body = await request.json();
     const { recipeId, stars } = body ?? {};
+    const namespace = import.meta.env.STARLIGHT_RECIPES_RATING_SECRET;
 
     const result = await submitRating({
       recipeId,
       stars,
       clientAddress,
+      namespace,
     });
 
     switch (result.kind) {

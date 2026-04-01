@@ -1,10 +1,9 @@
 import type { GetStaticPathsResult } from "astro";
-import { type CollectionEntry, getCollection, getEntry } from "astro:content";
+import { getCollection, getEntry } from "astro:content";
 import config from "virtual:starlight-recipes-config";
 import context from "virtual:starlight-recipes-context";
 import starlightConfig from "virtual:starlight/user-config";
 
-import type { StarlightRecipesFrontmatter } from "../schema";
 import { DefaultLocale, type Locale } from "./i18n";
 import {
   getPathWithLocale,
@@ -13,6 +12,12 @@ import {
 } from "./page";
 import { stripLeadingSlash, stripTrailingSlash } from "./path";
 import { getRecipeRating } from "./rating";
+import type {
+  StarlightEntry,
+  StarlightRecipeEntry,
+  StarlightRecipeEntryPaginated,
+  StarlightRecipesStaticProps,
+} from "./types";
 
 const recipeEntriesPerLocale = new Map<Locale, StarlightRecipeEntry[]>();
 
@@ -257,28 +262,4 @@ function validateRecipeEntry(
   if (entry.data.cover === undefined) {
     throw new Error(`Missing cover for recipe entry '${entry.id}'.`);
   }
-}
-
-type StarlightEntry = CollectionEntry<"docs">;
-
-export type StarlightRecipeEntry = StarlightEntry & {
-  data: StarlightRecipesFrontmatter;
-};
-
-export interface StarlightRecipeLink {
-  href: string;
-  label?: string;
-}
-
-export interface StarlightRecipeEntryPaginated {
-  entry: StarlightRecipeEntry;
-  nextLink: StarlightRecipeLink | undefined;
-  prevLink: StarlightRecipeLink | undefined;
-}
-
-interface StarlightRecipesStaticProps {
-  entries: StarlightRecipeEntry[];
-  locale: Locale;
-  nextLink: StarlightRecipeLink | undefined;
-  prevLink: StarlightRecipeLink | undefined;
 }
