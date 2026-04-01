@@ -1,5 +1,6 @@
 import { AstroError } from "astro/errors";
 import { z } from "astro/zod";
+import type { SchemaContext } from "astro:content";
 
 export const recipesAuthorSchema = z.object({
   /**
@@ -54,7 +55,7 @@ export const ingredientSchema = z.union([
 /**
  * Defines a single step in the recipe instructions.
  */
-export const instructionStepSchema = (image: ImageFunction) =>
+export const instructionStepSchema = (image: SchemaContext["image"]) =>
   z.union([
     z.string(),
     z.object({
@@ -69,7 +70,7 @@ export const instructionStepSchema = (image: ImageFunction) =>
       /**
        * An optional image showing the progress of this step.
        */
-      image: z.string().or(image()).optional(),
+      image: z.url().or(image()).optional(),
       /**
        * Accessible alternative text for the step image.
        */
@@ -183,8 +184,11 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
       alt: z.string(),
       /**
        * Relative path to an image file in your project, e.g. `../../assets/cover.png`, or a URL to a remote image.
+       *
+       * Local image paths are resolved via Astro's `image()` helper and become
+       * `ImageMetadata` objects. Remote images remain URL strings.
        */
-      image: z.string().or(image()),
+      image: z.url().or(image()),
     }),
     /**
      * The publish date of the recipe which must be a valid YAML timestamp.
@@ -378,26 +382,3 @@ export type StarlightRecipesFrontmatter = Omit<
 > & {
   video?: StarlightRecipesVideoProcessed;
 };
-
-interface SchemaContext {
-  image: ImageFunction;
-}
-
-// https://github.com/withastro/astro/blob/a9138ab11ac02cd0d7f1738eea3070c826585e7e/packages/astro/src/content/config.ts#L28-L44
-type ImageFunction = () => z.ZodObject<{
-  src: z.core.$ZodString;
-  width: z.core.$ZodNumber;
-  height: z.core.$ZodNumber;
-  format: z.core.$ZodUnion<
-    [
-      z.core.$ZodLiteral<"png">,
-      z.core.$ZodLiteral<"jpg">,
-      z.core.$ZodLiteral<"jpeg">,
-      z.core.$ZodLiteral<"tiff">,
-      z.core.$ZodLiteral<"webp">,
-      z.core.$ZodLiteral<"gif">,
-      z.core.$ZodLiteral<"svg">,
-      z.core.$ZodLiteral<"avif">,
-    ]
-  >;
-}>;
