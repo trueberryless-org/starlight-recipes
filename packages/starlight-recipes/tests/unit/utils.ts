@@ -2,7 +2,7 @@ import { z } from "astro/zod";
 import { slug } from "github-slugger";
 import { vi } from "vitest";
 
-import type { StarlightRecipeEntry } from "../../libs/content";
+import type { StarlightRecipeEntry } from "../../libs/types";
 import { recipeEntrySchema } from "../../schema";
 
 export async function mockRecipes(recipes: Parameters<typeof mockRecipe>[]) {

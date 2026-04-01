@@ -5,13 +5,13 @@ import config from "virtual:starlight-recipes-config";
 import context from "virtual:starlight-recipes-context";
 import starlightConfig from "virtual:starlight/user-config";
 
-import type { StarlightRecipeEntry } from "./content";
 import type { Locale } from "./i18n";
 import {
   ensureTrailingSlash,
   stripLeadingSlash,
   stripTrailingSlash,
 } from "./path";
+import type { StarlightRecipeEntry } from "./types";
 
 const trailingSlashTransformers: Record<
   AstroConfig["trailingSlash"],

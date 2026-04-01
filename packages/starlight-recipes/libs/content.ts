@@ -1,10 +1,10 @@
 import type { GetStaticPathsResult } from "astro";
-import { type CollectionEntry, getCollection, getEntry } from "astro:content";
+import { getCollection, getEntry } from "astro:content";
 import config from "virtual:starlight-recipes-config";
 import context from "virtual:starlight-recipes-context";
 import starlightConfig from "virtual:starlight/user-config";
 
-import type { StarlightRecipesFrontmatter } from "../schema";
+import { getRatingSecret } from "./env.server";
 import { DefaultLocale, type Locale } from "./i18n";
 import {
   getPathWithLocale,
@@ -13,6 +13,12 @@ import {
 } from "./page";
 import { stripLeadingSlash, stripTrailingSlash } from "./path";
 import { getRecipeRating } from "./rating";
+import type {
+  StarlightEntry,
+  StarlightRecipeEntry,
+  StarlightRecipeEntryPaginated,
+  StarlightRecipesStaticProps,
+} from "./types";
 
 const recipeEntriesPerLocale = new Map<Locale, StarlightRecipeEntry[]>();
 
@@ -48,9 +54,11 @@ export async function getSidebarRecipeEntries(locale: Locale) {
   const featured: StarlightRecipeEntry[] = [];
   const popular: StarlightRecipeEntry[] = [];
 
+  const ratingSecret = getRatingSecret();
+
   const entriesWithRatings = await Promise.all(
     entries.map(async (entry) => {
-      const rating = await getRecipeRating(entry.id);
+      const rating = await getRecipeRating(entry.id, ratingSecret);
       return { entry, rating: rating.ratingValue };
     })
   );
@@ -62,7 +70,7 @@ export async function getSidebarRecipeEntries(locale: Locale) {
   for (const { entry } of entriesWithRatings) {
     if (entry.data.featured) {
       featured.push(entry);
-    } else if (!!import.meta.env.STARLIGHT_RECIPES_RATING_SECRET) {
+    } else if (!!ratingSecret) {
       popular.push(entry);
     }
   }
@@ -257,28 +265,4 @@ function validateRecipeEntry(
   if (entry.data.cover === undefined) {
     throw new Error(`Missing cover for recipe entry '${entry.id}'.`);
   }
-}
-
-type StarlightEntry = CollectionEntry<"docs">;
-
-export type StarlightRecipeEntry = StarlightEntry & {
-  data: StarlightRecipesFrontmatter;
-};
-
-export interface StarlightRecipeLink {
-  href: string;
-  label?: string;
-}
-
-export interface StarlightRecipeEntryPaginated {
-  entry: StarlightRecipeEntry;
-  nextLink: StarlightRecipeLink | undefined;
-  prevLink: StarlightRecipeLink | undefined;
-}
-
-interface StarlightRecipesStaticProps {
-  entries: StarlightRecipeEntry[];
-  locale: Locale;
-  nextLink: StarlightRecipeLink | undefined;
-  prevLink: StarlightRecipeLink | undefined;
 }

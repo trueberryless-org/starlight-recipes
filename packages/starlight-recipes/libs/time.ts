@@ -1,6 +1,6 @@
 import { type Duration, parse, serialize } from "tinyduration";
 
-import type { StarlightRecipeEntry } from "./content";
+import type { StarlightRecipeEntry } from "./types";
 
 export const getPrepTime = (
   entry: StarlightRecipeEntry
