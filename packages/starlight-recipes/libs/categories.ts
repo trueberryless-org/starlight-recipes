@@ -4,9 +4,9 @@ import config from "virtual:starlight-recipes-config";
 import starlightConfig from "virtual:starlight/user-config";
 
 import { getRecipeEntries } from "./content";
-import type { StarlightRecipeEntry } from "./types";
 import { DefaultLocale, type Locale } from "./i18n";
 import { getPathWithLocale } from "./page";
+import type { StarlightRecipeEntry } from "./types";
 
 export async function getAllCategories(
   locale: Locale
