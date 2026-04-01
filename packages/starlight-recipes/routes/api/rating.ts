@@ -45,7 +45,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       recipeId,
       stars,
       clientAddress,
-      namespace: namespace ?? undefined,
+      namespace: namespace,
     });
 
     switch (result.kind) {
