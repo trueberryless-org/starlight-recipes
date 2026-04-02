@@ -2,7 +2,13 @@
   "name": "starlight-recipes",
   "version": "0.2.0",
   "description": "Starlight plugin to create a recipe website.",
-  "homepage": "https://starlight-recipes.trueberryless.org",
+  "keywords": [
+    "starlight",
+    "plugin",
+    "recipe",
+    "astro"
+  ],
+  "homepage": "https://github.com/trueberryless-org/starlight-recipes",
   "bugs": {
     "url": "https://github.com/trueberryless-org/starlight-recipes/issues"
   },
@@ -13,6 +19,7 @@
   },
   "license": "MIT",
   "author": "trueberryless <trueberryless@gmail.com> (https://trueberryless.org)",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./index.ts",
@@ -30,8 +37,8 @@
   },
   "scripts": {
     "test": "pnpm test:unit && pnpm test:e2e",
-    "test:unit": "vitest",
-    "test:e2e": "playwright install --with-deps chromium && playwright test"
+    "test:e2e": "playwright install --with-deps chromium && playwright test",
+    "test:unit": "vitest"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.1.0",
@@ -61,12 +68,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "sideEffects": false,
-  "keywords": [
-    "starlight",
-    "plugin",
-    "recipe",
-    "astro"
-  ]
+  }
 }
