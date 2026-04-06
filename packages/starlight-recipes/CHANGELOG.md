@@ -1,5 +1,11 @@
 # starlight-recipes
 
+## 0.2.1
+
+### Patch Changes
+
+- [#22](https://github.com/trueberryless-org/starlight-recipes/pull/22) [`c8468f5`](https://github.com/trueberryless-org/starlight-recipes/commit/c8468f53cdd0b3dff3586c460580cf0d7d4e5175) Thanks [@copilot-swe-agent](https://github.com/apps/copilot-swe-agent)! - Fix missing `/tags/` prefix in footer tag pill links
+
 ## 0.2.0
 
 ### Minor Changes
