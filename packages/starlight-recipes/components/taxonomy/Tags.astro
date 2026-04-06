@@ -24,7 +24,7 @@ const uniqueId = `tags-${entry.id.replace(/[^a-zA-Z0-9]/g, "-")}`;
       <ul aria-labelledby={uniqueId}>
         {tags.map((tag) => (
           <li>
-            <Pill slug={tag.slug} label={tag.label} {locale} />
+            <Pill slug={`/tags/${tag.slug}`} label={tag.label} {locale} />
           </li>
         ))}
       </ul>

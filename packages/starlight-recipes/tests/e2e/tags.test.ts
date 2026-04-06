@@ -10,3 +10,12 @@ test("should create the tag page", async ({ tagsPage }) => {
   );
 });
 
+test("tag pill links on recipe pages should include the /tags/ prefix", async ({ page }) => {
+  // avocado-toast has tags: Savory, Vegetarian
+  await page.goto("/recipes/avocado-toast");
+
+  const main = page.getByRole("main");
+  await expect(main.locator('a[href="/recipes/tags/savory/"]')).toBeVisible();
+  await expect(main.locator('a[href="/recipes/tags/vegetarian/"]')).toBeVisible();
+});
+

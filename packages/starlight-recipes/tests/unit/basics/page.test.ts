@@ -96,6 +96,15 @@ describe("getRelativeRecipeUrl", () => {
       "/de/recipes/recipe-1/"
     );
   });
+
+  test("returns a tag path with /tags/ prefix", () => {
+    expect(getRelativeRecipeUrl("/tags/quick--easy", undefined)).toBe(
+      "/recipes/tags/quick--easy/"
+    );
+    expect(getRelativeRecipeUrl("/tags/quick--easy", "de")).toBe(
+      "/de/recipes/tags/quick--easy/"
+    );
+  });
 });
 
 describe("getPathWithLocale", () => {
