@@ -14,7 +14,8 @@ test("tag pill links on recipe pages should include the /tags/ prefix", async ({
   // avocado-toast has tags: Savory, Vegetarian
   await page.goto("/recipes/avocado-toast");
 
-  await expect(page.locator('a[href="/recipes/tags/savory/"]')).toBeVisible();
-  await expect(page.locator('a[href="/recipes/tags/vegetarian/"]')).toBeVisible();
+  const main = page.getByRole("main");
+  await expect(main.locator('a[href="/recipes/tags/savory/"]')).toBeVisible();
+  await expect(main.locator('a[href="/recipes/tags/vegetarian/"]')).toBeVisible();
 });
 
