@@ -4,7 +4,6 @@ import config from "virtual:starlight-recipes/config";
 import context from "virtual:starlight-recipes/context";
 import starlightConfig from "virtual:starlight/user-config";
 
-import { getRatingSecret } from "./env.server";
 import { DefaultLocale, type Locale } from "./i18n";
 import {
   getPathWithLocale,
@@ -12,7 +11,6 @@ import {
   getRelativeUrl,
 } from "./page";
 import { stripLeadingSlash, stripTrailingSlash } from "./path";
-import { getRecipeRating } from "./rating";
 import type {
   StarlightEntry,
   StarlightRecipeEntry,
@@ -52,30 +50,13 @@ export async function getSidebarRecipeEntries(locale: Locale) {
   const entries = await getRecipeEntries(locale);
 
   const featured: StarlightRecipeEntry[] = [];
-  const popular: StarlightRecipeEntry[] = [];
-
-  const ratingSecret = getRatingSecret();
-
-  const entriesWithRatings = await Promise.all(
-    entries.map(async (entry) => {
-      const rating = await getRecipeRating(entry.id, ratingSecret);
-      return { entry, rating: rating.ratingValue };
-    })
-  );
-
-  entriesWithRatings.sort((a, b) => {
-    return b.rating - a.rating;
-  });
-
-  for (const { entry } of entriesWithRatings) {
+  for (const entry of entries) {
     if (entry.data.featured) {
       featured.push(entry);
-    } else if (!!ratingSecret) {
-      popular.push(entry);
     }
   }
 
-  return { featured, popular: popular.slice(0, config.popularRecipeCount) };
+  return { featured };
 }
 
 export async function getRecipeEntry(

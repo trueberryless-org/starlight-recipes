@@ -1,18 +1,15 @@
 <ul>
   {
     Astro.locals.starlightRecipes.recipes
-      .toSorted((a, b) => {
-        const ratingA = a.averageRating?.ratingValue ?? 0;
-        const ratingB = b.averageRating?.ratingValue ?? 0;
-        return ratingB - ratingA;
-      })
+      .toSorted(
+        (a, b) =>
+          (b.createdAt?.getTime() ?? 0) - (a.createdAt?.getTime() ?? 0)
+      )
       .slice(0, 5)
       .map((recipe) => (
         <li>
           <a href={recipe.href}>{recipe.title}</a>
-          {recipe.averageRating && (
-            <em>({recipe.averageRating.ratingValue}/5 stars)</em>
-          )}
+          <em>({recipe.createdAt?.toLocaleDateString() ?? "Unknown date"})</em>
         </li>
       ))
   }

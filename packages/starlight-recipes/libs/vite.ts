@@ -78,7 +78,6 @@ export interface StarlightRecipesContext {
   title: StarlightUserConfig["title"];
   adapter: AstroConfig["adapter"];
   trailingSlash: AstroConfig["trailingSlash"];
-  ratingEnabled: boolean;
 }
 
 type VitePlugin = NonNullable<ViteUserConfig["plugins"]>[number];

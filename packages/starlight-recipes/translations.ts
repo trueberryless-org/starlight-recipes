@@ -30,11 +30,6 @@ export const Translations = {
     "starlightRecipes.recipe.instructions.resetProgress": "Reset progress",
     "starlightRecipes.recipe.print": "Print Recipe",
     "starlightRecipes.recipe.published": "Published",
-    "starlightRecipes.recipe.rating.alreadyVoted": "Already voted!",
-    "starlightRecipes.recipe.rating.empty": "No ratings",
-    "starlightRecipes.recipe.rating.serverError": "Server Error!",
-    "starlightRecipes.recipe.rating.starLabel_one": "Rate {{count}} star",
-    "starlightRecipes.recipe.rating.starLabel_other": "Rate {{count}} stars",
     "starlightRecipes.recipe.tags": "Tags:",
     "starlightRecipes.recipe.totalTime": "Total time",
     "starlightRecipes.recipe.video.heading": "Video",
@@ -42,7 +37,6 @@ export const Translations = {
     "starlightRecipes.sidebar.authors": "Authors",
     "starlightRecipes.sidebar.exploreAll": "Explore all recipes",
     "starlightRecipes.sidebar.featured": "Featured recipes",
-    "starlightRecipes.sidebar.popular": "Popular recipes",
     "starlightRecipes.sidebar.tags": "Tags",
     "starlightRecipes.tags.count_one":
       "{{count}} recipe with the tag “{{tag}}”",
@@ -64,9 +58,6 @@ export const Translations = {
     "starlightRecipes.recipe.instructions.markStepDoneAriaLabel":
       "Mark step {{step}} as done",
     "starlightRecipes.recipe.instructions.stepAriaLabel": "Step {{step}}",
-    "starlightRecipes.recipe.rating.groupLabel": "Recipe rating",
-    "starlightRecipes.recipe.rating.starsGroupLabel": "Rate this recipe",
-    "starlightRecipes.recipe.rating.loading": "Loading ratings",
     "starlightRecipes.recipe.ingredients.servingsUpdated":
       "Servings updated to {count}",
     "starlightRecipes.recipe.author.linkAriaLabel": "View more by {{name}}",
@@ -103,13 +94,6 @@ export const Translations = {
       "Fortschritt zurücksetzen",
     "starlightRecipes.recipe.print": "Rezept ausdrucken",
     "starlightRecipes.recipe.published": "Veröffentlicht",
-    "starlightRecipes.recipe.rating.alreadyVoted": "Bereits abgestimmt!",
-    "starlightRecipes.recipe.rating.empty": "Keine Bewertungen",
-    "starlightRecipes.recipe.rating.serverError": "Serverfehler!",
-    "starlightRecipes.recipe.rating.starLabel_one":
-      "Bewerte mit {{count}} Stern",
-    "starlightRecipes.recipe.rating.starLabel_other":
-      "Bewerte mit {{count}} Sternen",
     "starlightRecipes.recipe.tags": "Stichwörter:",
     "starlightRecipes.recipe.totalTime": "Gesamtzeit",
     "starlightRecipes.recipe.video.heading": "Video",
@@ -117,7 +101,6 @@ export const Translations = {
     "starlightRecipes.sidebar.authors": "Autoren",
     "starlightRecipes.sidebar.exploreAll": "Alle Rezepte entdecken",
     "starlightRecipes.sidebar.featured": "Empfohlene Rezepte",
-    "starlightRecipes.sidebar.popular": "Beliebte Rezepte",
     "starlightRecipes.sidebar.tags": "Stichwörter",
     "starlightRecipes.tags.count_one":
       "{{count}} Rezept mit dem Stichwort „{{tag}}“",
@@ -140,9 +123,6 @@ export const Translations = {
     "starlightRecipes.recipe.instructions.markStepDoneAriaLabel":
       "Schritt {{step}} als erledigt markieren",
     "starlightRecipes.recipe.instructions.stepAriaLabel": "Schritt {{step}}",
-    "starlightRecipes.recipe.rating.groupLabel": "Rezeptbewertung",
-    "starlightRecipes.recipe.rating.starsGroupLabel": "Dieses Rezept bewerten",
-    "starlightRecipes.recipe.rating.loading": "Bewertungen werden geladen",
     "starlightRecipes.recipe.ingredients.servingsUpdated":
       "Portionen auf {count} aktualisiert",
     "starlightRecipes.recipe.author.linkAriaLabel":

@@ -33,16 +33,6 @@ const configSchema = z
       .transform(infinityToMax)
       .pipe(z.number().int()),
     /**
-     * The number of popular recipes to display in the sidebar.
-     */
-    popularRecipeCount: z
-      .number()
-      .min(0)
-      .or(z.literal(Infinity))
-      .default(3)
-      .transform(infinityToMax)
-      .pipe(z.number().int()),
-    /**
      * Configuration for the interactive cooking experience.
      */
     cookingMode: z

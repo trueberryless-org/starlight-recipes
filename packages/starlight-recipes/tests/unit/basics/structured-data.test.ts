@@ -140,13 +140,6 @@ vi.mock("../../../libs/page", () => ({
     slug === `recipes/cuisine/${cuisine}`,
 }));
 
-vi.mock("../../../libs/rating", () => ({
-  getRecipeRating: vi.fn().mockResolvedValue({
-    ratingValue: 4.5,
-    ratingCount: 10,
-  }),
-}));
-
 describe("getRecipeHead", () => {
   test("builds a Recipe structured data script tag", async () => {
     const head = await getRecipeHead("recipes/a", undefined);
@@ -161,6 +154,7 @@ describe("getRecipeHead", () => {
     expect(payload.name).toBe("Recipe A");
 
     expect(payload.recipeYield).toEqual(["4", "24 cookies"]);
+    expect(payload.aggregateRating).toBeUndefined();
   });
 });
 

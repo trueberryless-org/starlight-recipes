@@ -13,7 +13,6 @@ const context: StarlightRecipesContext = {
   title: "Recipes",
   adapter: undefined as any,
   trailingSlash: "ignore",
-  ratingEnabled: false,
 };
 
 describe("getImagesVirtualModule", () => {

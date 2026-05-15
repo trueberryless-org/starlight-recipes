@@ -10,7 +10,6 @@ import type { StarlightRecipesData } from "./data";
 import { getAllAuthors, getEntryAuthors } from "./libs/authors";
 import { getRecipeEntries, getSidebarRecipeEntries } from "./libs/content";
 import { resolveCuisine } from "./libs/cuisines";
-import { getRatingSecret } from "./libs/env.server";
 import type { Locale } from "./libs/i18n";
 import {
   getPathWithLocale,
@@ -24,7 +23,6 @@ import {
   isRecipeRoot,
   isRecipeTagPage,
 } from "./libs/page";
-import { getRecipeRating } from "./libs/rating";
 import { getHead } from "./libs/structured-data";
 import { getAllTags, getEntryTags } from "./libs/tags";
 
@@ -90,9 +88,6 @@ async function getRecipeEntriesData(locale: Locale) {
       chunk.map(async (entry) => {
         const authors = getEntryAuthors(entry);
         const tags = getEntryTags(entry);
-        const ratingSecret = getRatingSecret();
-
-        const averageRating = await getRecipeRating(entry.id, ratingSecret);
         const time = entry.data.time;
         const cuisine = resolveCuisine(entry.data.cuisine, locale);
 
@@ -112,7 +107,6 @@ async function getRecipeEntriesData(locale: Locale) {
             label,
             href: getRelativeRecipeUrl(`/tags/${slug}`, locale),
           })),
-          averageRating,
           time,
           category: entry.data.category,
           cuisine,
@@ -145,7 +139,7 @@ async function getRecipeSidebar(
   const { starlightRoute, t } = context.locals;
   const { id, locale } = starlightRoute;
 
-  const { featured, popular } = await getSidebarRecipeEntries(locale);
+  const { featured } = await getSidebarRecipeEntries(locale);
 
   const sidebar: StarlightRouteData["sidebar"] = [
     makeSidebarLink(
@@ -160,15 +154,6 @@ async function getRecipeSidebar(
       makeSidebarGroup(
         t("starlightRecipes.sidebar.featured"),
         getSidebarProps(id, featured, locale)
-      )
-    );
-  }
-
-  if (popular.length > 0) {
-    sidebar.push(
-      makeSidebarGroup(
-        t("starlightRecipes.sidebar.popular"),
-        getSidebarProps(id, popular, locale)
       )
     );
   }

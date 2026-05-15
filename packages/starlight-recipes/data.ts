@@ -82,23 +82,6 @@ export interface StarlightRecipesData {
       href: string;
     }[];
     /**
-     * The rating of the recipe between 1 and 5 stars.
-     *
-     * @see https://starlight-recipes.trueberryless.org/interactive/rating-system
-     */
-    averageRating?:
-      | {
-          /**
-           * The average rating value of the recipe rounded to one decimal point.
-           */
-          ratingValue: number;
-          /**
-           * The number of people who voted this recipe.
-           */
-          ratingCount: number;
-        }
-      | undefined;
-    /**
      * Duration related data about the recipe.
      */
     time:

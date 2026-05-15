@@ -34,26 +34,23 @@ const { recipes, authors } = Astro.locals.starlightRecipes
 
 ### Example: Recipes
 
-This can be useful for example to create a widget that lists popular recipes with their average rating on your homepage:
+This can be useful for example to create a widget that lists recently published recipes on your homepage:
 
 <Preview>
 
-```astro title="PopularRecipes.astro" "Astro.locals.starlightRecipes.recipes"
+```astro title="RecentRecipes.astro" "Astro.locals.starlightRecipes.recipes"
 <ul>
   {
     Astro.locals.starlightRecipes.recipes
-      .toSorted((a, b) => {
-        const ratingA = a.averageRating?.ratingValue ?? 0;
-        const ratingB = b.averageRating?.ratingValue ?? 0;
-        return ratingB - ratingA;
-      })
+      .toSorted(
+        (a, b) =>
+          (b.createdAt?.getTime() ?? 0) - (a.createdAt?.getTime() ?? 0)
+      )
       .slice(0, 5)
       .map((recipe) => (
         <li>
           <a href={recipe.href}>{recipe.title}</a>
-          {recipe.averageRating && (
-            <em>({recipe.averageRating.ratingValue}/5 stars)</em>
-          )}
+          <em>({recipe.createdAt?.toLocaleDateString() ?? "Unknown date"})</em>
         </li>
       ))
   }
@@ -67,10 +64,6 @@ This can be useful for example to create a widget that lists popular recipes wit
 </Fragment>
 
 </Preview>
-
-:::note
-You need to [set up the rating system](/interactive/rating-system#setup) in order for this example to work.
-:::
 
 ### Example: Authors
 
@@ -129,10 +122,6 @@ Here is a summary of the whole type of the object:
       label: string;
       href: string;
     }[];
-    averageRating: {
-      ratingValue: number;
-      ratingCount: number;
-    } | undefined;
     time: {
       preparation: number | undefined;
       cooking: number | undefined;

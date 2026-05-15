@@ -13,7 +13,6 @@ import type { StarlightRecipesFrontmatter } from "../schema";
 import { getAllAuthors, getEntryAuthors } from "./authors";
 import { getRecipeEntries, getRecipeEntry } from "./content";
 import { getAllCuisines, resolveCuisine } from "./cuisines";
-import { getRatingSecret } from "./env.server";
 import type { Locale } from "./i18n";
 import {
   getPathWithLocale,
@@ -28,7 +27,6 @@ import {
   stripLeadingSlash,
   stripTrailingSlash,
 } from "./path";
-import { getRecipeRating } from "./rating";
 import { getAllTags } from "./tags";
 import { getCookTime, getPrepTime, getTotalTime } from "./time";
 import type { StarlightRecipeEntry } from "./types";
@@ -136,15 +134,6 @@ export async function getRecipeHead(
   if (images) {
     recipeStructuredData.image = images;
   }
-
-  const ratingSecret = getRatingSecret();
-  const averageRating = await getRecipeRating(recipe.entry.id, ratingSecret);
-  if (averageRating && averageRating.ratingCount > 0)
-    recipeStructuredData.aggregateRating = {
-      "@type": "AggregateRating",
-      ratingValue: averageRating.ratingValue,
-      ratingCount: averageRating.ratingCount,
-    };
 
   const authorData = mapAuthors(recipe.entry);
   if (authorData) recipeStructuredData.author = authorData;

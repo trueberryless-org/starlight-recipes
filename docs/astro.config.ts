@@ -1,4 +1,3 @@
-import netlify from "@astrojs/netlify";
 import node from "@astrojs/node";
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
@@ -7,7 +6,7 @@ import starlightRecipes from "starlight-recipes";
 
 export default defineConfig({
   site: "https://starlight-recipes.trueberryless.org",
-  adapter: process.env.PLAYWRIGHT ? node({ mode: "standalone" }) : netlify(),
+  adapter: node({ mode: "standalone" }),
   integrations: [
     starlight({
       title: "Starlight Recipes",
@@ -93,10 +92,6 @@ export default defineConfig({
             "guides/recipes-data",
             "guides/i18n",
           ],
-        },
-        {
-          label: "Interactive Features",
-          items: ["interactive", "interactive/rating-system"],
         },
         {
           label: "Demo Recipes",

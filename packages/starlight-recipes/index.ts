@@ -3,9 +3,6 @@ import type {
   StarlightUserConfig,
 } from "@astrojs/starlight/types";
 import type { AstroIntegrationLogger } from "astro";
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
-import { parseEnv } from "node:util";
 
 import {
   type StarlightRecipesConfig,
@@ -38,28 +35,10 @@ export default function starlightRecipes(
         updateConfig: updateStarlightConfig,
       }) {
         const isSiteMissing = astroConfig.site === undefined;
-        const isAdapterMissing = astroConfig.adapter === undefined;
 
         if (isSiteMissing) {
           logger.warn(
             "The 'site' property must be set in your Astro config for starlight-recipes to generate valid SEO images.\nSee https://docs.astro.build/en/reference/configuration-reference/#site for more information."
-          );
-        }
-
-        if (isAdapterMissing) {
-          logger.warn(
-            "No Astro Server Adapter found. All on-demand features will be disabled. Setup an adapter for interactivity.\nSee https://docs.astro.build/en/guides/on-demand-rendering/ for more information."
-          );
-        }
-
-        const env = await loadEnvironmentVariables();
-        const ratingSecret = env.STARLIGHT_RECIPES_RATING_SECRET;
-        const ratingEnabled = !isAdapterMissing && !!ratingSecret;
-        const shouldWarnAboutMissingSecret = !isAdapterMissing && !ratingSecret;
-
-        if (shouldWarnAboutMissingSecret) {
-          logger.warn(
-            "Secret STARLIGHT_RECIPES_RATING_SECRET not set in `.env` file. Rating feature will be disabled. Create a random GUID as a secret to enable the rating system.\nSee https://starlight-recipes.trueberryless.org/interactive/rating-system/ for more information."
           );
         }
 
@@ -86,14 +65,6 @@ export default function starlightRecipes(
           name: "starlight-recipes-integration",
           hooks: {
             "astro:config:setup": ({ injectRoute, updateConfig }) => {
-              if (ratingEnabled) {
-                injectRoute({
-                  entrypoint: "starlight-recipes/routes/api/rating.ts",
-                  pattern: "/api/rating",
-                  prerender: false,
-                });
-              }
-
               const routes = [
                 {
                   pattern: "/[...prefix]/category/[category]",
@@ -132,7 +103,6 @@ export default function starlightRecipes(
                       title: starlightConfig.title,
                       adapter: astroConfig.adapter,
                       trailingSlash: astroConfig.trailingSlash,
-                      ratingEnabled,
                     }),
                   ],
                 },
@@ -159,28 +129,6 @@ export default function starlightRecipes(
       },
     },
   };
-}
-
-async function loadEnvironmentVariables(): Promise<Record<string, string>> {
-  const root = process.cwd();
-  const mode = process.env.MODE ?? process.env.NODE_ENV ?? "production";
-
-  const files = [".env", ".env.local", `.env.${mode}`, `.env.${mode}.local`];
-
-  let envConfig: Record<string, string> = {};
-
-  for (const file of files) {
-    const path = join(root, file);
-    try {
-      const envContent = await readFile(path, "utf-8");
-      const parsed = parseEnv(envContent);
-      envConfig = { ...envConfig, ...(parsed as Record<string, string>) };
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
-    }
-  }
-
-  return { ...envConfig, ...process.env } as Record<string, string>;
 }
 
 function overrideComponent(
