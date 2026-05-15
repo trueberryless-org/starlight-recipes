@@ -123,6 +123,10 @@ vi.mock("../../../libs/content", () => ({
           additional: [{ amount: 24, unit: "cookies" }],
         },
         instructions: ["Step 1"],
+        rating: {
+          value: 4.6,
+          count: 187,
+        },
       },
     },
   }),
@@ -359,5 +363,37 @@ describe("getRecipeHead - recipeYield mapping", () => {
     const payload = JSON.parse(head.content ?? "{}");
 
     expect(payload.recipeYield).toBeUndefined();
+  });
+});
+
+describe("getRecipeHead - aggregateRating mapping", () => {
+  let getRecipeEntry: any;
+
+  beforeEach(async () => {
+    getRecipeEntry = vi.mocked((await import("../../../libs/content")).getRecipeEntry);
+  });
+
+  test("maps frontmatter rating to AggregateRating", async () => {
+    getRecipeEntry.mockResolvedValueOnce({
+      entry: {
+        id: "recipes/rated",
+        data: {
+          title: "Rated Recipe",
+          rating: {
+            value: 4.7,
+            count: 124,
+          },
+        } as any,
+      },
+    } as any);
+
+    const head = await getRecipeHead("recipes/rated", undefined);
+    const payload = JSON.parse(head.content ?? "{}");
+
+    expect(payload.aggregateRating).toEqual({
+      "@type": "AggregateRating",
+      ratingValue: 4.7,
+      ratingCount: 124,
+    });
   });
 });

@@ -187,6 +187,32 @@ featured: true
 ---
 ```
 
+### `rating`
+
+**Type:** [`RatingConfig`](#ratingconfig)
+
+<DocField
+  description="A static recipe rating and the number of votes it is based on."
+  links={[{ label: "aggregateRating", href: "/guides/structured-data#aggregaterating" }, { label: "rating", href: "/guides/recipes-data#rating" }]}
+/>
+
+Use this object to provide a non-interactive rating that is rendered in recipe metadata and featured recipe previews.
+
+```md
+---
+rating:
+  value: 4.8
+  count: 321
+---
+```
+
+#### `RatingConfig`
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `value` | `number` | Average rating value from `1.0` to `5.0`, using at most one decimal place. |
+| `count` | `number` | Number of ratings used to calculate `value`. Must be a non-negative integer. |
+
 ### `authors`
 
 **Type:** [`StarlightRecipesAuthorsConfig`](/configuration#author-configuration)

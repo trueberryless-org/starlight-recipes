@@ -5,6 +5,7 @@ import type { StarlightRecipeEntry } from "./libs/types";
 import type {
   StarlightRecipesIngredientSchema,
   StarlightRecipesInstructionStepSchema,
+  StarlightRecipesRating,
 } from "./schema";
 
 export interface StarlightRecipesData {
@@ -62,6 +63,12 @@ export interface StarlightRecipesData {
      * @see https://docs.astro.build/en/reference/modules/astro-content/#collectionentry
      */
     entry: StarlightRecipeEntry;
+    /**
+     * Static rating data for the recipe.
+     *
+     * @see https://starlight-recipes.trueberryless.org/guides/frontmatter/#rating
+     */
+    rating: StarlightRecipesRating | undefined;
     /**
      * The link to the recipe.
      */

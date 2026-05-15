@@ -2,6 +2,7 @@
 import { getEntryAuthors } from "../../libs/authors";
 import type { StarlightRecipeEntry } from "../../libs/types";
 import Author from "./Author.astro";
+import Rating from "./Rating.astro";
 
 interface Props {
   entry: StarlightRecipeEntry;
@@ -9,23 +10,36 @@ interface Props {
 
 const { entry } = Astro.props;
 const authors = getEntryAuthors(entry);
+const rating = entry.data.rating;
 
-const hasAuthors = authors.length > 0;
+const hasAuthorsOrRating = authors.length > 0 || rating;
 ---
 
 {
-  hasAuthors ? (
+  hasAuthorsOrRating ? (
     <div class="not-content">
-      <div class="authors">
-        {authors.map((author) => (
-          <Author {author} />
-        ))}
+      <div class="authors-meta">
+        {authors.length > 0 && (
+          <div class="authors">
+            {authors.map((author) => (
+              <Author {author} />
+            ))}
+          </div>
+        )}
+        {rating && <Rating {rating} />}
       </div>
     </div>
   ) : null
 }
 
 <style>
+  .authors-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+  }
+
   .authors {
     display: flex;
     flex-wrap: wrap;

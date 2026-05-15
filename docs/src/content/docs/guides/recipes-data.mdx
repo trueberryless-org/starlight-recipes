@@ -108,6 +108,10 @@ Here is a summary of the whole type of the object:
     updatedAt: Date | undefined;
     draft: boolean;
     featured: boolean;
+    rating: {
+      value: number;
+      count: number;
+    } | undefined;
     cover: {
       alt: string;
       image: ImageMetadata | string;
@@ -245,6 +249,16 @@ Draft recipes are only visible in development mode.
 <DocField
     description="Whether the recipe is featured."
     links={[{ label: "featured", href: "/guides/frontmatter#featured" }]}
+    direction="upstream"
+/>
+
+#### `rating`
+
+**Type:** `{ value: number; count: number } | undefined`
+
+<DocField
+    description="The static rating information of the recipe."
+    links={[{ label: "rating", href: "/guides/frontmatter#rating" }]}
     direction="upstream"
 />
 

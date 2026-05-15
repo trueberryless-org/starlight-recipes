@@ -103,6 +103,7 @@ async function getRecipeEntriesData(locale: Locale) {
           entry: entry,
           featured: entry.data.featured === true,
           href: getRelativeUrl(`/${getPathWithLocale(entry.id, locale)}`),
+          rating: entry.data.rating,
           tags: tags.map(({ label, slug }) => ({
             label,
             href: getRelativeRecipeUrl(`/tags/${slug}`, locale),

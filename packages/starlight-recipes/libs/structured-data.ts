@@ -223,6 +223,14 @@ export async function getRecipeHead(
       };
   }
 
+  if (data.rating) {
+    recipeStructuredData.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: data.rating.value,
+      ratingCount: data.rating.count,
+    } as any;
+  }
+
   const v = data.video as VideoFrontmatterProcessed | undefined;
 
   if (v) {

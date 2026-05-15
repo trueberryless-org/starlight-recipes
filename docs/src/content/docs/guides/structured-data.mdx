@@ -195,6 +195,26 @@ Supports single or multiple authors (though too many may spoil the broth).
 }
 ```
 
+### `aggregateRating`
+
+<DocField
+  description="The overall rating of the recipe based on a fixed number of ratings."
+  links={[{ label: "rating", href: "/guides/frontmatter#rating" }]}
+  direction="upstream"
+/>
+
+Uses `rating.value` as `ratingValue` and `rating.count` as `ratingCount`.
+
+```json
+{
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": 4.8,
+    "ratingCount": 321
+  }
+}
+```
+
 ### `recipeCategory`
 
 <DocField

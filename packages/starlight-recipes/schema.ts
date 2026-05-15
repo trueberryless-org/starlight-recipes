@@ -118,6 +118,24 @@ export const videoMetadataSchema = z.object({
   userInteractionCount: z.number().nonnegative().optional(),
 });
 
+export const ratingSchema = z.object({
+  /**
+   * The average recipe rating from 1 to 5 in 0.1 increments.
+   */
+  value: z
+    .number()
+    .min(1)
+    .max(5)
+    .refine((value) => {
+      const tenths = value * 10;
+      return Math.abs(tenths - Math.round(tenths)) < 1e-9;
+    }, "Rating value must use at most one decimal place."),
+  /**
+   * The number of ratings that make up the average.
+   */
+  count: z.number().int().nonnegative(),
+});
+
 /**
  * Extended video metadata including the original source URL.
  */
@@ -337,6 +355,10 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
      * for better Google Recipe rich results.
      */
     video: videoFrontmatterSchema,
+    /**
+     * Static recipe rating information.
+     */
+    rating: ratingSchema.optional(),
   });
 
 /**
@@ -370,6 +392,7 @@ type RawFrontmatterSchema = z.infer<ReturnType<typeof recipeEntrySchema>>;
 export type StarlightRecipesVideoProcessed = z.infer<
   typeof videoProcessedFrontmatterSchema
 >;
+export type StarlightRecipesRating = z.infer<typeof ratingSchema>;
 
 // Runtime/frontmatter type used by the plugin and consumers.
 export type StarlightRecipesVideoFrontmatter =
