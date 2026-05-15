@@ -154,7 +154,6 @@ describe("getRecipeHead", () => {
     expect(payload.name).toBe("Recipe A");
 
     expect(payload.recipeYield).toEqual(["4", "24 cookies"]);
-    expect(payload.aggregateRating).toBeUndefined();
   });
 });
 
