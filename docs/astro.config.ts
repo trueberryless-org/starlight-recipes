@@ -6,7 +6,7 @@ import starlightRecipes from "starlight-recipes";
 
 export default defineConfig({
   site: "https://starlight-recipes.trueberryless.org",
-  adapter: node({ mode: "standalone" }),
+  ...(process.env.PLAYWRIGHT ? { adapter: node({ mode: "standalone" }) } : {}),
   integrations: [
     starlight({
       title: "Starlight Recipes",
