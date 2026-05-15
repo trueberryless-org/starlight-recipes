@@ -11,7 +11,6 @@ describe("validateConfig", () => {
 
     expect(result.prefix).toBe("recipes");
     expect(result.recipeCount).toBe(5);
-    expect(result.popularRecipeCount).toBe(3);
     expect(result.cookingMode).toEqual({
       stepTimer: true,
       stepCheckbox: true,
@@ -29,11 +28,9 @@ describe("validateConfig", () => {
   test("converts Infinity to Number.MAX_SAFE_INTEGER for counts", () => {
     const result = validateConfig({
       recipeCount: Infinity,
-      popularRecipeCount: Infinity,
     } satisfies StarlightRecipesUserConfig);
 
     expect(result.recipeCount).toBe(Number.MAX_SAFE_INTEGER);
-    expect(result.popularRecipeCount).toBe(Number.MAX_SAFE_INTEGER);
   });
 
   test("throws on invalid configuration", () => {

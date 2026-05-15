@@ -3,8 +3,7 @@ title: Getting Started
 description: Step-by-step instructions to set up Starlight Recipes.
 ---
 
-import { Steps, TabItem } from '@astrojs/starlight/components'
-import InstallAdapterCommands from '@/components/InstallAdapterCommands.astro'
+import { Steps } from '@astrojs/starlight/components'
 import PackageManagers from '@/components/PackageManagers.astro'
 
 An opinionated [Starlight](https://starlight.astro.build) plugin to create a recipe website.
@@ -19,10 +18,6 @@ Starlight Recipes supports the following features:
 - Dynamic ingredient scaling by serving size
 - Print-optimized layouts for every recipe
 - Automated SEO via [recipe structured data](/guides/structured-data)
-
-The following features are available when you allow [on-demand rendering](https://docs.astro.build/en/guides/on-demand-rendering/):
-
-- Automatic [rating system](/interactive/rating-system) based on [Countify](https://countify.xyz/)
 
 Check out the [demo](/recipes) for a preview of an example cookbook.
 
@@ -100,11 +95,7 @@ If you don't have one yet, you can follow the ["Getting Started"](https://starli
     })
     ```
 
-5. Add any [Astro Server Adapter](https://docs.astro.build/en/guides/on-demand-rendering/#server-adapters) to unlock [interactive features](/interactive).
-
-    <InstallAdapterCommands />
-
-6. Create your first recipe by copying the recipe's cover image into a new project folder, like `src/assets/`, and creating a `.md` or `.mdx` file in the `src/content/docs/recipes/` directory:
+5. Create your first recipe by copying the recipe's cover image into a new project folder, like `src/assets/`, and creating a `.md` or `.mdx` file in the `src/content/docs/recipes/` directory:
 
     ```md
     ---
@@ -116,7 +107,7 @@ If you don't have one yet, you can follow the ["Getting Started"](https://starli
     ---
     ```
 
-7. [Start the development server](https://starlight.astro.build/getting-started/#start-the-development-server) to preview the plugin in action.
+6. [Start the development server](https://starlight.astro.build/getting-started/#start-the-development-server) to preview the plugin in action.
 
 </Steps>
 

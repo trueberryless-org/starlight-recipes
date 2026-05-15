@@ -140,13 +140,6 @@ vi.mock("../../../libs/page", () => ({
     slug === `recipes/cuisine/${cuisine}`,
 }));
 
-vi.mock("../../../libs/rating", () => ({
-  getRecipeRating: vi.fn().mockResolvedValue({
-    ratingValue: 4.5,
-    ratingCount: 10,
-  }),
-}));
-
 describe("getRecipeHead", () => {
   test("builds a Recipe structured data script tag", async () => {
     const head = await getRecipeHead("recipes/a", undefined);

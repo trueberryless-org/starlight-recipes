@@ -30,7 +30,6 @@
     "./routes/Cuisine.astro": "./routes/Cuisine.astro",
     "./routes/Category.astro": "./routes/Category.astro",
     "./routes/Tags.astro": "./routes/Tags.astro",
-    "./routes/api/rating.ts": "./routes/api/rating.ts",
     "./data": "./data.ts",
     "./middleware": "./middleware.ts",
     "./schema": "./schema.ts"

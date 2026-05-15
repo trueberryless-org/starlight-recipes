@@ -1,13 +1,10 @@
 ---
-import context from "virtual:starlight-recipes/context";
-
 import type { StarlightRecipeEntry } from "../../libs/types";
 import type { Locale } from "../../libs/i18n";
 import { getPathWithLocale, getRelativeUrl } from "../../libs/page";
 
 import Authors from "./../metadata/Authors.astro";
 import Cover from "../metadata/Cover.astro";
-import Rating from "../metadata/Rating.astro";
 import Categories from "../taxonomy/Categories.astro";
 import Cuisines from "../taxonomy/Cuisines.astro";
 import Flexbox from "../ui/Flexbox.astro";
@@ -48,7 +45,6 @@ const headingId = `recipe-title-${entry.id.replace(/[^a-zA-Z0-9]/g, "-")}`;
           <div class="big-preview-meta">
             <div class="space-between">
               <h2 id={headingId}>{entry.data.title}</h2>
-              {context.ratingEnabled && <Rating recipeId={entry.id} />}
             </div>
             <Authors entry={entry} />
 

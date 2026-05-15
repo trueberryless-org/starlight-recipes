@@ -21,9 +21,6 @@ export function defineVitestConfig(
   const rootDir = new URL("./", import.meta.url);
   const srcDir = new URL("src/", rootDir);
 
-  const isAdapterMissing = context?.adapter === undefined;
-  const ratingSecret = process.env.STARLIGHT_RECIPES_RATING_SECRET;
-
   return getViteConfig({
     plugins: [
       vitePluginStarlightRecipesConfig(config, {
@@ -34,7 +31,6 @@ export function defineVitestConfig(
         title: context?.title ?? "Starlight Recipes Test",
         adapter: context?.adapter,
         trailingSlash: context?.trailingSlash ?? "ignore",
-        ratingEnabled: !isAdapterMissing && !!ratingSecret,
       }),
       {
         name: "vite-plugin-starlight-recipes-test",

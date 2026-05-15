@@ -23,7 +23,6 @@
     "start": "astro dev"
   },
   "dependencies": {
-    "@astrojs/netlify": "^7.0.6",
     "@astrojs/node": "^10.0.4",
     "@astrojs/starlight": "^0.38.2",
     "@expressive-code/plugin-collapsible-sections": "^0.41.7",

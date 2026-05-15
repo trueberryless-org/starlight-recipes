@@ -42,11 +42,6 @@ Here is an example of how a recipe could look with this convention:
     "@type": "NutritionInformation",
     "calories": "120 calories"
   },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": 5,
-    "ratingCount": 18
-  },
   "recipeIngredient": [
     "400ml of pineapple juice",
     "100ml cream of coconut",
@@ -243,22 +238,6 @@ Don't use a tag that's actually a [`recipeCategory`](#recipecategory) or [`recip
 ```json
 {
   "keywords": "Sweet"
-}
-```
-
-### `averageRating`
-
-The average user rating and total number of ratings for the recipe.
-
-This is automatically calculated if the [rating system](/interactive/rating-system) is enabled.
-
-```json
-{
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": 4.7,
-    "ratingCount": 3
-  }
 }
 ```
 
