@@ -35,15 +35,23 @@ const hasAuthorsOrRating = authors.length > 0 || rating;
 <style>
   .authors-meta {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem 1rem;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    width: 100%;
   }
 
   .authors {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem 1rem;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .authors-meta :global(.rating) {
+    margin-left: auto;
+    flex-shrink: 0;
   }
 
   @media print {
