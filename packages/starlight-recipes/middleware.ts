@@ -140,7 +140,7 @@ async function getRecipeSidebar(
   const { starlightRoute, t } = context.locals;
   const { id, locale } = starlightRoute;
 
-  const { featured } = await getSidebarRecipeEntries(locale);
+  const { featured, popular } = await getSidebarRecipeEntries(locale);
 
   const sidebar: StarlightRouteData["sidebar"] = [
     makeSidebarLink(
@@ -155,6 +155,15 @@ async function getRecipeSidebar(
       makeSidebarGroup(
         t("starlightRecipes.sidebar.featured"),
         getSidebarProps(id, featured, locale)
+      )
+    );
+  }
+
+  if (popular.length > 0) {
+    sidebar.push(
+      makeSidebarGroup(
+        t("starlightRecipes.sidebar.popular"),
+        getSidebarProps(id, popular, locale)
       )
     );
   }
