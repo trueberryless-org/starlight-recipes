@@ -59,7 +59,10 @@ export async function getSidebarRecipeEntries(locale: Locale) {
   }
 
   const entriesWithRatings = entries
-    .filter((entry) => entry.data.featured !== true && entry.data.rating)
+    .filter(
+      (entry) =>
+        entry.data.featured !== true && entry.data.rating !== undefined
+    )
     .map((entry) => ({
       entry,
       rating: entry.data.rating?.value ?? 0,
