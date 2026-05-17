@@ -50,4 +50,32 @@ describe("rating frontmatter schema", () => {
       }),
     ).toThrow("Rating value must use at most one decimal place.");
   });
+
+  test("rejects rating when only value is set", () => {
+    const schema = recipesSchema({
+      image: (() => ({})) as any,
+    });
+
+    expect(() =>
+      schema.parse({
+        rating: {
+          value: 4.5,
+        },
+      }),
+    ).toThrow("If rating.value is set, rating.count must also be set.");
+  });
+
+  test("rejects rating when only count is set", () => {
+    const schema = recipesSchema({
+      image: (() => ({})) as any,
+    });
+
+    expect(() =>
+      schema.parse({
+        rating: {
+          count: 12,
+        },
+      }),
+    ).toThrow("If rating.count is set, rating.value must also be set.");
+  });
 });
