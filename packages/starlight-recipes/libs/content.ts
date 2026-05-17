@@ -65,7 +65,7 @@ export async function getSidebarRecipeEntries(locale: Locale) {
     )
     .map((entry) => ({
       entry,
-      rating: entry.data.rating?.value ?? 0,
+      rating: entry.data.rating.value,
     }))
     .toSorted((a, b) => b.rating - a.rating);
 
