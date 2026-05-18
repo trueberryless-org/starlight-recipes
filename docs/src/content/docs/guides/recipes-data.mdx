@@ -51,6 +51,14 @@ This can be useful for example to create a widget that lists recently published 
         <li>
           <a href={recipe.href}>{recipe.title}</a>
           <em>({recipe.createdAt?.toLocaleDateString() ?? "Unknown date"})</em>
+          {
+            recipe.rating ? (
+              <span>
+                {" "}
+                — ⭐ {recipe.rating.value} ({recipe.rating.count})
+              </span>
+            ) : null
+          }
         </li>
       ))
   }
