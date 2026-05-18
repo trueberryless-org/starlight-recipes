@@ -138,6 +138,14 @@ export const ratingSchema = z
     count: z.number().int().nonnegative().optional(),
   })
   .superRefine((val, ctx) => {
+    if (val.value === undefined && val.count === undefined) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "When rating is defined, both rating.value and rating.count must be set.",
+        path: ["value"],
+      });
+    }
     if (val.value !== undefined && val.count === undefined) {
       ctx.addIssue({
         code: "custom",

@@ -3,6 +3,30 @@ import { describe, expect, test } from "vitest";
 import { recipesSchema } from "../../../schema";
 
 describe("rating frontmatter schema", () => {
+  test("accepts boundary rating values", () => {
+    const schema = recipesSchema({
+      image: (() => ({})) as any,
+    });
+
+    expect(
+      schema.parse({
+        rating: {
+          value: 1,
+          count: 0,
+        },
+      }).rating,
+    ).toEqual({ value: 1, count: 0 });
+
+    expect(
+      schema.parse({
+        rating: {
+          value: 5,
+          count: 999,
+        },
+      }).rating,
+    ).toEqual({ value: 5, count: 999 });
+  });
+
   test("accepts valid static rating values", () => {
     const schema = recipesSchema({
       image: (() => ({})) as any,
@@ -77,5 +101,41 @@ describe("rating frontmatter schema", () => {
         },
       }),
     ).toThrow("If rating.count is set, rating.value must also be set.");
+  });
+
+  test("rejects empty rating objects", () => {
+    const schema = recipesSchema({
+      image: (() => ({})) as any,
+    });
+
+    expect(() =>
+      schema.parse({
+        rating: {},
+      }),
+    ).toThrow("When rating is defined, both rating.value and rating.count must be set.");
+  });
+
+  test("rejects invalid rating.count values", () => {
+    const schema = recipesSchema({
+      image: (() => ({})) as any,
+    });
+
+    expect(() =>
+      schema.parse({
+        rating: {
+          value: 4.5,
+          count: -1,
+        },
+      }),
+    ).toThrow();
+
+    expect(() =>
+      schema.parse({
+        rating: {
+          value: 4.5,
+          count: 1.2,
+        },
+      }),
+    ).toThrow();
   });
 });

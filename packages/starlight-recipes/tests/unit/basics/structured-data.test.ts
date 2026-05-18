@@ -396,4 +396,20 @@ describe("getRecipeHead - aggregateRating mapping", () => {
       ratingCount: 124,
     });
   });
+
+  test("omits aggregateRating when rating is missing", async () => {
+    getRecipeEntry.mockResolvedValueOnce({
+      entry: {
+        id: "recipes/unrated",
+        data: {
+          title: "Unrated Recipe",
+        } as any,
+      },
+    } as any);
+
+    const head = await getRecipeHead("recipes/unrated", undefined);
+    const payload = JSON.parse(head.content ?? "{}");
+
+    expect(payload.aggregateRating).toBeUndefined();
+  });
 });
