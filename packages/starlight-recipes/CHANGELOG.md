@@ -1,5 +1,16 @@
 # starlight-recipes
 
+## 0.3.0
+
+### Minor Changes
+
+- [#28](https://github.com/trueberryless-org/starlight-recipes/pull/28) [`5c60cb6`](https://github.com/trueberryless-org/starlight-recipes/commit/5c60cb6af7b3dd0411e1e7828eaaab70d8b3befb) Thanks [@copilot-swe-agent](https://github.com/apps/copilot-swe-agent)! - Remove the interactive rating feature due to potential security risks from Countify.xyz
+
+  **⚠️ Potential breaking change**: If you were using the rating feature, make sure to follow these steps for a clean migration:
+  1. Remove any server adapter if you do not need it for other parts of your Astro website, as this plugin no longer has any interactive features.
+  2. Remove all usages of `Astro.locals.starlightRecipes.recipes[i].averageRating` from [recipes data](https://starlight-recipes.trueberryless.org/guides/recipes-data/), since they are no longer available.
+  3. Delete the `STARLIGHT_RECIPES_RATING_SECRET` environment variable from local development and your hosting provider. It is no longer used.
+
 ## 0.2.1
 
 ### Patch Changes
