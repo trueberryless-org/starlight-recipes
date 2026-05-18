@@ -143,7 +143,7 @@ export const ratingSchema = z
         code: "custom",
         message:
           "When rating is defined, both rating.value and rating.count must be set.",
-        path: ["value"],
+        path: [],
       });
     }
     if (val.value !== undefined && val.count === undefined) {

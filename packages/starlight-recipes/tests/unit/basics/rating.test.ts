@@ -12,10 +12,10 @@ describe("rating frontmatter schema", () => {
       schema.parse({
         rating: {
           value: 1,
-          count: 0,
+          count: 1,
         },
       }).rating,
-    ).toEqual({ value: 1, count: 0 });
+    ).toEqual({ value: 1, count: 1 });
 
     expect(
       schema.parse({
