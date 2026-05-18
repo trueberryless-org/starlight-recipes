@@ -50,13 +50,30 @@ export async function getSidebarRecipeEntries(locale: Locale) {
   const entries = await getRecipeEntries(locale);
 
   const featured: StarlightRecipeEntry[] = [];
+  const popular: StarlightRecipeEntry[] = [];
+  const popularCandidates: StarlightRecipeEntry[] = [];
+
   for (const entry of entries) {
     if (entry.data.featured) {
       featured.push(entry);
+    } else {
+      popularCandidates.push(entry);
     }
   }
 
-  return { featured };
+  const entriesWithRatings = popularCandidates
+    .filter((entry) => entry.data.rating !== undefined)
+    .map((entry) => ({
+      entry,
+      rating: entry.data.rating.value,
+    }))
+    .toSorted((a, b) => b.rating - a.rating);
+
+  for (const { entry } of entriesWithRatings) {
+    popular.push(entry);
+  }
+
+  return { featured, popular: popular.slice(0, config.popularRecipeCount) };
 }
 
 export async function getRecipeEntry(

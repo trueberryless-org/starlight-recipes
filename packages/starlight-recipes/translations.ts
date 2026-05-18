@@ -37,6 +37,7 @@ export const Translations = {
     "starlightRecipes.sidebar.authors": "Authors",
     "starlightRecipes.sidebar.exploreAll": "Explore all recipes",
     "starlightRecipes.sidebar.featured": "Featured recipes",
+    "starlightRecipes.sidebar.popular": "Popular recipes",
     "starlightRecipes.sidebar.tags": "Tags",
     "starlightRecipes.tags.count_one":
       "{{count}} recipe with the tag “{{tag}}”",
@@ -101,6 +102,7 @@ export const Translations = {
     "starlightRecipes.sidebar.authors": "Autoren",
     "starlightRecipes.sidebar.exploreAll": "Alle Rezepte entdecken",
     "starlightRecipes.sidebar.featured": "Empfohlene Rezepte",
+    "starlightRecipes.sidebar.popular": "Beliebte Rezepte",
     "starlightRecipes.sidebar.tags": "Stichwörter",
     "starlightRecipes.tags.count_one":
       "{{count}} Rezept mit dem Stichwort „{{tag}}“",

@@ -1,0 +1,76 @@
+---
+import type { StarlightRecipesRating } from "../../schema";
+
+interface Props {
+  rating: StarlightRecipesRating;
+}
+
+const { rating } = Astro.props;
+---
+
+<div class="rating" aria-label={`${rating.value.toFixed(1)} out of 5 stars`}>
+  <span class="stars" style={`--rating: ${rating.value};`} aria-hidden="true">
+    <span class="empty">★★★★★</span>
+    <span class="filled">★★★★★</span>
+  </span>
+  <span class="value">{rating.value.toFixed(1)}</span>
+  <span class="count">({rating.count})</span>
+</div>
+
+<style>
+  .rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--sl-color-text);
+    font-size: var(--sl-text-sm);
+    font-weight: 600;
+  }
+
+  .stars {
+    display: inline-grid;
+    position: relative;
+    line-height: 1;
+    letter-spacing: 0.1em;
+  }
+
+  .empty,
+  .filled {
+    grid-area: 1 / 1;
+  }
+
+  .empty {
+    color: var(--sl-color-gray-3);
+  }
+
+  .filled {
+    color: #f7c948;
+    overflow: hidden;
+    width: calc(var(--rating) / 5 * 100%);
+    white-space: nowrap;
+  }
+
+  .count {
+    color: var(--sl-color-gray-3);
+    font-weight: 500;
+  }
+
+  @media print {
+    .rating {
+      color: #000;
+      font-size: 0.75rem;
+    }
+
+    .empty {
+      color: #999;
+    }
+
+    .filled {
+      color: #000;
+    }
+
+    .count {
+      color: #666;
+    }
+  }
+</style>

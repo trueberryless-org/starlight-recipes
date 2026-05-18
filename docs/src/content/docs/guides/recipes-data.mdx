@@ -51,6 +51,14 @@ This can be useful for example to create a widget that lists recently published 
         <li>
           <a href={recipe.href}>{recipe.title}</a>
           <em>({recipe.createdAt?.toLocaleDateString() ?? "Unknown date"})</em>
+          {
+            recipe.rating ? (
+              <span>
+                {" "}
+                — ⭐ {recipe.rating.value} ({recipe.rating.count})
+              </span>
+            ) : null
+          }
         </li>
       ))
   }
@@ -108,6 +116,10 @@ Here is a summary of the whole type of the object:
     updatedAt: Date | undefined;
     draft: boolean;
     featured: boolean;
+    rating: {
+      value: number;
+      count: number;
+    } | undefined;
     cover: {
       alt: string;
       image: ImageMetadata | string;
@@ -245,6 +257,16 @@ Draft recipes are only visible in development mode.
 <DocField
     description="Whether the recipe is featured."
     links={[{ label: "featured", href: "/guides/frontmatter#featured" }]}
+    direction="upstream"
+/>
+
+#### `rating`
+
+**Type:** `{ value: number; count: number } | undefined`
+
+<DocField
+    description="The static rating information of the recipe."
+    links={[{ label: "rating", href: "/guides/frontmatter#rating" }]}
     direction="upstream"
 />
 
