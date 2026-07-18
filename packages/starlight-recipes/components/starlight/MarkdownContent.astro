@@ -21,8 +21,7 @@ if (!isAnyRecipePage(id)) {
 const { entry, nextLink, prevLink } = await getRecipeEntry(id, locale);
 
 const video = entry.data.video as
-  | import("../../libs/video").VideoFrontmatterProcessed
-  | undefined;
+  import("../../libs/video").VideoFrontmatterProcessed | undefined;
 
 const videoUrl = video?.url;
 const cardTitle = video?.name ?? entry.data.title;
