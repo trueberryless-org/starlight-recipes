@@ -148,9 +148,7 @@ export async function normalizeVideoInFile(filePath: string): Promise<void> {
   const parsed = matter(raw);
 
   const current = parsed.data.video as
-    | string
-    | VideoFrontmatterProcessed
-    | undefined;
+    string | VideoFrontmatterProcessed | undefined;
 
   if (!current) {
     return;

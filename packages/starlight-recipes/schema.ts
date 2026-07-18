@@ -422,8 +422,7 @@ export type StarlightRecipesRating = z.infer<typeof ratingSchema>;
 
 // Runtime/frontmatter type used by the plugin and consumers.
 export type StarlightRecipesVideoFrontmatter =
-  | StarlightRecipesVideoProcessed
-  | undefined;
+  StarlightRecipesVideoProcessed | undefined;
 
 export type StarlightRecipesFrontmatter = Omit<
   RawFrontmatterSchema,
