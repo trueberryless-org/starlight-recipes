@@ -8,7 +8,7 @@
     "recipe",
     "astro"
   ],
-  "homepage": "https://starlight-recipes.trueberryless.org",
+  "homepage": "https://starlight-recipes.netlify.app/",
   "bugs": {
     "url": "https://github.com/trueberryless-org/starlight-recipes/issues"
   },
@@ -18,7 +18,7 @@
     "directory": "packages/starlight-recipes"
   },
   "license": "MIT",
-  "author": "trueberryless <trueberryless@gmail.com> (https://trueberryless.org)",
+  "author": "trueberryless <trueberryless@gmail.com> (https://felixs.dev)",
   "sideEffects": false,
   "type": "module",
   "exports": {
