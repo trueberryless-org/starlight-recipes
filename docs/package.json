@@ -23,14 +23,14 @@
     "start": "astro dev"
   },
   "dependencies": {
-    "@astrojs/node": "^10.1.1",
-    "@astrojs/starlight": "^0.39.2",
-    "@expressive-code/plugin-collapsible-sections": "^0.42.0",
-    "astro": "^6.3.5",
+    "@astrojs/node": "^10.1.4",
+    "@astrojs/starlight": "^0.41.7",
+    "@expressive-code/plugin-collapsible-sections": "^0.44.1",
+    "astro": "^6.4.8",
     "github-slugger": "^2.0.0",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.3",
     "starlight-contributor-list": "^0.4.0",
-    "starlight-links-validator": "^0.24.0",
+    "starlight-links-validator": "^0.25.3",
     "starlight-recipes": "workspace:*"
   },
   "packageManager": "pnpm@11.1.2",
