@@ -16,36 +16,32 @@ const isImageMetadata = typeof image !== "string";
 ---
 
 <figure class={featured ? "featured" : ""}>
-  {
-    isImageMetadata ? (
-      <Image
-        class="sl-recipes-cover-image"
-        alt={cover.alt}
-        src={image}
-        loading={loading}
-        style={{ aspectRatio: aspectRatio }}
-      />
-    ) : (
-      <img
-        class="sl-recipes-cover-image"
-        alt={cover.alt}
-        src={image}
-        loading={loading}
-        style={{ aspectRatio: aspectRatio }}
-      />
-    )
-  }
-  {
-    featured && (
-      <div class="featured-badge">
-        <span class="shiny-text">
-          {Astro.locals.t("starlightRecipes.recipe.featured")}
-        </span>
-        <div class="corner-cut top-left" />
-        <div class="corner-cut bottom-right" />
-      </div>
-    )
-  }
+  {isImageMetadata ? (
+    <Image
+      class="sl-recipes-cover-image"
+      alt={cover.alt}
+      src={image}
+      loading={loading}
+      style={{ aspectRatio: aspectRatio }}
+    />
+  ) : (
+    <img
+      class="sl-recipes-cover-image"
+      alt={cover.alt}
+      src={image}
+      loading={loading}
+      style={{ aspectRatio: aspectRatio }}
+    />
+  )}
+  {featured && (
+    <div class="featured-badge">
+      <span class="shiny-text">
+        {Astro.locals.t("starlightRecipes.recipe.featured")}
+      </span>
+      <div class="corner-cut top-left" />
+      <div class="corner-cut bottom-right" />
+    </div>
+  )}
 </figure>
 
 <style>

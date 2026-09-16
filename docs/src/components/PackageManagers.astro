@@ -19,33 +19,29 @@ const DEFAULT_MANAGER = "npm";
 <package-managers class="installer-wrapper not-prose not-content">
   <div class="controls">
     <div class="selector">
-      {
-        managers.map((m) => (
-          <button
-            class="pill"
-            type="button"
-            data-value={m.id}
-            data-default={m.id === DEFAULT_MANAGER}
-          >
-            {m.id}
-          </button>
-        ))
-      }
+      {managers.map((m) => (
+        <button
+          class="pill"
+          type="button"
+          data-value={m.id}
+          data-default={m.id === DEFAULT_MANAGER}
+        >
+          {m.id}
+        </button>
+      ))}
     </div>
   </div>
 
   <div class="code-stack">
-    {
-      managers.map((m) => (
-        <div
-          class="command-variant"
-          data-id={m.id}
-          data-default={m.id === DEFAULT_MANAGER}
-        >
-          <Code code={m.cmd} lang="sh" />
-        </div>
-      ))
-    }
+    {managers.map((m) => (
+      <div
+        class="command-variant"
+        data-id={m.id}
+        data-default={m.id === DEFAULT_MANAGER}
+      >
+        <Code code={m.cmd} lang="sh" />
+      </div>
+    ))}
   </div>
 </package-managers>
 
