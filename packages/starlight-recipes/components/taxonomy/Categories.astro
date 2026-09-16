@@ -14,8 +14,6 @@ const { entry, locale } = Astro.props;
 const category = getEntryCategory(entry);
 ---
 
-{
-  category && (
-    <Pill slug={`/category/${category.slug}`} label={category.label} {locale} />
-  )
-}
+{category && (
+  <Pill slug={`/category/${category.slug}`} label={category.label} {locale} />
+)}

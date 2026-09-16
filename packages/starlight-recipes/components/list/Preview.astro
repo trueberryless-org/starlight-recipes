@@ -26,36 +26,32 @@ const headingId = `recipe-title-${entry.id.replace(/[^a-zA-Z0-9]/g, "-")}`;
   aria-labelledby={headingId}
 >
   <article class="preview-card">
-    {
-      entry.data.cover && (
-        <div class="cover-wrapper">
-          <Cover
-            cover={entry.data.cover}
-            aspectRatio="16/9"
-            featured={entry.data.featured ?? false}
-          />
-        </div>
-      )
-    }
+    {entry.data.cover && (
+      <div class="cover-wrapper">
+        <Cover
+          cover={entry.data.cover}
+          aspectRatio="16/9"
+          featured={entry.data.featured ?? false}
+        />
+      </div>
+    )}
 
     <div class="card-content">
       {!bigPreview && <h2 id={headingId}>{entry.data.title}</h2>}
-      {
-        bigPreview && (
-          <div class="big-preview-meta">
-            <div class="space-between">
-              <h2 id={headingId}>{entry.data.title}</h2>
-            </div>
-            <Authors entry={entry} />
-
-            {entry.data.description && (
-              <div class="sl-markdown-content description">
-                {entry.data.description}
-              </div>
-            )}
+      {bigPreview && (
+        <div class="big-preview-meta">
+          <div class="space-between">
+            <h2 id={headingId}>{entry.data.title}</h2>
           </div>
-        )
-      }
+          <Authors entry={entry} />
+
+          {entry.data.description && (
+            <div class="sl-markdown-content description">
+              {entry.data.description}
+            </div>
+          )}
+        </div>
+      )}
 
       <div class="blobs-wrapper">
         <Flexbox>

@@ -13,8 +13,6 @@ const { entry, locale } = Astro.props;
 const cuisine = resolveCuisine(entry.data.cuisine, locale);
 ---
 
-{
-  cuisine && (
-    <Pill slug={`/cuisine/${cuisine.slug}`} label={cuisine.label} {locale} />
-  )
-}
+{cuisine && (
+  <Pill slug={`/cuisine/${cuisine.slug}`} label={cuisine.label} {locale} />
+)}
