@@ -15,22 +15,20 @@ const tags = getEntryTags(entry);
 const uniqueId = `tags-${entry.id.replace(/[^a-zA-Z0-9]/g, "-")}`;
 ---
 
-{
-  tags.length > 0 ? (
-    <div class="container">
-      <span class="tags-label" id={uniqueId}>
-        {Astro.locals.t("starlightRecipes.recipe.tags")}
-      </span>
-      <ul aria-labelledby={uniqueId}>
-        {tags.map((tag) => (
-          <li>
-            <Pill slug={`/tags/${tag.slug}`} label={tag.label} {locale} />
-          </li>
-        ))}
-      </ul>
-    </div>
-  ) : null
-}
+{tags.length > 0 ? (
+  <div class="container">
+    <span class="tags-label" id={uniqueId}>
+      {Astro.locals.t("starlightRecipes.recipe.tags")}
+    </span>
+    <ul aria-labelledby={uniqueId}>
+      {tags.map((tag) => (
+        <li>
+          <Pill slug={`/tags/${tag.slug}`} label={tag.label} {locale} />
+        </li>
+      ))}
+    </ul>
+  </div>
+) : null}
 
 <style>
   .container {

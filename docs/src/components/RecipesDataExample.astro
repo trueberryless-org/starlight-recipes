@@ -1,21 +1,19 @@
 <ul>
-  {
-    Astro.locals.starlightRecipes.recipes
-      .toSorted(
-        (a, b) => (b.createdAt?.getTime() ?? 0) - (a.createdAt?.getTime() ?? 0)
-      )
-      .slice(0, 5)
-      .map((recipe) => (
-        <li>
-          <a href={recipe.href}>{recipe.title}</a>
-          <em>({recipe.createdAt?.toLocaleDateString() ?? "Unknown date"})</em>
-          {recipe.rating ? (
-            <span>
-              {" "}
-              — ⭐ {recipe.rating.value} ({recipe.rating.count})
-            </span>
-          ) : null}
-        </li>
-      ))
-  }
+  {Astro.locals.starlightRecipes.recipes
+    .toSorted(
+      (a, b) => (b.createdAt?.getTime() ?? 0) - (a.createdAt?.getTime() ?? 0)
+    )
+    .slice(0, 5)
+    .map((recipe) => (
+      <li>
+        <a href={recipe.href}>{recipe.title}</a>
+        <em>({recipe.createdAt?.toLocaleDateString() ?? "Unknown date"})</em>
+        {recipe.rating ? (
+          <span>
+            {" "}
+            — ⭐ {recipe.rating.value} ({recipe.rating.count})
+          </span>
+        ) : null}
+      </li>
+    ))}
 </ul>

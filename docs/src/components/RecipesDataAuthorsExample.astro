@@ -10,10 +10,8 @@ const authorList = new Intl.ListFormat(Astro.currentLocale, {
 }).format(authorNames);
 ---
 
-{
-  authorNames.length > 0 && (
-    <p>
-      <b>Authors:</b>&nbsp;{authorList}
-    </p>
-  )
-}
+{authorNames.length > 0 && (
+  <p>
+    <b>Authors:</b>&nbsp;{authorList}
+  </p>
+)}
