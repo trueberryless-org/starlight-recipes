@@ -1,5 +1,25 @@
 # starlight-recipes
 
+## 0.4.0
+
+### Minor Changes
+
+- [#53](https://github.com/trueberryless-org/starlight-recipes/pull/53) [`ab76d6b`](https://github.com/trueberryless-org/starlight-recipes/commit/ab76d6b94cbe0c9b8fb628e9ec195418964e94fe) Thanks [@trueberryless](https://github.com/trueberryless)! - Adds support for Astro v7, drops support for Astro v6.
+  
+  ⚠️ **BREAKING CHANGE:** The minimum supported version of Starlight is now `0.42.0`.
+  
+  Please follow the [upgrade guide](https://github.com/withastro/starlight/releases/tag/%40astrojs%2Fstarlight%400.42.0) to update your project.
+
+### Patch Changes
+
+- [#53](https://github.com/trueberryless-org/starlight-recipes/pull/53) [`ab76d6b`](https://github.com/trueberryless-org/starlight-recipes/commit/ab76d6b94cbe0c9b8fb628e9ec195418964e94fe) Thanks [@trueberryless](https://github.com/trueberryless)! - Fixes a build error when a global author with a local `picture` uses a configuration key that is not a valid JavaScript identifier, e.g. `john-doe`, or has a name containing double quotes.
+
+- [#53](https://github.com/trueberryless-org/starlight-recipes/pull/53) [`ab76d6b`](https://github.com/trueberryless-org/starlight-recipes/commit/ab76d6b94cbe0c9b8fb628e9ec195418964e94fe) Thanks [@trueberryless](https://github.com/trueberryless)! - Fixes empty `yield.additional` entries being rendered as `undefined undefined` in the ingredients list and in the recipe structured data.
+
+- [#53](https://github.com/trueberryless-org/starlight-recipes/pull/53) [`ab76d6b`](https://github.com/trueberryless-org/starlight-recipes/commit/ab76d6b94cbe0c9b8fb628e9ec195418964e94fe) Thanks [@trueberryless](https://github.com/trueberryless)! - Removes the `tinyduration`, `@astrojs/markdown-remark`, `@astrojs/mdx`, `astro-remote`, `mdast-util-mdx-expression`, and `unist-util-visit` dependencies and refactors internal logic to small pure functions for improved maintainability.
+
+- [#53](https://github.com/trueberryless-org/starlight-recipes/pull/53) [`ab76d6b`](https://github.com/trueberryless-org/starlight-recipes/commit/ab76d6b94cbe0c9b8fb628e9ec195418964e94fe) Thanks [@trueberryless](https://github.com/trueberryless)! - Fixes recipe detection, local author pictures, and YouTube video metadata preprocessing for projects located in a directory whose path contains spaces or other characters that need to be URL-encoded.
+
 ## 0.3.0
 
 ### Minor Changes
