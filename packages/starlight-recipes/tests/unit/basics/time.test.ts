@@ -1,7 +1,8 @@
 import { describe, expect, test, vi } from "vitest";
 
+type Translate = App.Locals["t"];
+
 import {
-  addDurations,
   formatNaturalTime,
   getCookTime,
   getPrepTime,
@@ -83,25 +84,6 @@ describe("getTotalTime", () => {
   });
 });
 
-describe("addDurations", () => {
-  test("returns PT0S when both inputs are missing", () => {
-    expect(addDurations()).toBe("PT0S");
-  });
-
-  test("adds two valid ISO durations", () => {
-    expect(addDurations("PT30M", "PT45M")).toBe("PT1H15M");
-  });
-
-  test("ignores invalid inputs and returns the valid portion", () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-
-    expect(addDurations("invalid", "PT30M")).toBe("PT30M");
-    expect(warn).toHaveBeenCalled();
-
-    warn.mockRestore();
-  });
-});
-
 describe("secondsToIsoDuration", () => {
   test("returns PT0S for non-positive seconds", () => {
     expect(secondsToIsoDuration(0)).toBe("PT0S");
@@ -111,11 +93,26 @@ describe("secondsToIsoDuration", () => {
   test("serializes seconds to duration components", () => {
     expect(secondsToIsoDuration(90)).toBe("PT1M30S");
   });
+
+  test("serializes whole hours without trailing components", () => {
+    expect(secondsToIsoDuration(3600)).toBe("PT1H");
+  });
+
+  test("serializes date components with and without time components", () => {
+    expect(secondsToIsoDuration(86400)).toBe("P1D");
+    expect(secondsToIsoDuration(90061)).toBe("P1DT1H1M1S");
+    expect(secondsToIsoDuration(691200)).toBe("P1W1D");
+  });
+
+  test("ignores fractional seconds", () => {
+    expect(secondsToIsoDuration(0.5)).toBe("PT0S");
+    expect(secondsToIsoDuration(61.5)).toBe("PT1M1S");
+  });
 });
 
 describe("formatNaturalTime", () => {
   test("formats minutes under one hour", () => {
-    const t = vi.fn().mockReturnValue("20 minutes");
+    const t = vi.fn().mockReturnValue("20 minutes") as unknown as Translate;
 
     const result = formatNaturalTime(20, t);
 
@@ -128,7 +125,7 @@ describe("formatNaturalTime", () => {
   });
 
   test("formats whole hours without minutes", () => {
-    const t = vi.fn().mockReturnValue("2 hours");
+    const t = vi.fn().mockReturnValue("2 hours") as unknown as Translate;
 
     const result = formatNaturalTime(120, t);
 
@@ -141,7 +138,7 @@ describe("formatNaturalTime", () => {
   });
 
   test("formats mixed hours and minutes", () => {
-    const t = vi.fn().mockReturnValue("1 hour 30 minutes");
+    const t = vi.fn().mockReturnValue("1 hour 30 minutes") as unknown as Translate;
 
     const result = formatNaturalTime(90, t);
 

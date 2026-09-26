@@ -10,6 +10,7 @@ import Ingredients from "../content/Ingredients.astro";
 import ShowcaseMediaCard from "../ui/ShowcaseMediaCard.astro";
 import RecipeStats from "../content/RecipeStats.astro";
 import { getRecipeEntry } from "../../libs/content";
+import { getRecipeVideo } from "../../libs/media";
 import { isAnyRecipePage } from "../../libs/page";
 
 const { id, locale } = Astro.locals.starlightRoute;
@@ -19,12 +20,7 @@ if (!isAnyRecipePage(id)) {
 }
 
 const { entry, nextLink, prevLink } = await getRecipeEntry(id, locale);
-
-const video = entry.data.video as
-  import("../../libs/video").VideoFrontmatterProcessed | undefined;
-
-const videoUrl = video?.url;
-const cardTitle = video?.name ?? entry.data.title;
+const video = getRecipeVideo(entry);
 ---
 
 <Default>
@@ -36,13 +32,11 @@ const cardTitle = video?.name ?? entry.data.title;
 
   <slot />
 
-  {
-    videoUrl && (
-      <ShowcaseMediaCard title={cardTitle}>
-        <YouTube id={videoUrl} />
-      </ShowcaseMediaCard>
-    )
-  }
+  {video && (
+    <ShowcaseMediaCard title={video.title}>
+      <YouTube id={video.url} />
+    </ShowcaseMediaCard>
+  )}
   <Footer {entry} {locale} {nextLink} {prevLink} />
 </Default>
 

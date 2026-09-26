@@ -1,7 +1,7 @@
 ---
-import type { StarlightRecipeEntry } from "../../libs/types";
 import type { Locale } from "../../libs/i18n";
-import { getPathWithLocale, getRelativeUrl } from "../../libs/page";
+import { getEntryElementId, getRecipeUrl } from "../../libs/page";
+import type { StarlightRecipeEntry } from "../../libs/types";
 
 import Authors from "./../metadata/Authors.astro";
 import Cover from "../metadata/Cover.astro";
@@ -16,46 +16,41 @@ interface Props {
 }
 
 const { entry, locale, bigPreview } = Astro.props;
-const url = getRelativeUrl(`/${getPathWithLocale(entry.id, locale)}`);
-const headingId = `recipe-title-${entry.id.replace(/[^a-zA-Z0-9]/g, "-")}`;
+const headingId = getEntryElementId("recipe-title", entry.id);
 ---
 
 <a
-  href={url}
-  class={`card-link ${bigPreview ? "big" : "small"}`}
+  href={getRecipeUrl(entry.id, locale)}
+  class:list={["card-link", bigPreview ? "big" : "small"]}
   aria-labelledby={headingId}
 >
   <article class="preview-card">
-    {
-      entry.data.cover && (
-        <div class="cover-wrapper">
-          <Cover
-            cover={entry.data.cover}
-            aspectRatio="16/9"
-            featured={entry.data.featured ?? false}
-          />
-        </div>
-      )
-    }
+    {entry.data.cover && (
+      <div class="cover-wrapper">
+        <Cover
+          cover={entry.data.cover}
+          aspectRatio="16/9"
+          featured={entry.data.featured ?? false}
+        />
+      </div>
+    )}
 
     <div class="card-content">
       {!bigPreview && <h2 id={headingId}>{entry.data.title}</h2>}
-      {
-        bigPreview && (
-          <div class="big-preview-meta">
-            <div class="space-between">
-              <h2 id={headingId}>{entry.data.title}</h2>
-            </div>
-            <Authors entry={entry} />
-
-            {entry.data.description && (
-              <div class="sl-markdown-content description">
-                {entry.data.description}
-              </div>
-            )}
+      {bigPreview && (
+        <div class="big-preview-meta">
+          <div class="space-between">
+            <h2 id={headingId}>{entry.data.title}</h2>
           </div>
-        )
-      }
+          <Authors entry={entry} />
+
+          {entry.data.description && (
+            <div class="sl-markdown-content description">
+              {entry.data.description}
+            </div>
+          )}
+        </div>
+      )}
 
       <div class="blobs-wrapper">
         <Flexbox>

@@ -1,12 +1,10 @@
-import node from "@astrojs/node";
 import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 import starlightLinksValidator from "starlight-links-validator";
 import starlightRecipes from "starlight-recipes";
 
 export default defineConfig({
-  site: "https://starlight-recipes.trueberryless.org",
-  ...(process.env.PLAYWRIGHT ? { adapter: node({ mode: "standalone" }) } : {}),
+  site: "https://starlight-recipes.netlify.app",
   integrations: [
     starlight({
       title: "Starlight Recipes",
@@ -17,7 +15,7 @@ export default defineConfig({
           label: "GitHub",
         },
         {
-          href: "https://bsky.app/profile/trueberryless.org",
+          href: "https://bsky.app/profile/felixs.dev",
           icon: "blueSky",
           label: "BlueSky",
         },
@@ -48,7 +46,7 @@ export default defineConfig({
               name: "Felix Schneider",
               title: "trueberryless",
               picture: "./src/assets/trueberryless.png",
-              url: "https://trueberryless.org",
+              url: "https://felixs.dev",
             },
             calmChef: {
               name: "Ms. Glenda",

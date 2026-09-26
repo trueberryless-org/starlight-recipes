@@ -1,11 +1,5 @@
 import type { StarlightRecipeEntry } from "./types";
 
-/**
- * Organizes recipe entries into a grid layout with a row size for regular items.
- * A featured item always occupies a full row.
- * If a regular item is about to be left alone in a row (and it's not the end of the list),
- * we swap it with the subsequent featured item to maintain row density.
- */
 export function getSmartGridData(
   entries: StarlightRecipeEntry[],
   rowSize: number = 2
@@ -67,4 +61,20 @@ export function getSmartGridData(
     regular,
     smartEntries,
   };
+}
+
+export function getGridCells(entries: StarlightRecipeEntry[]): GridCell[] {
+  const { smartEntries } = getSmartGridData(entries);
+
+  return smartEntries.map((entry) => ({
+    entry,
+    isFeatured: entry.data.featured ?? false,
+    isFullWidth: entry.data.featured === true || smartEntries.length <= 1,
+  }));
+}
+
+interface GridCell {
+  entry: StarlightRecipeEntry;
+  isFeatured: boolean;
+  isFullWidth: boolean;
 }

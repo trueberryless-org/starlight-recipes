@@ -6,10 +6,10 @@ Starlight plugin to create a recipe website.
 
 Want to get started immediately?
 
-Check out the `starlight-recipes` getting started guide.
+Check out the [`starlight-recipes` getting started guide](https://starlight-recipes.netlify.app/getting-started/).
 
 ## License
 
-Licensed under the MIT license, Copyright © trueberryless.
+Licensed under the MIT License, Copyright © trueberryless.
 
 See [LICENSE](https://github.com/trueberryless-org/starlight-recipes/blob/main/LICENSE) for more information.

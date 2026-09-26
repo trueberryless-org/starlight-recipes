@@ -11,7 +11,7 @@ const createEntry = (id: string, featured: boolean): any => ({
 
 describe("getSmartGridData", () => {
   test("throws when rowSize is not a positive integer", () => {
-    expect(() => getSmartGridData([], 0)).toThrowError(
+    expect(() => getSmartGridData([], 0)).toThrow(
       "rowSize must be a positive integer"
     );
   });

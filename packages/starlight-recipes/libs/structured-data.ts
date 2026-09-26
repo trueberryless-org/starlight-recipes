@@ -1,22 +1,28 @@
 import type { APIContext } from "astro";
+import type { ImageMetadata } from "astro";
 import { getImage } from "astro:assets";
 import type {
+  AggregateRating,
   HowToStep,
   ItemList,
   Person,
   Recipe,
+  VideoObject,
   WithContext,
 } from "schema-dts";
 import context from "virtual:starlight-recipes/context";
 
-import type { StarlightRecipesFrontmatter } from "../schema";
+import type {
+  StarlightRecipesFrontmatter,
+  StarlightRecipesVideoProcessed,
+} from "../schema";
 import { getAllAuthors, getEntryAuthors } from "./authors";
 import { getRecipeEntries, getRecipeEntry } from "./content";
 import { getAllCuisines, resolveCuisine } from "./cuisines";
 import type { Locale } from "./i18n";
+import { getAdditionalYields } from "./ingredients";
 import {
-  getPathWithLocale,
-  getRelativeUrl,
+  getRecipeUrl,
   isAnyRecipeRootPage,
   isRecipeAuthorPage,
   isRecipeCuisinePage,
@@ -27,10 +33,10 @@ import {
   stripLeadingSlash,
   stripTrailingSlash,
 } from "./path";
+import { type Rating, getRating } from "./rating";
 import { getAllTags } from "./tags";
 import { getCookTime, getPrepTime, getTotalTime } from "./time";
 import type { StarlightRecipeEntry } from "./types";
-import type { VideoFrontmatterProcessed } from "./video";
 
 export async function getHead(apiContext: APIContext): Promise<HeadConfig> {
   const { starlightRoute } = apiContext.locals;
@@ -88,9 +94,7 @@ export async function getRecipesHead(
     "@type": "ItemList",
     name: listName,
     itemListElement: filteredEntries.map((entry, index) => {
-      const relativeUrl = getRelativeUrl(
-        `/${getPathWithLocale(entry.id, locale)}`
-      );
+      const relativeUrl = getRecipeUrl(entry.id, locale);
       const absoluteUrl = siteUrl ? `${siteUrl}${relativeUrl}` : relativeUrl;
 
       return {
@@ -110,14 +114,6 @@ export async function getRecipesHead(
   return getRecipeHeadConfig(recipeWithContext);
 }
 
-/**
- * Generates the SEO head configuration and [Structured Data](https://schema.org/Recipe)
- * for a recipe page.
- * * Complies with the [Google Search Recipe Guidelines](https://developers.google.com/search/docs/appearance/structured-data/recipe).
- * @param slug - The unique identifier/URL segment for the recipe.
- * @param locale - The target language/region for content localization.
- * @returns A promise resolving to the {@link HeadConfig} for the page metadata.
- */
 export async function getRecipeHead(
   slug: string,
   locale: Locale
@@ -211,8 +207,9 @@ export async function getRecipeHead(
 
   if (data.yield) {
     const primaryYield = data.yield.servings.toString();
-    const additional =
-      data.yield.additional?.map((y) => `${y.amount} ${y.unit}`.trim()) ?? [];
+    const additional = getAdditionalYields(data.yield.additional).map(
+      ({ label }) => label
+    );
 
     recipeStructuredData.recipeYield = [primaryYield, ...additional];
 
@@ -223,33 +220,13 @@ export async function getRecipeHead(
       };
   }
 
-  if (data.rating) {
-    recipeStructuredData.aggregateRating = {
-      "@type": "AggregateRating",
-      ratingValue: data.rating.value,
-      ratingCount: data.rating.count,
-    } as any;
+  const rating = getRating(data.rating);
+  if (rating) {
+    recipeStructuredData.aggregateRating = getAggregateRating(rating);
   }
 
-  const v = data.video as VideoFrontmatterProcessed | undefined;
-
-  if (v) {
-    recipeStructuredData.video = {
-      "@type": "VideoObject",
-      name: v.name,
-      description: v.description,
-      thumbnailUrl: v.thumbnailUrl,
-      embedUrl: v.embedUrl ?? undefined,
-      uploadDate: v.uploadDate,
-      duration: v.duration,
-      interactionStatistic: v.userInteractionCount
-        ? {
-            "@type": "InteractionCounter",
-            interactionType: { "@type": "WatchAction" },
-            userInteractionCount: v.userInteractionCount,
-          }
-        : undefined,
-    } as any;
+  if (data.video) {
+    recipeStructuredData.video = getVideoObject(data.video);
   }
 
   const recipeWithContext: WithContext<Recipe> = {
@@ -297,7 +274,7 @@ async function getRecommendedImages(
 }
 
 async function getInstructionStepImageUrl(
-  image: any
+  image: ImageMetadata | string | undefined
 ): Promise<string | undefined> {
   if (!image) return undefined;
 
@@ -315,16 +292,41 @@ async function getInstructionStepImageUrl(
     return resolveImageUrl(result.src);
   }
 
-  const typedImage = image as { width?: number; height?: number };
-  const { width, height } = typedImage;
   const result = await getImage({
-    src: image as any,
-    width: width ?? 1000,
-    height,
+    src: image,
+    width: image.width,
+    height: image.height,
     format: "webp",
   });
 
   return resolveImageUrl(result.src);
+}
+
+function getAggregateRating(rating: Rating): AggregateRating {
+  return {
+    "@type": "AggregateRating",
+    ratingValue: rating.value,
+    ratingCount: rating.count,
+  };
+}
+
+function getVideoObject(video: StarlightRecipesVideoProcessed): VideoObject {
+  return {
+    "@type": "VideoObject",
+    name: video.name,
+    ...(video.description && { description: video.description }),
+    thumbnailUrl: video.thumbnailUrl,
+    ...(video.embedUrl && { embedUrl: video.embedUrl }),
+    uploadDate: video.uploadDate,
+    ...(video.duration && { duration: video.duration }),
+    ...(video.userInteractionCount && {
+      interactionStatistic: {
+        "@type": "InteractionCounter",
+        interactionType: { "@type": "WatchAction" },
+        userInteractionCount: video.userInteractionCount,
+      },
+    }),
+  };
 }
 
 function mapAuthors(

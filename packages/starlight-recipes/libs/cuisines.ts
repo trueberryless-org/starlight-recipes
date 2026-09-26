@@ -1,10 +1,10 @@
 import type { GetStaticPathsResult } from "astro";
 import { slug as githubSlugger } from "github-slugger";
 import config from "virtual:starlight-recipes/config";
-import starlightConfig from "virtual:starlight/user-config";
 
 import { getRecipeEntries } from "./content";
-import { DefaultLocale, type Locale } from "./i18n";
+import type { Locale } from "./i18n";
+import { getLocales } from "./locales";
 import { getPathWithLocale } from "./page";
 import type { StarlightRecipeEntry } from "./types";
 
@@ -43,9 +43,7 @@ export const resolveCuisine = (
         isCountry: true,
       };
     }
-  } catch (e) {
-    // Intl.DisplayNames may throw for unsupported locales/regions; fall back to raw input
-  }
+  } catch {}
 
   return {
     slug: githubSlugger(input),
@@ -81,21 +79,11 @@ export async function getAllCuisines(
 export async function getCuisinesStaticPaths() {
   const paths = [];
 
-  if (starlightConfig.isMultilingual) {
-    for (const localeKey of Object.keys(starlightConfig.locales)) {
-      const locale = localeKey === "root" ? undefined : localeKey;
-
-      const entryCuisines = await getAllCuisines(locale);
-
-      for (const [slug, { entries, label }] of entryCuisines.entries()) {
-        paths.push(getCuisinesStaticPath(entries, slug, label, locale));
-      }
-    }
-  } else {
-    const entryCuisines = await getAllCuisines(DefaultLocale);
+  for (const locale of getLocales()) {
+    const entryCuisines = await getAllCuisines(locale);
 
     for (const [slug, { entries, label }] of entryCuisines.entries()) {
-      paths.push(getCuisinesStaticPath(entries, slug, label, DefaultLocale));
+      paths.push(getCuisinesStaticPath(entries, slug, label, locale));
     }
   }
 

@@ -3,6 +3,12 @@ import { describe, expect, test, vi, beforeEach } from "vitest";
 const mockContext = vi.hoisted(() => ({
   base: "/",
   trailingSlash: "ignore" as "ignore" | "always" | "never",
+  isMultilingual: false,
+  defaultLocale: {
+    locale: undefined,
+    lang: "en",
+  },
+  locales: {},
 }));
 
 vi.mock("astro:content", () => ({
@@ -32,17 +38,6 @@ vi.mock("virtual:starlight-recipes/context", () => ({
 vi.mock("virtual:starlight-recipes/images", () => ({
   authors: {
     Alice: "/images/alice.png",
-  },
-}));
-
-vi.mock("virtual:starlight/user-config", () => ({
-  default: {
-    isMultilingual: false,
-    defaultLocale: {
-      locale: undefined,
-      lang: "en",
-    },
-    locales: {},
   },
 }));
 

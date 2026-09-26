@@ -20,11 +20,6 @@ vi.mock("virtual:starlight-recipes/context", () => ({
   default: {
     site: "https://example.com",
     trailingSlash: "ignore",
-  },
-}));
-
-vi.mock("virtual:starlight/user-config", () => ({
-  default: {
     isMultilingual: false,
     defaultLocale: {
       locale: undefined,
@@ -133,8 +128,7 @@ vi.mock("../../../libs/content", () => ({
 }));
 
 vi.mock("../../../libs/page", () => ({
-  getRelativeUrl: (path: string) => path,
-  getPathWithLocale: (path: string) => path,
+  getRecipeUrl: (entryId: string) => `/${entryId}`,
   isAnyRecipeRootPage: (slug: string) => slug === "recipes",
   isRecipeTagPage: (slug: string, tag: string) =>
     slug === `recipes/tags/${tag}`,

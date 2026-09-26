@@ -3,11 +3,11 @@ import type { ImageMetadata } from "astro";
 import { slug as githubSlugger } from "github-slugger";
 import config from "virtual:starlight-recipes/config";
 import { authors } from "virtual:starlight-recipes/images";
-import starlightConfig from "virtual:starlight/user-config";
 
 import type { StarlightRecipesAuthor } from "../schema";
 import { getRecipeEntries } from "./content";
-import { DefaultLocale, type Locale } from "./i18n";
+import type { Locale } from "./i18n";
+import { getLocales } from "./locales";
 import { getPathWithLocale, getRelativeUrl } from "./page";
 import type { StarlightRecipeEntry } from "./types";
 
@@ -37,21 +37,11 @@ export async function getAllAuthors(
 export async function getAuthorsStaticPaths() {
   const paths = [];
 
-  if (starlightConfig.isMultilingual) {
-    for (const localeKey of Object.keys(starlightConfig.locales)) {
-      const locale = localeKey === "root" ? undefined : localeKey;
-
-      const entryAuthors = await getAllAuthors(locale);
-
-      for (const [, { author, entries }] of entryAuthors.entries()) {
-        paths.push(getAuthorsStaticPath(entries, author, locale));
-      }
-    }
-  } else {
-    const entryAuthors = await getAllAuthors(DefaultLocale);
+  for (const locale of getLocales()) {
+    const entryAuthors = await getAllAuthors(locale);
 
     for (const [, { author, entries }] of entryAuthors.entries()) {
-      paths.push(getAuthorsStaticPath(entries, author, DefaultLocale));
+      paths.push(getAuthorsStaticPath(entries, author, locale));
     }
   }
 

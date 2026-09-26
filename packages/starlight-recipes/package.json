@@ -1,38 +1,23 @@
 {
   "name": "starlight-recipes",
   "version": "0.3.0",
-  "description": "Starlight plugin to create a recipe website.",
-  "keywords": [
-    "starlight",
-    "plugin",
-    "recipe",
-    "astro"
-  ],
-  "homepage": "https://starlight-recipes.netlify.app/",
-  "bugs": {
-    "url": "https://github.com/trueberryless-org/starlight-recipes/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/trueberryless-org/starlight-recipes.git",
-    "directory": "packages/starlight-recipes"
-  },
   "license": "MIT",
+  "description": "Starlight plugin to create a recipe website.",
   "author": "trueberryless <trueberryless@gmail.com> (https://felixs.dev)",
-  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": "./index.ts",
     "./components/MarkdownContent.astro": "./components/starlight/MarkdownContent.astro",
-    "./overrides/MarkdownContent.astro": "./overrides/MarkdownContent.astro",
-    "./routes/Recipes.astro": "./routes/Recipes.astro",
-    "./routes/Authors.astro": "./routes/Authors.astro",
-    "./routes/Cuisine.astro": "./routes/Cuisine.astro",
-    "./routes/Category.astro": "./routes/Category.astro",
-    "./routes/Tags.astro": "./routes/Tags.astro",
     "./data": "./data.ts",
     "./middleware": "./middleware.ts",
-    "./schema": "./schema.ts"
+    "./overrides/MarkdownContent.astro": "./overrides/MarkdownContent.astro",
+    "./routes/Authors.astro": "./routes/Authors.astro",
+    "./routes/Category.astro": "./routes/Category.astro",
+    "./routes/Cuisine.astro": "./routes/Cuisine.astro",
+    "./routes/Recipes.astro": "./routes/Recipes.astro",
+    "./routes/Tags.astro": "./routes/Tags.astro",
+    "./schema": "./schema.ts",
+    "./package.json": "./package.json"
   },
   "scripts": {
     "test": "pnpm test:unit && pnpm test:e2e",
@@ -40,32 +25,43 @@
     "test:unit": "vitest"
   },
   "dependencies": {
-    "@astrojs/markdown-remark": "^7.1.2",
-    "@astrojs/mdx": "^5.0.6",
     "@distube/ytdl-core": "^4.16.12",
-    "astro-embed": "^0.13.0",
-    "astro-remote": "^0.3.4",
+    "astro-embed": "^0.14.0",
     "github-slugger": "^2.0.0",
     "gray-matter": "^4.0.3",
-    "mdast-util-mdx-expression": "^2.0.1",
-    "schema-dts": "^2.0.0",
-    "tinyduration": "^3.4.1",
-    "unist-util-visit": "^5.1.0"
+    "schema-dts": "^2.0.0"
   },
   "devDependencies": {
-    "@astrojs/starlight": "^0.39.2",
-    "@playwright/test": "^1.60.0",
-    "astro": "^6.3.5",
-    "vitest": "^4.1.6"
+    "@astrojs/starlight": "^0.42.4",
+    "@playwright/test": "^1.63.0",
+    "astro": "^7.3.5",
+    "vitest": "^5.0.2"
   },
   "peerDependencies": {
-    "@astrojs/starlight": ">=0.38",
-    "astro": ">=6.0.0"
+    "@astrojs/starlight": ">=0.42.0"
   },
   "engines": {
-    "node": ">=24.20.0"
+    "node": ">=22.12.0"
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "sideEffects": false,
+  "keywords": [
+    "starlight",
+    "plugin",
+    "recipe",
+    "cooking",
+    "documentation",
+    "astro",
+    "withastro",
+    "astro-integration"
+  ],
+  "homepage": "https://starlight-recipes.netlify.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trueberryless-org/starlight-recipes.git",
+    "directory": "packages/starlight-recipes"
+  },
+  "bugs": "https://github.com/trueberryless-org/starlight-recipes/issues"
 }

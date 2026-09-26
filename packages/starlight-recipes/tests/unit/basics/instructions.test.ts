@@ -14,11 +14,6 @@ vi.mock("virtual:starlight-recipes/config", () => ({
 vi.mock("virtual:starlight-recipes/context", () => ({
   default: {
     trailingSlash: "ignore",
-  },
-}));
-
-vi.mock("virtual:starlight/user-config", () => ({
-  default: {
     isMultilingual: false,
     defaultLocale: {
       locale: undefined,

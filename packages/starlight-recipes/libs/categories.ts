@@ -1,10 +1,10 @@
 import type { GetStaticPathsResult } from "astro";
 import { slug as githubSlugger } from "github-slugger";
 import config from "virtual:starlight-recipes/config";
-import starlightConfig from "virtual:starlight/user-config";
 
 import { getRecipeEntries } from "./content";
-import { DefaultLocale, type Locale } from "./i18n";
+import type { Locale } from "./i18n";
+import { getLocales } from "./locales";
 import { getPathWithLocale } from "./page";
 import type { StarlightRecipeEntry } from "./types";
 
@@ -33,21 +33,11 @@ export async function getAllCategories(
 export async function getCategoriesStaticPaths() {
   const paths = [];
 
-  if (starlightConfig.isMultilingual) {
-    for (const localeKey of Object.keys(starlightConfig.locales)) {
-      const locale = localeKey === "root" ? undefined : localeKey;
-
-      const entryCategories = await getAllCategories(locale);
-
-      for (const [slug, { entries, label }] of entryCategories.entries()) {
-        paths.push(getCategoriesStaticPath(entries, slug, label, locale));
-      }
-    }
-  } else {
-    const entryCategories = await getAllCategories(DefaultLocale);
+  for (const locale of getLocales()) {
+    const entryCategories = await getAllCategories(locale);
 
     for (const [slug, { entries, label }] of entryCategories.entries()) {
-      paths.push(getCategoriesStaticPath(entries, slug, label, DefaultLocale));
+      paths.push(getCategoriesStaticPath(entries, slug, label, locale));
     }
   }
 

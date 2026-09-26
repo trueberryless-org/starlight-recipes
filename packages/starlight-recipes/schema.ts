@@ -1,6 +1,7 @@
-import { AstroError } from "astro/errors";
 import { z } from "astro/zod";
 import type { SchemaContext } from "astro:content";
+
+import { throwPluginError } from "./libs/error";
 
 export const recipesAuthorSchema = z.object({
   /**
@@ -208,12 +209,7 @@ const youtubeUrlSchema = z.url().refine(
  * The video schema as used in frontmatter, allowing either a raw URL or processed metadata.
  */
 const videoFrontmatterSchema = z
-  .union([
-    // Author-facing raw form: just a URL string.
-    youtubeUrlSchema,
-    // Plugin-processed form: flattened VideoObject-like metadata.
-    videoProcessedFrontmatterSchema,
-  ])
+  .union([youtubeUrlSchema, videoProcessedFrontmatterSchema])
   .optional();
 
 export const recipeEntrySchema = ({ image }: SchemaContext) =>
@@ -391,16 +387,12 @@ export const recipeEntrySchema = ({ image }: SchemaContext) =>
  * Returns the Zod schema for a recipe entry, with all top-level fields made optional.
  */
 export function recipesSchema(context: SchemaContext) {
-  // Checking for `context` to provide a better migration error message.
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!context) {
-    throw new AstroError(
+    throwPluginError(
       "Missing recipes schema validation context.",
       `You may need to update your content collections configuration in the \`src/content.config.ts\` file and pass the context to the \`recipesSchema\` function:
 
-\`docs: defineCollection({ loader: docsLoader(), schema: docsSchema({ extend: (context) => recipesSchema(context) }) })\`
-
-If you believe this is a bug, please file an issue at https://github.com/trueberryless-org/starlight-recipes/issues/new/choose`
+\`docs: defineCollection({ loader: docsLoader(), schema: docsSchema({ extend: (context) => recipesSchema(context) }) })\``
     );
   }
 
@@ -420,7 +412,6 @@ export type StarlightRecipesVideoProcessed = z.infer<
 >;
 export type StarlightRecipesRating = z.infer<typeof ratingSchema>;
 
-// Runtime/frontmatter type used by the plugin and consumers.
 export type StarlightRecipesVideoFrontmatter =
   StarlightRecipesVideoProcessed | undefined;
 

@@ -1,65 +1,90 @@
-import astroConfig from "virtual:starlight-recipes/context";
-import starlightConfig from "virtual:starlight/user-config";
+import type { StarlightUserConfig } from "@astrojs/starlight/types";
 
-import { stripLeadingSlash, stripTrailingSlash } from "./path";
+const StarlightDefaultLang = "en";
+const RootLocale = "root";
 
-export const DefaultLocale =
-  starlightConfig.defaultLocale.locale === "root"
-    ? undefined
-    : starlightConfig.defaultLocale.locale;
+export function getI18nContext(
+  starlightConfig: Pick<StarlightUserConfig, "defaultLocale" | "locales">
+): StarlightRecipesI18nContext {
+  const { defaultLocale, locales } = starlightConfig;
+  const localeKeys = Object.keys(locales ?? {});
 
-export function getLangFromLocale(locale: Locale): string {
-  const lang = locale
-    ? starlightConfig.locales?.[locale]?.lang
-    : starlightConfig.locales?.root?.lang;
-  const defaultLang =
-    starlightConfig.defaultLocale.lang ??
-    (starlightConfig.defaultLocale.locale === "root"
-      ? undefined
-      : starlightConfig.defaultLocale.locale);
-  return lang ?? defaultLang ?? "en";
-}
-
-export function getLocaleFromSlug(slug: string): string | undefined {
-  const locales = Object.keys(starlightConfig.locales ?? {});
-  const base = astroConfig?.base || "";
-  const localeIndex = getLocaleIndex(slug, base);
-  const slugSegments = stripLeadingSlash(slug).split("/");
-
-  const possibleLocale = slugSegments[localeIndex];
-
-  return possibleLocale && locales.includes(possibleLocale)
-    ? possibleLocale
-    : undefined;
-}
-
-export function stripLocaleFromSlug(slug: string): string {
-  const locale = getLocaleFromSlug(slug);
-
-  if (!locale) {
-    return slug;
+  if (!locales || !isLocalizedSite(localeKeys, locales)) {
+    return {
+      defaultLocale: {
+        lang: locales?.root?.lang ?? StarlightDefaultLang,
+        locale: undefined,
+      },
+      isMultilingual: false,
+      locales: undefined,
+    };
   }
 
-  const normalizedSlug = stripLeadingSlash(slug);
-  const base = astroConfig?.base || "";
-  const localeIndex = getLocaleIndex(slug, base);
+  const defaultLocaleKey = defaultLocale ?? RootLocale;
 
-  const segments = normalizedSlug.split("/");
-
-  segments.splice(localeIndex, 1);
-
-  const result = segments.join("/");
-  return slug.startsWith("/") ? `/${result}` : result;
+  return {
+    defaultLocale: {
+      lang: getLocaleLang(defaultLocaleKey, locales[defaultLocaleKey]?.lang),
+      locale: defaultLocale,
+    },
+    isMultilingual: localeKeys.length > 1,
+    locales: Object.fromEntries(
+      Object.entries(locales).map(([locale, localeConfig]) => [
+        locale,
+        { lang: getLocaleLang(locale, localeConfig?.lang) },
+      ])
+    ),
+  };
 }
 
-function getLocaleIndex(slug: string, base: string): number {
-  const slugSegments = stripLeadingSlash(slug).split("/");
-  const baseSegments = stripLeadingSlash(stripTrailingSlash(base))
-    .split("/")
-    .filter(Boolean);
-  return baseSegments.every((segment, index) => slugSegments[index] === segment)
-    ? baseSegments.length
-    : 0;
+export function resolveDefaultLocale(
+  i18nContext: StarlightRecipesI18nContext
+): Locale {
+  const { locale } = i18nContext.defaultLocale;
+
+  return locale === RootLocale ? undefined : locale;
+}
+
+export function resolveLocales(
+  i18nContext: StarlightRecipesI18nContext
+): Locale[] {
+  if (!i18nContext.isMultilingual) return [resolveDefaultLocale(i18nContext)];
+
+  return Object.keys(i18nContext.locales ?? {}).map((locale) =>
+    locale === RootLocale ? undefined : locale
+  );
+}
+
+export function resolveLangFromLocale(
+  i18nContext: StarlightRecipesI18nContext,
+  locale: Locale
+): string {
+  const lang = i18nContext.locales?.[locale ?? RootLocale]?.lang;
+
+  return lang ?? i18nContext.defaultLocale.lang;
+}
+
+function isLocalizedSite(
+  localeKeys: string[],
+  locales: NonNullable<StarlightUserConfig["locales"]>
+): boolean {
+  return (
+    localeKeys.length > 1 ||
+    (localeKeys.length === 1 && locales[RootLocale] === undefined)
+  );
+}
+
+function getLocaleLang(locale: string, lang: string | undefined): string {
+  return lang ?? (locale === RootLocale ? StarlightDefaultLang : locale);
+}
+
+export interface StarlightRecipesI18nContext {
+  defaultLocale: {
+    lang: string;
+    locale: string | undefined;
+  };
+  isMultilingual: boolean;
+  locales: Record<string, { lang: string }> | undefined;
 }
 
 export type Locale = string | undefined;

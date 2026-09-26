@@ -16,13 +16,13 @@ export interface StarlightRecipesData {
     /**
      * The authors of the recipe.
      *
-     * @see https://starlight-recipes.trueberryless.org/guides/authors/
+     * @see https://starlight-recipes.netlify.app/guides/authors/
      */
     authors: StarlightRecipeAuthorData[];
     /**
      * The optional cover image of the recipe.
      *
-     * @see https://starlight-recipes.trueberryless.org/guides/frontmatter#cover
+     * @see https://starlight-recipes.netlify.app/guides/frontmatter#cover
      */
     cover?:
       | {
@@ -41,20 +41,20 @@ export interface StarlightRecipesData {
     /**
      * The date of the recipe.
      *
-     * @see https://starlight-recipes.trueberryless.org/guides/frontmatter/#date-required
+     * @see https://starlight-recipes.netlify.app/guides/frontmatter/#date-required
      */
     createdAt: Date;
     /**
      * Whether the recipe is a draft.
      * Draft recipes are only visible in development mode.
      *
-     * @see https://starlight-recipes.trueberryless.org/guides/frontmatter/#draft
+     * @see https://starlight-recipes.netlify.app/guides/frontmatter/#draft
      */
     draft: boolean;
     /**
      * Whether the recipe is featured.
      *
-     * @see https://starlight-recipes.trueberryless.org/guides/frontmatter/#featured
+     * @see https://starlight-recipes.netlify.app/guides/frontmatter/#featured
      */
     featured: boolean;
     /**
@@ -66,7 +66,7 @@ export interface StarlightRecipesData {
     /**
      * Static rating data for the recipe.
      *
-     * @see https://starlight-recipes.trueberryless.org/guides/frontmatter/#rating
+     * @see https://starlight-recipes.netlify.app/guides/frontmatter/#rating
      */
     rating: StarlightRecipesRating | undefined;
     /**
@@ -76,7 +76,7 @@ export interface StarlightRecipesData {
     /**
      * A list of tags associated with the recipe.
      *
-     * @see https://starlight-recipes.trueberryless.org/guides/frontmatter/#tags
+     * @see https://starlight-recipes.netlify.app/guides/frontmatter/#tags
      */
     tags: {
       /**
@@ -155,14 +155,14 @@ export interface StarlightRecipesData {
     /**
      * The title of the recipe.
      *
-     * @see https://starlight-recipes.trueberryless.org/guides/frontmatter/#title
+     * @see https://starlight-recipes.netlify.app/guides/frontmatter/#title
      */
     title: string;
     /**
      * The last update date of the recipe.
      * Defined only if the recipe has been updated and differs from the creation date.
      *
-     * @see https://starlight-recipes.trueberryless.org/guides/frontmatter/#lastupdated
+     * @see https://starlight-recipes.netlify.app/guides/frontmatter/#lastupdated
      */
     updatedAt?: Date | undefined;
   }[];
@@ -176,19 +176,19 @@ interface StarlightRecipeAuthorData {
   /**
    * The name of the author.
    *
-   * @see https://starlight-recipes.trueberryless.org/configuration/#name
+   * @see https://starlight-recipes.netlify.app/configuration/#name
    */
   name: string;
   /**
    * An optional title for the author.
    *
-   * @see https://starlight-recipes.trueberryless.org/configuration/#title-1
+   * @see https://starlight-recipes.netlify.app/configuration/#title-1
    */
   title?: string | undefined;
   /**
    * An optional URL to link the author to.
    *
-   * @see https://starlight-recipes.trueberryless.org/configuration/#url
+   * @see https://starlight-recipes.netlify.app/configuration/#url
    */
   url?: string | undefined;
 }
