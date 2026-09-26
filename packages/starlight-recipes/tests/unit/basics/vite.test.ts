@@ -98,6 +98,20 @@ describe("getContext", () => {
     });
   });
 
+  test("decodes project directories with special characters", () => {
+    const context = getContext(
+      { title: "Recipes" },
+      {
+        ...astroConfig,
+        root: new URL("file:///my%20recipes/"),
+        srcDir: new URL("file:///my%20recipes/my%20src/"),
+      }
+    );
+
+    expect(context.rootDir).toBe("/my recipes/");
+    expect(context.srcDir).toBe("/my recipes/my src/");
+  });
+
   test("uses the root locale language for monolingual sites", () => {
     const context = getContext(
       { title: "Recipes", locales: { root: { label: "Deutsch", lang: "de" } } },

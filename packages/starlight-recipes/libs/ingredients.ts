@@ -8,7 +8,7 @@ export function getIngredients(entry: StarlightRecipeEntry): Ingredients {
   const servings = recipeYield?.servings || undefined;
 
   return {
-    additionalYields: getAdditionalYields(recipeYield?.additional ?? []),
+    additionalYields: getAdditionalYields(recipeYield?.additional),
     hasFewItems: ingredients.length < fewIngredientsThreshold,
     items: ingredients.map((ingredient) =>
       getIngredientItem(ingredient, servings)
@@ -17,17 +17,25 @@ export function getIngredients(entry: StarlightRecipeEntry): Ingredients {
   };
 }
 
-function getAdditionalYields(
-  additional: NonNullable<
-    NonNullable<StarlightRecipeEntry["data"]["yield"]>["additional"]
-  >
+export function getAdditionalYields(
+  additional: RecipeAdditionalYields | undefined
 ): AdditionalYield[] {
-  return additional.map(({ amount, unit }, index) => ({
+  const yields = (additional ?? []).filter(isDefinedAdditionalYield);
+
+  return yields.map(({ amount, unit }, index) => ({
     amount,
     label: `${amount} ${unit}`,
-    separator: index < additional.length - 1 ? ", " : "",
+    separator: index < yields.length - 1 ? ", " : "",
     unit,
   }));
+}
+
+function isDefinedAdditionalYield(
+  additionalYield: RecipeAdditionalYields[number]
+): additionalYield is { amount: number; unit: string } {
+  return (
+    additionalYield.amount !== undefined && additionalYield.unit !== undefined
+  );
 }
 
 function getIngredientItem(
@@ -50,11 +58,15 @@ function getIngredientItem(
   };
 }
 
+type RecipeAdditionalYields = NonNullable<
+  NonNullable<StarlightRecipeEntry["data"]["yield"]>["additional"]
+>;
+
 interface AdditionalYield {
-  amount: number | undefined;
+  amount: number;
   label: string;
   separator: string;
-  unit: string | undefined;
+  unit: string;
 }
 
 type IngredientItem =

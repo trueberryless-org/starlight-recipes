@@ -20,6 +20,7 @@ import { getAllAuthors, getEntryAuthors } from "./authors";
 import { getRecipeEntries, getRecipeEntry } from "./content";
 import { getAllCuisines, resolveCuisine } from "./cuisines";
 import type { Locale } from "./i18n";
+import { getAdditionalYields } from "./ingredients";
 import {
   getRecipeUrl,
   isAnyRecipeRootPage,
@@ -206,8 +207,9 @@ export async function getRecipeHead(
 
   if (data.yield) {
     const primaryYield = data.yield.servings.toString();
-    const additional =
-      data.yield.additional?.map((y) => `${y.amount} ${y.unit}`.trim()) ?? [];
+    const additional = getAdditionalYields(data.yield.additional).map(
+      ({ label }) => label
+    );
 
     recipeStructuredData.recipeYield = [primaryYield, ...additional];
 

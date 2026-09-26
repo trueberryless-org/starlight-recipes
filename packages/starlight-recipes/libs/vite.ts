@@ -53,9 +53,9 @@ export function getContext(
   return {
     ...getI18nContext(starlightConfig),
     base: astroConfig.base,
-    rootDir: astroConfig.root.pathname,
+    rootDir: decodeURIComponent(astroConfig.root.pathname),
     site: astroConfig.site,
-    srcDir: astroConfig.srcDir.pathname,
+    srcDir: decodeURIComponent(astroConfig.srcDir.pathname),
     title: starlightConfig.title,
     trailingSlash: astroConfig.trailingSlash,
   };
