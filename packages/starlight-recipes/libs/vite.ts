@@ -1,19 +1,27 @@
 import type { StarlightUserConfig } from "@astrojs/starlight/types";
 import type { AstroConfig, ViteUserConfig } from "astro";
-import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import type { StarlightRecipesConfig } from "./config";
+import { type StarlightRecipesI18nContext, getI18nContext } from "./i18n";
 
-export function vitePluginStarlightRecipesConfig(
-  starlightRecipesConfig: StarlightRecipesConfig,
-  context: StarlightRecipesContext
+export function vitePluginStarlightRecipes(
+  config: StarlightRecipesConfig,
+  starlightConfig: Pick<
+    StarlightUserConfig,
+    "defaultLocale" | "locales" | "title"
+  >,
+  astroConfig: Pick<
+    AstroConfig,
+    "base" | "root" | "site" | "srcDir" | "trailingSlash"
+  >
 ): VitePlugin {
   const modules = {
-    "virtual:starlight-recipes/config": `export default ${JSON.stringify(starlightRecipesConfig)}`,
-    "virtual:starlight-recipes/context": `export default ${JSON.stringify(context)}`,
+    "virtual:starlight-recipes/config": `export default ${JSON.stringify(config)};`,
+    "virtual:starlight-recipes/context": `export default ${JSON.stringify(getContext(starlightConfig, astroConfig))};`,
     "virtual:starlight-recipes/images": getImagesVirtualModule(
-      starlightRecipesConfig,
-      context
+      config,
+      astroConfig
     ),
   };
 
@@ -31,37 +39,63 @@ export function vitePluginStarlightRecipesConfig(
       return moduleId ? modules[moduleId] : undefined;
     },
     resolveId(id) {
-      return id in modules ? resolveVirtualModuleId(id) : undefined;
+      return Object.hasOwn(modules, id)
+        ? resolveVirtualModuleId(id)
+        : undefined;
     },
   };
 }
 
-export function getImagesVirtualModule(
-  starlightRecipesConfig: StarlightRecipesConfig,
-  context: StarlightRecipesContext
-) {
-  let module = "";
-  const authors = Object.entries(starlightRecipesConfig.authors);
-
-  for (const [id, author] of authors) {
-    if (!author.picture?.startsWith(".")) continue;
-    module += `import ${id} from ${resolveModuleId(author.picture, context)};\n`;
-  }
-
-  module += "export const authors = {\n";
-  for (const [id, author] of authors) {
-    if (!author.picture) continue;
-    module += `  "${author.name}": ${author.picture.startsWith(".") ? id : resolveModuleId(author.picture, context)},\n`;
-  }
-  module += "};\n";
-
-  return module;
+export function getContext(
+  starlightConfig: Parameters<typeof vitePluginStarlightRecipes>[1],
+  astroConfig: Parameters<typeof vitePluginStarlightRecipes>[2]
+): StarlightRecipesContext {
+  return {
+    ...getI18nContext(starlightConfig),
+    base: astroConfig.base,
+    rootDir: astroConfig.root.pathname,
+    site: astroConfig.site,
+    srcDir: astroConfig.srcDir.pathname,
+    title: starlightConfig.title,
+    trailingSlash: astroConfig.trailingSlash,
+  };
 }
 
-function resolveModuleId(id: string, context: StarlightRecipesContext) {
-  return JSON.stringify(
-    id.startsWith(".") ? path.resolve(context.rootDir, id) : id
-  );
+export function getImagesVirtualModule(
+  config: Pick<StarlightRecipesConfig, "authors">,
+  astroConfig: Pick<AstroConfig, "root">
+): string {
+  const imports: string[] = [];
+  const authors: string[] = [];
+
+  for (const author of Object.values(config.authors)) {
+    if (!author.picture) continue;
+
+    const moduleId = JSON.stringify(
+      resolveModuleId(author.picture, astroConfig)
+    );
+    let pictureValue = moduleId;
+
+    if (isLocalPath(author.picture)) {
+      pictureValue = `authorImage${imports.length}`;
+      imports.push(`import ${pictureValue} from ${moduleId};`);
+    }
+
+    authors.push(`  ${JSON.stringify(author.name)}: ${pictureValue},`);
+  }
+
+  return [...imports, "export const authors = {", ...authors, "};"].join("\n");
+}
+
+function isLocalPath(id: string): boolean {
+  return id.startsWith(".");
+}
+
+function resolveModuleId(
+  id: string,
+  astroConfig: Pick<AstroConfig, "root">
+): string {
+  return isLocalPath(id) ? fileURLToPath(new URL(id, astroConfig.root)) : id;
 }
 
 function resolveVirtualModuleId<TModuleId extends string>(
@@ -70,13 +104,12 @@ function resolveVirtualModuleId<TModuleId extends string>(
   return `\0${id}`;
 }
 
-export interface StarlightRecipesContext {
+export interface StarlightRecipesContext extends StarlightRecipesI18nContext {
   base: string;
   rootDir: string;
-  srcDir: string;
   site: AstroConfig["site"];
+  srcDir: string;
   title: StarlightUserConfig["title"];
-  adapter: AstroConfig["adapter"];
   trailingSlash: AstroConfig["trailingSlash"];
 }
 

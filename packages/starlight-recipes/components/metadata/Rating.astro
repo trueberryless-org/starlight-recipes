@@ -1,19 +1,19 @@
 ---
-import type { StarlightRecipesRating } from "../../schema";
+import type { Rating } from "../../libs/rating";
 
 interface Props {
-  rating: StarlightRecipesRating;
+  rating: Rating;
 }
 
 const { rating } = Astro.props;
 ---
 
-<div class="rating" aria-label={`${rating.value.toFixed(1)} out of 5 stars`}>
+<div class="rating" aria-label={`${rating.formattedValue} out of 5 stars`}>
   <span class="stars" style={`--rating: ${rating.value};`} aria-hidden="true">
     <span class="empty">★★★★★</span>
     <span class="filled">★★★★★</span>
   </span>
-  <span class="value">{rating.value.toFixed(1)}</span>
+  <span class="value">{rating.formattedValue}</span>
   <span class="count">({rating.count})</span>
 </div>
 

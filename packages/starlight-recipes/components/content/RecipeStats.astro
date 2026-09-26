@@ -1,62 +1,57 @@
 ---
-import type { StarlightRecipeEntry } from "../../libs/types";
+import { getRecipeStats } from "../../libs/stats";
 import { formatNaturalTime } from "../../libs/time";
+import type { StarlightRecipeEntry } from "../../libs/types";
 
 interface Props {
   entry: StarlightRecipeEntry;
 }
 
-const { entry } = Astro.props;
-const { time, date } = entry.data;
-const calories = entry.data.yield?.calories;
-
-const totalMinutes = (time?.preparation || 0) + (time?.cooking || 0);
-const formattedTime = formatNaturalTime(totalMinutes, Astro.locals.t);
-
-const hasStats =
-  totalMinutes > 0 || date || (calories !== undefined && calories !== null);
+const { calories, date, hasStats, totalMinutes } = getRecipeStats(
+  Astro.props.entry
+);
 ---
 
-{
-  hasStats && (
-    <div class="recipe-stats-container not-content">
-      {totalMinutes > 0 && (
-        <div class="stat-item">
-          <span class="stat-label">
-            {Astro.locals.t("starlightRecipes.recipe.totalTime")}
-          </span>
-          <span class="stat-value">{formattedTime}</span>
-        </div>
-      )}
+{hasStats && (
+  <div class="recipe-stats-container not-content">
+    {totalMinutes > 0 && (
+      <div class="stat-item">
+        <span class="stat-label">
+          {Astro.locals.t("starlightRecipes.recipe.totalTime")}
+        </span>
+        <span class="stat-value">
+          {formatNaturalTime(totalMinutes, Astro.locals.t)}
+        </span>
+      </div>
+    )}
 
-      {date && (
-        <div class="stat-item">
-          <span class="stat-label">
-            {Astro.locals.t("starlightRecipes.recipe.published")}
-          </span>
-          <span class="stat-value">
-            <time datetime={date.toISOString()}>
-              {Astro.locals.t("starlightRecipes.recipe.date", { date })}
-            </time>
-          </span>
-        </div>
-      )}
+    {date && (
+      <div class="stat-item">
+        <span class="stat-label">
+          {Astro.locals.t("starlightRecipes.recipe.published")}
+        </span>
+        <span class="stat-value">
+          <time datetime={date.toISOString()}>
+            {Astro.locals.t("starlightRecipes.recipe.date", { date })}
+          </time>
+        </span>
+      </div>
+    )}
 
-      {calories !== undefined && calories !== null && (
-        <div class="stat-item">
-          <span class="stat-label">
-            {Astro.locals.t("starlightRecipes.recipe.calories")}
-          </span>
-          <span class="stat-value">
-            {Astro.locals.t("starlightRecipes.recipe.caloriesValue", {
-              calories,
-            })}
-          </span>
-        </div>
-      )}
-    </div>
-  )
-}
+    {calories !== undefined && (
+      <div class="stat-item">
+        <span class="stat-label">
+          {Astro.locals.t("starlightRecipes.recipe.calories")}
+        </span>
+        <span class="stat-value">
+          {Astro.locals.t("starlightRecipes.recipe.caloriesValue", {
+            calories,
+          })}
+        </span>
+      </div>
+    )}
+  </div>
+)}
 
 <style>
   .recipe-stats-container {

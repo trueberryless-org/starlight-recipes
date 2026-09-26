@@ -1,32 +1,18 @@
 import ytdl from "@distube/ytdl-core";
-import { z } from "astro/zod";
 import matter from "gray-matter";
 import { readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
+import {
+  type StarlightRecipesVideoProcessed,
+  videoMetadataSchema,
+} from "../schema";
+import type { Locale } from "./i18n";
 import { secondsToIsoDuration } from "./time";
-
-export const processedVideoSchema = z.object({
-  name: z.string(),
-  thumbnailUrl: z.array(z.string()).min(1),
-  uploadDate: z.string(),
-  description: z.string().optional(),
-  duration: z.string().optional(),
-  embedUrl: z.string().url().optional(),
-  userInteractionCount: z.number().nonnegative().optional(),
-});
-
-export type ProcessedVideo = z.infer<typeof processedVideoSchema>;
-
-export interface VideoFrontmatterProcessed extends ProcessedVideo {
-  url: string;
-}
-
-export type VideoFrontmatter = VideoFrontmatterProcessed | undefined;
 
 export async function fetchYouTubeVideoMetadata(
   url: string
-): Promise<VideoFrontmatterProcessed | undefined> {
+): Promise<StarlightRecipesVideoProcessed | undefined> {
   try {
     const info = await ytdl.getBasicInfo(url);
     const details = info?.videoDetails;
@@ -47,14 +33,13 @@ export async function fetchYouTubeVideoMetadata(
       .map((t) => t.url as string);
 
     if (thumbnailUrl.length === 0) {
-      // Without at least one thumbnail, we can’t satisfy required fields.
       throw new Error(`No thumbnails for YouTube URL: ${url}`);
     }
 
     const durationInSeconds =
       Number.parseInt(details.lengthSeconds ?? "0", 10) || 0;
 
-    const processed: VideoFrontmatterProcessed = {
+    const processed: StarlightRecipesVideoProcessed = {
       url,
       name: details.title ?? "Untitled video",
       thumbnailUrl,
@@ -69,7 +54,7 @@ export async function fetchYouTubeVideoMetadata(
         : undefined,
     };
 
-    processedVideoSchema.parse(processed);
+    videoMetadataSchema.parse(processed);
 
     return processed;
   } catch (error) {
@@ -83,7 +68,7 @@ export async function fetchYouTubeVideoMetadata(
 
 export function rewriteVideoFieldInFrontmatter(
   raw: string,
-  video: VideoFrontmatterProcessed
+  video: StarlightRecipesVideoProcessed
 ): string {
   const parsed = matter(raw);
   const data = parsed.data ?? {};
@@ -148,7 +133,7 @@ export async function normalizeVideoInFile(filePath: string): Promise<void> {
   const parsed = matter(raw);
 
   const current = parsed.data.video as
-    string | VideoFrontmatterProcessed | undefined;
+    string | StarlightRecipesVideoProcessed | undefined;
 
   if (!current) {
     return;
@@ -156,7 +141,7 @@ export async function normalizeVideoInFile(filePath: string): Promise<void> {
 
   if (typeof current === "object" && current !== null) {
     try {
-      processedVideoSchema.parse(current);
+      videoMetadataSchema.parse(current);
       return;
     } catch {}
   }
@@ -180,17 +165,14 @@ export async function normalizeVideoInFile(filePath: string): Promise<void> {
 export async function preprocessRecipeVideos(options: {
   srcDir: string;
   prefix: string;
-  locales?: string[];
+  locales: Locale[];
 }): Promise<void> {
   const baseDocsDir = join(options.srcDir, "content", "docs");
-  const localeKeys =
-    options.locales && options.locales.length > 0 ? options.locales : ["root"];
 
-  for (const locale of localeKeys) {
-    const docsDir =
-      locale === "root"
-        ? join(baseDocsDir, options.prefix)
-        : join(baseDocsDir, locale, options.prefix);
+  for (const locale of options.locales) {
+    const docsDir = locale
+      ? join(baseDocsDir, locale, options.prefix)
+      : join(baseDocsDir, options.prefix);
 
     let stats;
     try {

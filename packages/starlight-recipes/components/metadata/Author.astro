@@ -9,36 +9,35 @@ interface Props {
 
 const { author } = Astro.props;
 const { tagName: Element, isLink, picture } = resolveAuthorData(author);
-const linkAriaLabel = isLink
-  ? Astro.locals.t("starlightRecipes.recipe.author.linkAriaLabel", {
-      name: author.name,
-    })
-  : undefined;
 ---
 
 <Element
   href={isLink ? author.url : undefined}
-  aria-label={linkAriaLabel}
+  aria-label={
+    isLink
+      ? Astro.locals.t("starlightRecipes.recipe.author.linkAriaLabel", {
+          name: author.name,
+        })
+      : undefined
+  }
   class="author"
 >
-  {
-    picture.src &&
-      (typeof picture.src === "string" ? (
-        <img
-          src={picture.src}
-          alt={author.name}
-          loading={picture.isRemote ? "lazy" : "eager"}
-        />
-      ) : (
-        <Image
-          alt={author.name}
-          loading="eager"
-          src={picture.src}
-          height={40}
-          width={40}
-        />
-      ))
-  }
+  {picture.src &&
+    (typeof picture.src === "string" ? (
+      <img
+        src={picture.src}
+        alt={author.name}
+        loading={picture.isRemote ? "lazy" : "eager"}
+      />
+    ) : (
+      <Image
+        alt={author.name}
+        loading="eager"
+        src={picture.src}
+        height={40}
+        width={40}
+      />
+    ))}
 
   <div class="text">
     <div class="name">{author.name}</div>

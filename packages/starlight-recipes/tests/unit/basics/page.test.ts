@@ -20,6 +20,15 @@ import {
 const mockContext = vi.hoisted(() => ({
   trailingSlash: "ignore" as "ignore" | "always" | "never",
   base: "/",
+  isMultilingual: false,
+  defaultLocale: {
+    locale: undefined,
+    lang: "en",
+  },
+  locales: {
+    en: { lang: "en" },
+    de: { lang: "de" },
+  },
 }));
 
 vi.mock("virtual:starlight-recipes/config", () => ({
@@ -30,20 +39,6 @@ vi.mock("virtual:starlight-recipes/config", () => ({
 
 vi.mock("virtual:starlight-recipes/context", () => ({
   default: mockContext,
-}));
-
-vi.mock("virtual:starlight/user-config", () => ({
-  default: {
-    isMultilingual: false,
-    defaultLocale: {
-      locale: undefined,
-      lang: "en",
-    },
-    locales: {
-      en: { lang: "en" },
-      de: { lang: "de" },
-    },
-  },
 }));
 
 describe("getRelativeUrl", () => {

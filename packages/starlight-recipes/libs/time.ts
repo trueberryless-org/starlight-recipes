@@ -1,125 +1,78 @@
-import { type Duration, parse, serialize } from "tinyduration";
-
 import type { StarlightRecipeEntry } from "./types";
 
-export const getPrepTime = (
-  entry: StarlightRecipeEntry
-): string | undefined => {
-  const preparation = entry.data.time?.preparation;
-  return preparation != undefined
-    ? secondsToIsoDuration(preparation * 60)
-    : undefined;
-};
+const dateUnits: DurationUnit[] = [
+  { designator: "Y", seconds: 31536000 },
+  { designator: "M", seconds: 2592000 },
+  { designator: "W", seconds: 604800 },
+  { designator: "D", seconds: 86400 },
+];
 
-export const getCookTime = (
-  entry: StarlightRecipeEntry
-): string | undefined => {
-  const cooking = entry.data.time?.cooking;
-  return cooking != undefined ? secondsToIsoDuration(cooking * 60) : undefined;
-};
+const timeUnits: DurationUnit[] = [
+  { designator: "H", seconds: 3600 },
+  { designator: "M", seconds: 60 },
+  { designator: "S", seconds: 1 },
+];
 
-export const getTotalTime = (
-  entry: StarlightRecipeEntry
-): string | undefined => {
-  const total = entry.data.time?.total;
-  return total != undefined ? secondsToIsoDuration(total * 60) : undefined;
-};
-
-type DurationUnits = Omit<Duration, "negative">;
-
-// Approximate conversions: months = 30 days, years = 365 days.
-// Acceptable for recipe durations; not calendar-accurate.
-const UNIT_SECONDS: Record<keyof DurationUnits, number> = {
-  years: 31536000,
-  months: 2592000,
-  weeks: 604800,
-  days: 86400,
-  hours: 3600,
-  minutes: 60,
-  seconds: 1,
-};
-
-function safeParse(iso?: string): Partial<Duration> {
-  if (!iso) return {};
-  try {
-    const parsed = parse(iso);
-    if (parsed.negative) {
-      console.warn(`Negative ISO 8601 duration not supported: "${iso}"`);
-      return {};
-    }
-    return parsed;
-  } catch {
-    console.warn(`Invalid ISO 8601 duration: "${iso}"`);
-    return {};
-  }
+export function getPrepTime(entry: StarlightRecipeEntry): string | undefined {
+  return minutesToIsoDuration(entry.data.time?.preparation);
 }
 
-export function addDurations(isoA?: string, isoB?: string): string {
-  const durA = safeParse(isoA);
-  const durB = safeParse(isoB);
+export function getCookTime(entry: StarlightRecipeEntry): string | undefined {
+  return minutesToIsoDuration(entry.data.time?.cooking);
+}
 
-  let totalSeconds = 0;
-
-  const units = Object.keys(UNIT_SECONDS) as Array<keyof DurationUnits>;
-
-  for (const unit of units) {
-    totalSeconds += (durA[unit] || 0) * UNIT_SECONDS[unit];
-    totalSeconds += (durB[unit] || 0) * UNIT_SECONDS[unit];
-  }
-
-  const resultObj: Duration = {};
-  let remainingSeconds = totalSeconds;
-
-  for (const unit of units) {
-    const secondsInUnit = UNIT_SECONDS[unit];
-    const value = Math.floor(remainingSeconds / secondsInUnit);
-    if (value > 0) {
-      resultObj[unit] = value;
-      remainingSeconds %= secondsInUnit;
-    }
-  }
-
-  return totalSeconds > 0 ? serialize(resultObj) : "PT0S";
+export function getTotalTime(entry: StarlightRecipeEntry): string | undefined {
+  return minutesToIsoDuration(entry.data.time?.total);
 }
 
 export function secondsToIsoDuration(seconds: number): string {
-  if (seconds <= 0) return "PT0S";
+  const date = formatDurationUnits(seconds, dateUnits);
+  const time = formatDurationUnits(date.remainingSeconds, timeUnits);
 
-  const units = Object.keys(UNIT_SECONDS) as Array<keyof DurationUnits>;
-  const duration: Duration = {};
-  let remainingSeconds = seconds;
+  if (!date.value && !time.value) return "PT0S";
 
-  for (const unit of units) {
-    const secondsInUnit = UNIT_SECONDS[unit];
-    const value = Math.floor(remainingSeconds / secondsInUnit);
-    if (value > 0) {
-      duration[unit] = value;
-      remainingSeconds %= secondsInUnit;
-    }
-  }
-  return serialize(duration);
+  return `P${date.value}${time.value ? `T${time.value}` : ""}`;
 }
 
-export const formatNaturalTime = (totalMinutes: number, t: any): string => {
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
+export function formatNaturalTime(
+  totalMinutes: number,
+  t: App.Locals["t"]
+): string {
+  const context = getNaturalTimeContext(totalMinutes);
 
-  const isWholeHour = totalMinutes > 0 && totalMinutes % 60 === 0;
-  const isLessThanHour = totalMinutes < 60;
+  return t("starlightRecipes.time.total", {
+    context,
+    hours: Math.floor(totalMinutes / 60),
+    minutes: context === "minutes" ? totalMinutes : totalMinutes % 60,
+  });
+}
 
-  const timeContext = getContext(isWholeHour, isLessThanHour);
+function minutesToIsoDuration(minutes: number | undefined) {
+  return minutes === undefined ? undefined : secondsToIsoDuration(minutes * 60);
+}
 
-  const translationPayload = {
-    context: timeContext,
-    hours,
-    minutes: timeContext === "minutes" ? totalMinutes : minutes,
-  };
+function formatDurationUnits(seconds: number, units: DurationUnit[]) {
+  let remainingSeconds = Math.max(seconds, 0);
+  let value = "";
 
-  return t("starlightRecipes.time.total", translationPayload);
-};
+  for (const unit of units) {
+    const count = Math.floor(remainingSeconds / unit.seconds);
+    if (count === 0) continue;
 
-const getContext = (isWholeHour: boolean, isLessThanHour: boolean): string => {
-  if (isWholeHour) return "hours";
-  if (isLessThanHour) return "minutes";
+    value += `${count}${unit.designator}`;
+    remainingSeconds %= unit.seconds;
+  }
+
+  return { remainingSeconds, value };
+}
+
+function getNaturalTimeContext(totalMinutes: number) {
+  if (totalMinutes > 0 && totalMinutes % 60 === 0) return "hours";
+  if (totalMinutes < 60) return "minutes";
   return "full";
-};
+}
+
+interface DurationUnit {
+  designator: string;
+  seconds: number;
+}

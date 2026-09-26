@@ -21,13 +21,11 @@ const pageProps = getPageProps(label);
 ---
 
 <Page {...pageProps}>
-  <Count
-    >{
-      Astro.locals.t("starlightRecipes.categories.count", {
-        count: entries.length,
-        category: label,
-      })
-    }</Count
-  >
+  <Count>
+    {Astro.locals.t("starlightRecipes.categories.count", {
+      count: entries.length,
+      category: label,
+    })}
+  </Count>
   <Grid {entries} {locale} />
 </Page>

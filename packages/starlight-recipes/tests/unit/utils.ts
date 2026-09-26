@@ -43,6 +43,7 @@ function mockRecipe(
                 z.literal("gif"),
                 z.literal("svg"),
                 z.literal("avif"),
+                z.literal("apng"),
               ]),
             }),
         }).shape

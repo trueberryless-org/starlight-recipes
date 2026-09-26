@@ -1,20 +1,20 @@
-import type { StarlightConfig } from "@astrojs/starlight/types";
 import { getViteConfig } from "astro/config";
 
 import {
   type StarlightRecipesUserConfig,
   validateConfig,
 } from "../../libs/config";
-import {
-  type StarlightRecipesContext,
-  vitePluginStarlightRecipesConfig,
-} from "../../libs/vite";
+import { vitePluginStarlightRecipes } from "../../libs/vite";
 
 export function defineVitestConfig(
   userConfig: StarlightRecipesUserConfig,
-  context?: Partial<StarlightRecipesContext> & {
-    locales?: StarlightConfig["locales"];
-  }
+  context?: Partial<Parameters<typeof vitePluginStarlightRecipes>[1]> &
+    Partial<
+      Pick<
+        Parameters<typeof vitePluginStarlightRecipes>[2],
+        "base" | "site" | "trailingSlash"
+      >
+    >
 ) {
   const config = validateConfig(userConfig);
 
@@ -23,49 +23,21 @@ export function defineVitestConfig(
 
   return getViteConfig({
     plugins: [
-      vitePluginStarlightRecipesConfig(config, {
-        base: context?.base ?? "",
-        rootDir: rootDir.pathname,
-        site: context?.site,
-        srcDir: srcDir.pathname,
-        title: context?.title ?? "Starlight Recipes Test",
-        adapter: context?.adapter,
-        trailingSlash: context?.trailingSlash ?? "ignore",
-      }),
-      {
-        name: "vite-plugin-starlight-recipes-test",
-        load(id) {
-          if (id !== "virtual:starlight-recipes/test") return undefined;
-
-          const config: Partial<StarlightConfig> = context?.locales
-            ? {
-                isMultilingual: true,
-                defaultLocale: {
-                  label: "English",
-                  lang: "en",
-                  dir: "ltr",
-                  locale: "en",
-                },
-                locales: context.locales,
-              }
-            : {
-                isMultilingual: false,
-                defaultLocale: {
-                  label: "English",
-                  lang: "en",
-                  dir: "ltr",
-                  locale: undefined,
-                },
-              };
-
-          return `export default ${JSON.stringify(config)}`;
+      vitePluginStarlightRecipes(
+        config,
+        {
+          defaultLocale: context?.defaultLocale,
+          locales: context?.locales,
+          title: context?.title ?? "Starlight Recipes Test",
         },
-        resolveId(id) {
-          return id === "virtual:starlight/user-config"
-            ? "virtual:starlight-recipes/test"
-            : undefined;
-        },
-      },
+        {
+          base: context?.base ?? "",
+          root: rootDir,
+          site: context?.site,
+          srcDir,
+          trailingSlash: context?.trailingSlash ?? "ignore",
+        }
+      ),
     ],
   });
 }

@@ -2,15 +2,12 @@ import type { GetStaticPathsResult } from "astro";
 import { getCollection, getEntry } from "astro:content";
 import config from "virtual:starlight-recipes/config";
 import context from "virtual:starlight-recipes/context";
-import starlightConfig from "virtual:starlight/user-config";
 
-import { DefaultLocale, type Locale } from "./i18n";
-import {
-  getPathWithLocale,
-  getRelativeRecipeUrl,
-  getRelativeUrl,
-} from "./page";
+import type { Locale } from "./i18n";
+import { DefaultLocale, getLocales } from "./locales";
+import { getPathWithLocale, getRecipeUrl, getRelativeRecipeUrl } from "./page";
 import { stripLeadingSlash, stripTrailingSlash } from "./path";
+import { getRating } from "./rating";
 import type {
   StarlightEntry,
   StarlightRecipeEntry,
@@ -23,23 +20,12 @@ const recipeEntriesPerLocale = new Map<Locale, StarlightRecipeEntry[]>();
 export async function getRecipesStaticPaths() {
   const paths: GetStaticPathsResult = [];
 
-  if (starlightConfig.isMultilingual) {
-    for (const localeKey of Object.keys(starlightConfig.locales)) {
-      const locale = localeKey === "root" ? undefined : localeKey;
-
-      const entries = await getRecipeEntries(locale);
-      const pages = getPaginatedRecipeEntries(entries);
-
-      for (const [index, entries] of pages.entries()) {
-        paths.push(getRecipesStaticPath(pages, entries, index, locale));
-      }
-    }
-  } else {
-    const entries = await getRecipeEntries(DefaultLocale);
+  for (const locale of getLocales()) {
+    const entries = await getRecipeEntries(locale);
     const pages = getPaginatedRecipeEntries(entries);
 
-    for (const [index, entries] of pages.entries()) {
-      paths.push(getRecipesStaticPath(pages, entries, index, DefaultLocale));
+    for (const [index, pageEntries] of pages.entries()) {
+      paths.push(getRecipesStaticPath(pages, pageEntries, index, locale));
     }
   }
 
@@ -62,11 +48,10 @@ export async function getSidebarRecipeEntries(locale: Locale) {
   }
 
   const entriesWithRatings = popularCandidates
-    .filter((entry) => entry.data.rating !== undefined)
-    .map((entry) => ({
-      entry,
-      rating: entry.data.rating.value,
-    }))
+    .flatMap((entry) => {
+      const rating = getRating(entry.data.rating);
+      return rating ? [{ entry, rating: rating.value }] : [];
+    })
     .toSorted((a, b) => b.rating - a.rating);
 
   for (const { entry } of entriesWithRatings) {
@@ -104,7 +89,7 @@ export async function getRecipeEntry(
   const prevEntry = entries[entryIndex - 1];
   const prevLink = prevEntry
     ? {
-        href: getRelativeUrl(`/${getPathWithLocale(prevEntry.id, locale)}`),
+        href: getRecipeUrl(prevEntry.id, locale),
         label: prevEntry.data.title,
       }
     : undefined;
@@ -112,7 +97,7 @@ export async function getRecipeEntry(
   const nextEntry = entries[entryIndex + 1];
   const nextLink = nextEntry
     ? {
-        href: getRelativeUrl(`/${getPathWithLocale(nextEntry.id, locale)}`),
+        href: getRecipeUrl(nextEntry.id, locale),
         label: nextEntry.data.title,
       }
     : undefined;
@@ -155,9 +140,7 @@ export async function getRecipeEntries(
         continue;
       }
 
-      // Briefly override `console.warn()` to silence logging when a localized entry is not found.
       const warn = console.warn;
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
       console.warn = () => {};
 
       try {
@@ -175,7 +158,6 @@ export async function getRecipeEntries(
       } catch {
         recipeEntries.push(entry);
       } finally {
-        // Restore the original `console.warn()` implementation.
         console.warn = warn;
       }
     }
@@ -247,8 +229,6 @@ function getPaginatedRecipeEntries(
   return pages;
 }
 
-// The validation of required fields is done here instead of in the zod schema directly as we do not want to require
-// them for the docs.
 function validateRecipeEntries(
   entries: StarlightEntry[]
 ): asserts entries is StarlightRecipeEntry[] {

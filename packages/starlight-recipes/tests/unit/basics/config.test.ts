@@ -41,6 +41,6 @@ describe("validateConfig", () => {
       validateConfig({
         recipeCount: 0,
       } satisfies StarlightRecipesUserConfig)
-    ).toThrowError(/Invalid starlight-recipes configuration/);
+    ).toThrow(/Invalid starlight-recipes configuration/);
   });
 });

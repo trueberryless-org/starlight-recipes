@@ -1,7 +1,7 @@
-import { AstroError } from "astro/errors";
 import { z } from "astro/zod";
 
 import { recipesAuthorSchema } from "../schema";
+import { throwPluginError } from "./error";
 import { stripLeadingSlash, stripTrailingSlash } from "./path";
 
 const configSchema = z
@@ -58,7 +58,6 @@ const configSchema = z
          */
         stepCheckbox: z.boolean().default(true),
       })
-      .strict()
       .prefault({}),
   })
   .prefault({});
@@ -67,13 +66,10 @@ export function validateConfig(userConfig: unknown): StarlightRecipesConfig {
   const config = configSchema.safeParse(userConfig);
 
   if (!config.success) {
-    throw new AstroError(
-      `Invalid starlight-recipes configuration:
+    throwPluginError(`Invalid starlight-recipes configuration:
 
 ${z.prettifyError(config.error)}
-`,
-      `See the error report above for more information.\n\nIf you believe this is a bug, please file an issue at https://github.com/trueberryless-org/starlight-recipes/issues/new/choose`
-    );
+`);
   }
 
   return config.data;

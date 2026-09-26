@@ -1,27 +1,31 @@
-import starlightConfig from "virtual:starlight/user-config";
+import context from "virtual:starlight-recipes/context";
 
-import { type Locale, getLangFromLocale } from "./i18n";
+import type { Locale } from "./i18n";
+import { getLangFromLocale } from "./locales";
+import type { StarlightRecipesContext } from "./vite";
 
 export function getSiteTitle(locale: Locale): string {
-  if (typeof starlightConfig.title === "string") return starlightConfig.title;
+  return resolveSiteTitle(
+    context.title,
+    getLangFromLocale(locale),
+    context.defaultLocale.lang
+  );
+}
 
-  let title: string;
-  const lang = getLangFromLocale(locale);
+export function resolveSiteTitle(
+  title: StarlightRecipesContext["title"],
+  lang: string,
+  defaultLang: string
+): string {
+  if (typeof title === "string") return title;
 
-  if (lang && starlightConfig.title[lang]) {
-    title = starlightConfig.title[lang];
-  } else {
-    const defaultLang =
-      starlightConfig.defaultLocale.lang ??
-      starlightConfig.defaultLocale.locale;
-    title = defaultLang ? (starlightConfig.title[defaultLang] ?? "") : "";
-  }
+  const localizedTitle = title[lang] || title[defaultLang] || "";
 
-  if (title.length === 0) {
+  if (localizedTitle.length === 0) {
     throw new Error(
       "The recipe title must have a key for the default language."
     );
   }
 
-  return title;
+  return localizedTitle;
 }

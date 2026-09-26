@@ -1,10 +1,9 @@
 declare namespace App {
-  type StarlightLocals = import("@astrojs/starlight").StarlightLocals;
-  interface Locals extends StarlightLocals {
+  interface Locals {
     /**
      * Starlight Recipes data.
      *
-     * @see https://starlight-recipes.trueberryless.org/guides/recipes-data/
+     * @see https://starlight-recipes.netlify.app/guides/recipes-data/
      */
     starlightRecipes: import("./data").StarlightRecipesData;
   }

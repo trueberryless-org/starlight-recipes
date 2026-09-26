@@ -12,9 +12,8 @@ import { getRecipeEntries, getSidebarRecipeEntries } from "./libs/content";
 import { resolveCuisine } from "./libs/cuisines";
 import type { Locale } from "./libs/i18n";
 import {
-  getPathWithLocale,
+  getRecipeUrl,
   getRelativeRecipeUrl,
-  getRelativeUrl,
   getSidebarProps,
   isAnyRecipePage,
   isAnyRecipeRootPage,
@@ -80,7 +79,6 @@ async function getRecipeEntriesData(locale: Locale) {
   const CONCURRENCY_LIMIT = 10;
   const results = [];
 
-  // Process in chunks to avoid scaling issues with collection size
   for (let i = 0; i < entries.length; i += CONCURRENCY_LIMIT) {
     const chunk = entries.slice(i, i + CONCURRENCY_LIMIT);
 
@@ -102,7 +100,7 @@ async function getRecipeEntriesData(locale: Locale) {
           draft: entry.data.draft,
           entry: entry,
           featured: entry.data.featured === true,
-          href: getRelativeUrl(`/${getPathWithLocale(entry.id, locale)}`),
+          href: getRecipeUrl(entry.id, locale),
           rating: entry.data.rating,
           tags: tags.map(({ label, slug }) => ({
             label,

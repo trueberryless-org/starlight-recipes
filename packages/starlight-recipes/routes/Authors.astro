@@ -21,13 +21,11 @@ const pageProps = getPageProps(author.name);
 ---
 
 <Page {...pageProps}>
-  <Count
-    >{
-      Astro.locals.t("starlightRecipes.authors.count", {
-        count: entries.length,
-        author: author.name,
-      })
-    }</Count
-  >
+  <Count>
+    {Astro.locals.t("starlightRecipes.authors.count", {
+      count: entries.length,
+      author: author.name,
+    })}
+  </Count>
   <Grid {entries} {locale} />
 </Page>

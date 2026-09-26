@@ -3,7 +3,6 @@ import type { StarlightRouteData } from "@astrojs/starlight/route-data";
 import type { AstroConfig } from "astro";
 import config from "virtual:starlight-recipes/config";
 import context from "virtual:starlight-recipes/context";
-import starlightConfig from "virtual:starlight/user-config";
 
 import type { Locale } from "./i18n";
 import {
@@ -52,6 +51,14 @@ export function getRelativeUrl(path: string, ignoreTrailingSlash = false) {
     trailingSlashTransformers[context.trailingSlash];
 
   return trailingSlashTransformer(combinedPath);
+}
+
+export function getRecipeUrl(entryId: string, locale: Locale) {
+  return getRelativeUrl(`/${getPathWithLocale(entryId, locale)}`);
+}
+
+export function getEntryElementId(prefix: string, entryId: string) {
+  return `${prefix}-${entryId.replace(/[^a-zA-Z0-9]/g, "-")}`;
 }
 
 export function getPathWithLocale(path: string, locale: Locale): string {
@@ -166,7 +173,7 @@ export function getSidebarProps(
     return {
       attrs: {},
       badge: undefined,
-      href: getRelativeUrl(`/${localizedEntrySlug}`),
+      href: getRecipeUrl(entry.id, locale),
       isCurrent: isRecipePage(slug, localizedEntrySlug),
       label: entry.data.title,
       type: "link" as const,
@@ -177,9 +184,9 @@ export function getSidebarProps(
 export function getLocaleFromPath(path: string): Locale {
   const normalizedPath = stripLeadingSlash(path);
   const baseSegment = normalizedPath.split("/")[0];
-  const locales = starlightConfig.locales ?? {};
+  const locales = context.locales ?? {};
 
-  return baseSegment && baseSegment in locales
-    ? (baseSegment as Locale)
+  return baseSegment && Object.hasOwn(locales, baseSegment)
+    ? baseSegment
     : undefined;
 }

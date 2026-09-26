@@ -1,7 +1,7 @@
 ---
-import type { StarlightRecipeEntry } from "../../libs/types";
 import type { Locale } from "../../libs/i18n";
-import { getSmartGridData } from "../../libs/smart-grid";
+import { getGridCells } from "../../libs/smart-grid";
+import type { StarlightRecipeEntry } from "../../libs/types";
 import Preview from "./Preview.astro";
 
 interface Props {
@@ -10,27 +10,20 @@ interface Props {
 }
 
 const { entries, locale } = Astro.props;
-const { smartEntries } = getSmartGridData(entries);
 ---
 
 <div class="mobile-only">
-  {entries.map((entry) => <Preview {entry} {locale} />)}
+  {entries.map((entry) => (
+    <Preview {entry} {locale} />
+  ))}
 </div>
 
 <div class="desktop-only grid">
-  {
-    smartEntries.map((entry) => (
-      <div
-        class={
-          entry.data.featured || smartEntries.length <= 1
-            ? "span-full"
-            : "span-half"
-        }
-      >
-        <Preview {entry} {locale} bigPreview={entry.data.featured ?? false} />
-      </div>
-    ))
-  }
+  {getGridCells(entries).map(({ entry, isFeatured, isFullWidth }) => (
+    <div class={isFullWidth ? "span-full" : "span-half"}>
+      <Preview {entry} {locale} bigPreview={isFeatured} />
+    </div>
+  ))}
 </div>
 
 <style>
