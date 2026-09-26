@@ -26,16 +26,14 @@ const videoTitle = Astro.locals.t("starlightRecipes.recipe.video.heading");
       <div class="starlight-showcases-media-asset">
         <slot />
       </div>
-      {
-        (title || description) && (
-          <div class="starlight-showcases-media-infos sl-flex">
-            {title && <p class="starlight-showcases-media-title">{title}</p>}
-            {description && (
-              <p class="starlight-showcases-media-description">{description}</p>
-            )}
-          </div>
-        )
-      }
+      {(title || description) && (
+        <div class="starlight-showcases-media-infos sl-flex">
+          {title && <p class="starlight-showcases-media-title">{title}</p>}
+          {description && (
+            <p class="starlight-showcases-media-description">{description}</p>
+          )}
+        </div>
+      )}
     </Element>
   </div>
 </div>

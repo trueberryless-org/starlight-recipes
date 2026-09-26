@@ -36,13 +36,11 @@ const cardTitle = video?.name ?? entry.data.title;
 
   <slot />
 
-  {
-    videoUrl && (
-      <ShowcaseMediaCard title={cardTitle}>
-        <YouTube id={videoUrl} />
-      </ShowcaseMediaCard>
-    )
-  }
+  {videoUrl && (
+    <ShowcaseMediaCard title={cardTitle}>
+      <YouTube id={videoUrl} />
+    </ShowcaseMediaCard>
+  )}
   <Footer {entry} {locale} {nextLink} {prevLink} />
 </Default>
 

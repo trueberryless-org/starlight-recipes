@@ -7,14 +7,12 @@ import { isAnyRecipePage } from "../libs/page";
 const { id } = Astro.locals.starlightRoute;
 ---
 
-{
-  isAnyRecipePage(id) ? (
-    <StarlightRecipesMarkdownContent>
-      <slot />
-    </StarlightRecipesMarkdownContent>
-  ) : (
-    <Default>
-      <slot />
-    </Default>
-  )
-}
+{isAnyRecipePage(id) ? (
+  <StarlightRecipesMarkdownContent>
+    <slot />
+  </StarlightRecipesMarkdownContent>
+) : (
+  <Default>
+    <slot />
+  </Default>
+)}

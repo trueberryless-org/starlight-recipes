@@ -15,20 +15,18 @@ const rating = entry.data.rating;
 const hasAuthorsOrRating = authors.length > 0 || rating;
 ---
 
-{
-  hasAuthorsOrRating ? (
-    <div class="authors-meta not-content">
-      {authors.length > 0 && (
-        <div class="authors">
-          {authors.map((author) => (
-            <Author {author} />
-          ))}
-        </div>
-      )}
-      {rating && <Rating {rating} />}
-    </div>
-  ) : null
-}
+{hasAuthorsOrRating ? (
+  <div class="authors-meta not-content">
+    {authors.length > 0 && (
+      <div class="authors">
+        {authors.map((author) => (
+          <Author {author} />
+        ))}
+      </div>
+    )}
+    {rating && <Rating {rating} />}
+  </div>
+) : null}
 
 <style>
   .authors-meta {

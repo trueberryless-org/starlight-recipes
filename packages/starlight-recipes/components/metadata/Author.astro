@@ -21,24 +21,22 @@ const linkAriaLabel = isLink
   aria-label={linkAriaLabel}
   class="author"
 >
-  {
-    picture.src &&
-      (typeof picture.src === "string" ? (
-        <img
-          src={picture.src}
-          alt={author.name}
-          loading={picture.isRemote ? "lazy" : "eager"}
-        />
-      ) : (
-        <Image
-          alt={author.name}
-          loading="eager"
-          src={picture.src}
-          height={40}
-          width={40}
-        />
-      ))
-  }
+  {picture.src &&
+    (typeof picture.src === "string" ? (
+      <img
+        src={picture.src}
+        alt={author.name}
+        loading={picture.isRemote ? "lazy" : "eager"}
+      />
+    ) : (
+      <Image
+        alt={author.name}
+        loading="eager"
+        src={picture.src}
+        height={40}
+        width={40}
+      />
+    ))}
 
   <div class="text">
     <div class="name">{author.name}</div>
