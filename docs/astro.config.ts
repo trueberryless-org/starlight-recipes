@@ -3,11 +3,33 @@ import { defineConfig } from "astro/config";
 import starlightLinksValidator from "starlight-links-validator";
 import starlightRecipes from "starlight-recipes";
 
+const site =
+  (process.env.CONTEXT === "deploy-preview" ||
+  process.env.CONTEXT === "branch-deploy"
+    ? process.env.DEPLOY_PRIME_URL
+    : process.env.URL) ?? "https://starlight-recipes.netlify.app";
+
 export default defineConfig({
-  site: "https://starlight-recipes.netlify.app",
+  site,
   integrations: [
     starlight({
       title: "Starlight Recipes",
+      head: [
+        {
+          tag: "meta",
+          attrs: {
+            property: "og:image",
+            content: new URL("og.png", site).href,
+          },
+        },
+        {
+          tag: "meta",
+          attrs: {
+            property: "og:image:alt",
+            content: "Starlight plugin to create a recipe website.",
+          },
+        },
+      ],
       social: [
         {
           href: "https://github.com/trueberryless-org/starlight-recipes",
