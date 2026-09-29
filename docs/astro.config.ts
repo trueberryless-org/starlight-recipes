@@ -32,14 +32,14 @@ export default defineConfig({
       ],
       social: [
         {
-          href: "https://github.com/trueberryless-org/starlight-recipes",
-          icon: "github",
-          label: "GitHub",
-        },
-        {
-          href: "https://bsky.app/profile/felixs.dev",
           icon: "blueSky",
           label: "BlueSky",
+          href: "https://bsky.app/profile/felixs.dev",
+        },
+        {
+          icon: "github",
+          label: "GitHub",
+          href: "https://github.com/trueberryless-org/starlight-recipes",
         },
       ],
       editLink: {
