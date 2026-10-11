@@ -1,10 +1,19 @@
 {
   "name": "starlight-recipes-docs",
   "version": "0.0.1",
-  "license": "MIT",
-  "description": "Documentation for the Starlight Recipes plugin.",
-  "author": "trueberryless <trueberryless@gmail.com> (https://felixs.dev)",
   "private": true,
+  "description": "Documentation for the Starlight Recipes plugin.",
+  "homepage": "https://starlight-recipes.netlify.app/",
+  "bugs": {
+    "url": "https://github.com/trueberryless-org/starlight-recipes/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/trueberryless-org/starlight-recipes.git",
+    "directory": "docs"
+  },
+  "license": "MIT",
+  "author": "trueberryless <trueberryless@gmail.com> (https://felixs.dev)",
   "type": "module",
   "scripts": {
     "astro": "astro",
@@ -22,14 +31,8 @@
     "starlight-links-validator": "^0.26.0",
     "starlight-recipes": "workspace:*"
   },
+  "packageManager": "pnpm@11.28.0",
   "engines": {
     "node": ">=22.12.0"
-  },
-  "homepage": "https://starlight-recipes.netlify.app",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/trueberryless-org/starlight-recipes.git",
-    "directory": "docs"
-  },
-  "bugs": "https://github.com/trueberryless-org/starlight-recipes/issues"
+  }
 }
