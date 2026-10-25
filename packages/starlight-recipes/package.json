@@ -14,11 +14,11 @@
   ],
   "homepage": "https://starlight-recipes.netlify.app/",
   "bugs": {
-    "url": "https://github.com/trueberryless-org/starlight-recipes/issues"
+    "url": "https://github.com/trueberryless/starlight-recipes/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/trueberryless-org/starlight-recipes.git",
+    "url": "https://github.com/trueberryless/starlight-recipes.git",
     "directory": "packages/starlight-recipes"
   },
   "license": "MIT",

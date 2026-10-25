@@ -12,4 +12,4 @@ Check out the [`starlight-recipes` getting started guide](https://starlight-reci
 
 Licensed under the MIT license, Copyright © trueberryless.
 
-See [LICENSE](https://github.com/trueberryless-org/starlight-recipes/blob/main/LICENSE) for more information.
+See [LICENSE](https://github.com/trueberryless/starlight-recipes/blob/main/LICENSE) for more information.
