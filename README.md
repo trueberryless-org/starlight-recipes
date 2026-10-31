@@ -10,7 +10,7 @@ Read the [Starlight Recipes docs](https://starlight-recipes.netlify.app).
 
 ## Package
 
-If you are looking for the Starlight plugin package, you can find it in the [`packages/starlight-recipes/`](https://github.com/trueberryless-org/starlight-recipes/tree/main/packages/starlight-recipes) directory.
+If you are looking for the Starlight plugin package, you can find it in the [`packages/starlight-recipes/`](https://github.com/trueberryless/starlight-recipes/tree/main/packages/starlight-recipes) directory.
 
 ## Project structure
 
@@ -20,4 +20,4 @@ This project uses pnpm workspaces to develop a single Starlight plugin from the 
 
 Licensed under the MIT License, Copyright © trueberryless.
 
-See [LICENSE](https://github.com/trueberryless-org/starlight-recipes/blob/main/LICENSE) for more information.
+See [LICENSE](https://github.com/trueberryless/starlight-recipes/blob/main/LICENSE) for more information.

@@ -43,12 +43,12 @@ export default defineConfig({
         {
           icon: "github",
           label: "GitHub",
-          href: "https://github.com/trueberryless-org/starlight-recipes",
+          href: "https://github.com/trueberryless/starlight-recipes",
         },
       ],
       editLink: {
         baseUrl:
-          "https://github.com/trueberryless-org/starlight-recipes/edit/main/docs/",
+          "https://github.com/trueberryless/starlight-recipes/edit/main/docs/",
       },
       customCss: ["./src/styles/custom.css"],
       locales: {
